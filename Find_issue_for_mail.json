@@ -1,0 +1,217 @@
+{
+  "name": "Find issue for mail",
+  "nodes": [
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "let inputText = $json.cleanedText;\n\nlet cleanedText = inputText.replace(/{color:[^}]+}/g, '');\ncleanedText = cleanedText.replace(/{color}/g, '');\ncleanedText = cleanedText.replace(/<[^>]*>/g, '');\ncleanedText = cleanedText.replace(/\\\\n/g, '\\n').replace(/\\\\{2}/g, '').trim();\n\n// Max for gpt-3.5-turbo\ncleanedText = cleanedText.substring(0, 10000);\n\nreturn {\n  json: {\n    cleanedText: cleanedText\n  }\n};\n"
+      },
+      "id": "4b967525-af42-472f-94d5-debb54d28d81",
+      "name": "Code",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -140,
+        80
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-large",
+        "options": {},
+        "requestOptions": {}
+      },
+      "id": "c2a9d540-064d-44c0-9cd1-001f2db13ae0",
+      "name": "Embeddings OpenAI",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1,
+      "position": [
+        120,
+        300
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "yiuOd1rh4VvrteZZ",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "5839800e-bc20-4c0d-a488-64877f9acfd2",
+      "name": "Workflow",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4eb5bd1d-bb9f-4995-9ec7-5313d14d9d77",
+              "name": "issuekey",
+              "value": "={{ $json.document.metadata.issuekey }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "ignoreConversionErrors": false
+        }
+      },
+      "id": "be8f1512-b805-4190-aa5c-2ea9cc47bb1c",
+      "name": "Get issuekey",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        760,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "load",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "n8n",
+          "mode": "list",
+          "cachedResultName": "n8n"
+        },
+        "prompt": "=Durchsuche den Index nach passenden Namen und Themen {{ $json.cleanedText }} und sortiere nach der Häufigkeit wie oft ein Name und eine Domain bzw. ein Projektname vorkommt",
+        "topK": 1,
+        "options": {
+          "pineconeNamespace": "issues"
+        }
+      },
+      "id": "ccaa04fb-dff6-4209-ac95-8e23f9521e32",
+      "name": "Pinecone Vector Store",
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1,
+      "position": [
+        100,
+        80
+      ],
+      "credentials": {
+        "pineconeApi": {
+          "id": "JtVJ99Ey7P7QCuTI",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "cce35a51-fdcb-4d58-9461-b255c1e34773",
+              "leftValue": "={{ $json.score }}",
+              "rightValue": 1,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "looseTypeValidation": true
+        }
+      },
+      "id": "0fcba12a-6cb1-4a45-a337-e9680569a242",
+      "name": "Relevant",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        480,
+        80
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Workflow": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store": {
+      "main": [
+        [
+          {
+            "node": "Relevant",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Relevant": {
+      "main": [
+        [
+          {
+            "node": "Get issuekey",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "27f238dd-9964-4cd7-8d6b-3133bb2b3cce",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "56fc812360391141cb9ac505c6be68147adf1858bd8b2dd9bdae3c3202be4a50"
+  },
+  "id": "nA90ZnS3db3xGllq",
+  "tags": [
+    {
+      "createdAt": "2024-07-05T08:08:00.361Z",
+      "updatedAt": "2024-07-05T08:08:00.361Z",
+      "id": "PnvLO7jNQ3TYpmzx",
+      "name": "rag"
+    }
+  ]
+}

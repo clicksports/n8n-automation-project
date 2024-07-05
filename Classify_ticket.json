@@ -1,0 +1,307 @@
+{
+  "name": "Classify ticket",
+  "nodes": [
+    {
+      "parameters": {
+        "model": "text-embedding-3-large",
+        "options": {},
+        "requestOptions": {}
+      },
+      "id": "44710628-fc00-4148-84fb-5f03e8901ebd",
+      "name": "Embeddings OpenAI",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1,
+      "position": [
+        1260,
+        260
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "yiuOd1rh4VvrteZZ",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "acc67f22-9193-42cb-bacc-75dc3455a7f6",
+        "options": {}
+      },
+      "id": "ada10ab2-594f-4944-9a3d-ef85cba6f542",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        660,
+        240
+      ],
+      "webhookId": "acc67f22-9193-42cb-bacc-75dc3455a7f6"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "document.pageContent",
+              "renameField": true,
+              "outputFieldName": "content"
+            },
+            {
+              "fieldToAggregate": "document.metadata.name",
+              "renameField": true,
+              "outputFieldName": "author"
+            }
+          ]
+        },
+        "options": {
+          "mergeLists": true
+        }
+      },
+      "id": "36bccf2a-0552-4d36-9567-72d445d4d626",
+      "name": "Aggregate",
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        2020,
+        40
+      ]
+    },
+    {
+      "parameters": {
+        "compare": "selectedFields",
+        "fieldsToCompare": "document.pageContent",
+        "options": {}
+      },
+      "id": "ccd0dd95-5009-4b9b-bca8-600e5d84a0b7",
+      "name": "Remove Duplicates",
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 1.1,
+      "position": [
+        1720,
+        40
+      ]
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-3.5-turbo",
+          "mode": "list",
+          "cachedResultName": "GPT-3.5-TURBO"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "="
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4b9e854b-8ada-4155-beae-053a5a9b7ff7",
+      "name": "OpenAI",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.4,
+      "position": [
+        2320,
+        40
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "yiuOd1rh4VvrteZZ",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-large",
+        "options": {},
+        "requestOptions": {}
+      },
+      "id": "75ffe6c4-872d-4716-a2f2-41b8e99686ed",
+      "name": "Embeddings OpenAI1",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1,
+      "position": [
+        1260,
+        760
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "yiuOd1rh4VvrteZZ",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "load",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "n8n",
+          "mode": "list",
+          "cachedResultName": "n8n"
+        },
+        "prompt": "=",
+        "topK": 100,
+        "options": {
+          "pineconeNamespace": "issues",
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "issuekey",
+                "value": "={{ $json.body.issuekey }}"
+              }
+            ]
+          }
+        }
+      },
+      "id": "598a2c7a-0166-432b-86a3-c9caaecead89",
+      "name": "Fetch issue content",
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        40
+      ],
+      "credentials": {
+        "pineconeApi": {
+          "id": "JtVJ99Ey7P7QCuTI",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "load",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "n8n",
+          "mode": "list",
+          "cachedResultName": "n8n"
+        },
+        "prompt": "=",
+        "topK": 100,
+        "options": {
+          "pineconeNamespace": "issues",
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "issuekey",
+                "value": "={{ $json.body.issuekey }}"
+              }
+            ]
+          }
+        }
+      },
+      "id": "301c62ab-169f-40eb-ad55-cd150e17fa03",
+      "name": "Fetch related issues",
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        520
+      ],
+      "credentials": {
+        "pineconeApi": {
+          "id": "JtVJ99Ey7P7QCuTI",
+          "name": "PineconeApi account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Fetch issue content",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Fetch issue content",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Fetch related issues",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "OpenAI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicates": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Fetch related issues",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch issue content": {
+      "main": [
+        [
+          {
+            "node": "Remove Duplicates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "e253b56d-5bff-41f6-8be9-254ad6471788",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "56fc812360391141cb9ac505c6be68147adf1858bd8b2dd9bdae3c3202be4a50"
+  },
+  "id": "bs9M5aK7IR8yGv9v",
+  "tags": [
+    {
+      "createdAt": "2024-07-05T08:08:00.361Z",
+      "updatedAt": "2024-07-05T08:08:00.361Z",
+      "id": "PnvLO7jNQ3TYpmzx",
+      "name": "rag"
+    }
+  ]
+}
