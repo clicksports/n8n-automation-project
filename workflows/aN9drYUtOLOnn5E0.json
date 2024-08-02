@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-08-02T11:54:52.386Z",
-  "updatedAt": "2024-08-02T18:16:39.000Z",
+  "updatedAt": "2024-08-02T18:19:30.000Z",
   "id": "aN9drYUtOLOnn5E0",
   "name": "Backup n8n workflows",
   "active": false,
@@ -99,7 +99,7 @@
     {
       "parameters": {
         "operation": "commit",
-        "repositoryPath": "/backup/docker/n8n/workflows",
+        "repositoryPath": "={{ $('Repo').first().json.path }}",
         "message": "Backup Workflows",
         "options": {}
       },
@@ -108,14 +108,14 @@
       "type": "n8n-nodes-base.git",
       "typeVersion": 1,
       "position": [
-        2200,
+        2120,
         160
       ]
     },
     {
       "parameters": {
         "operation": "addConfig",
-        "repositoryPath": "/backup/docker/n8n/workflows",
+        "repositoryPath": "={{ $('Repo').first().json.path }}",
         "key": "user.email",
         "value": "christian.gick@clicksports.de",
         "options": {}
@@ -132,7 +132,7 @@
     {
       "parameters": {
         "operation": "addConfig",
-        "repositoryPath": "/backup/docker/n8n/workflows",
+        "repositoryPath": "={{ $('Repo').first().json.path }}",
         "key": "user.name",
         "value": "Christian Gick N8N",
         "options": {}
@@ -148,32 +148,9 @@
     },
     {
       "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "0138869e-4baa-49c2-b133-abe46c2d6660",
-              "name": "repo",
-              "value": "/backup/docker/n8n/workflows",
-              "type": "string"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "id": "43d5f014-cf0b-4008-9889-bd21f3d5cb68",
-      "name": "Edit Fields1",
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        1260,
-        160
-      ]
-    },
-    {
-      "parameters": {
         "authentication": "gitPassword",
         "operation": "push",
-        "repositoryPath": "/backup/docker/n8n/workflows",
+        "repositoryPath": "={{ $('Repo').first().json.path }}",
         "options": {
           "targetRepository": "https://bitbucket.org/clicksports/n8n.git"
         }
@@ -183,7 +160,7 @@
       "type": "n8n-nodes-base.git",
       "typeVersion": 1,
       "position": [
-        2440,
+        2340,
         160
       ],
       "credentials": {
@@ -196,8 +173,8 @@
     {
       "parameters": {
         "operation": "add",
-        "repositoryPath": "/backup/docker/n8n/workflows",
-        "pathsToAdd": "/backup/docker/n8n/workflows"
+        "repositoryPath": "={{ $('Repo').first().json.path }}",
+        "pathsToAdd": "={{ $('Repo').first().json.path }}"
       },
       "id": "e2097b27-6d14-42a9-9c13-8b802ab27f9b",
       "name": "Git4",
@@ -217,6 +194,29 @@
       "position": [
         300,
         260
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0138869e-4baa-49c2-b133-abe46c2d6660",
+              "name": "path",
+              "value": "/backup/docker/n8n/workflows",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "43d5f014-cf0b-4008-9889-bd21f3d5cb68",
+      "name": "Repo",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1260,
+        160
       ]
     }
   ],
@@ -247,7 +247,7 @@
       "main": [
         [
           {
-            "node": "Edit Fields1",
+            "node": "Repo",
             "type": "main",
             "index": 0
           }
@@ -294,17 +294,6 @@
         ]
       ]
     },
-    "Edit Fields1": {
-      "main": [
-        [
-          {
-            "node": "Git1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Git4": {
       "main": [
         [
@@ -326,6 +315,17 @@
           }
         ]
       ]
+    },
+    "Repo": {
+      "main": [
+        [
+          {
+            "node": "Git1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -336,7 +336,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "b5dbf9ab-3187-4650-8226-ccd7a1a4c05a",
+  "versionId": "d3f3ed99-979d-4966-a127-e178146afe7e",
   "triggerCount": 0,
   "tags": []
 }
