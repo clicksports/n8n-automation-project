@@ -1,0 +1,1347 @@
+{
+  "createdAt": "2024-07-18T14:16:00.169Z",
+  "updatedAt": "2024-07-31T05:51:23.000Z",
+  "id": "Lzw399ANe04HZ6wK",
+  "name": "Validate processing SSL orders",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://my.gogetssl.com/api/auth",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "user",
+              "value": "ssl@clicksports.de"
+            },
+            {
+              "name": "pass",
+              "value": "4e11675a327aad6831703c82fdf01bea"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "bd2bfc90-754a-4092-a06e-eac988393958",
+      "name": "Authentication",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        -3240,
+        800
+      ],
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://my.gogetssl.com/api/orders",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "status",
+              "value": "processing"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "87336115-4f84-4275-ae5f-a7f8355d2738",
+      "name": "get processing orders",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        -3000,
+        800
+      ],
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "pskjhKSslGfoyCfJ",
+          "name": "GoGetSSL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://my.gogetssl.com/api/orders/ssl/revalidate/{{ $('Domain').first().json.order_id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "domain",
+              "value": "={{ $('Domain').first().json.domain_name }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "55d65cd6-4aa2-4c14-8d88-d34b9be90506",
+      "name": "try to revalidate",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        2240,
+        660
+      ],
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "pskjhKSslGfoyCfJ",
+          "name": "GoGetSSL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes"
+            }
+          ]
+        }
+      },
+      "id": "c5995585-b08c-4862-8e18-d148ee92a61f",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -3460,
+        800
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "orders",
+        "include": "allOtherFields",
+        "options": {}
+      },
+      "id": "98953c2f-8b45-466b-93e2-ff71bba84add",
+      "name": "Split out items",
+      "type": "n8n-nodes-base.itemLists",
+      "typeVersion": 3,
+      "position": [
+        -2720,
+        800
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://my.gogetssl.com/api/orders/status/{{ $json.orders.order_id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "options": {}
+      },
+      "id": "660abb61-8a56-40a8-95b4-52fd4a217fad",
+      "name": "validation data",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        -1620,
+        580
+      ],
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "pskjhKSslGfoyCfJ",
+          "name": "GoGetSSL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "DELETE",
+        "url": "=https://{{ $('Set active Plesk').item.json.pleskaddress }}:8443/api/v2/dns/records/{{ $json.id }}  ",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "id": "b4df94b7-6606-4b54-9a8d-bd7010827127",
+      "name": "dns remove",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1060,
+        -860
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "c3IiH8vgW4O0OY0t",
+          "name": "Plesk"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Funktion zum Laden der Public Suffix List\nasync function loadPublicSuffixList() {\n    const response = await this.helpers.request({\n        method: 'GET',\n        url: 'https://raw.githubusercontent.com/publicsuffix/list/master/public_suffix_list.dat',\n        json: false,\n    });\n    \n    const suffixes = response.split('\\n')\n        .map(line => line.trim())\n        .filter(line => line && !line.startsWith('//') && !line.startsWith('!'));\n\n    return suffixes;\n}\n\n// Funktion zum Extrahieren der Basisdomain\nfunction getBaseDomain(domain, publicSuffixList) {\n    const domainParts = domain.split('.');\n    const domainPartsLength = domainParts.length;\n\n    // Prüfe auf öffentliche Suffixe von der längsten zur kürzesten\n    for (let i = 0; i < publicSuffixList.length; i++) {\n        const suffix = publicSuffixList[i];\n        const suffixParts = suffix.split('.');\n        const suffixPartsLength = suffixParts.length;\n\n        // Wenn das Ende der Domain mit dem öffentlichen Suffix übereinstimmt\n        if (domainParts.slice(-suffixPartsLength).join('.') === suffix) {\n            // Nimm den Teil vor dem öffentlichen Suffix als Basisdomain\n            return domainParts.slice(-(suffixPartsLength + 1)).join('.');\n        }\n    }\n\n    // Standardlogik für zweigliedrige TLDs\n    if (domainPartsLength >= 2) {\n        return domainParts.slice(-2).join('.');\n    } else {\n        return domain;\n    }\n}\n\n// Public Suffix List wird nur einmal geladen und in einer globalen Variable gespeichert\nif (!global.publicSuffixList) {\n    global.publicSuffixList = await loadPublicSuffixList();\n}\n\n// Verarbeitung jedes Items einzeln\nconst domain = item.json.domain; // Ersetze dies durch den tatsächlichen Pfad zu deiner Domain\nconst baseDomain = getBaseDomain(domain, global.publicSuffixList);\n\nreturn {\n    json: { ...item.json, baseDomain },\n};\n"
+      },
+      "id": "885a30e8-5458-46aa-9707-aa0d2796f60e",
+      "name": "Code",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1340,
+        580
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://{{ $json.pleskaddress }}:8443/api/v2/dns/records",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "domain",
+              "value": "={{ $json.zone }}"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true,
+          "timeout": 10000
+        }
+      },
+      "id": "f469f416-c3c0-4733-b9bb-7abf6d00f0a6",
+      "name": "Get DNS records",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        580,
+        -700
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "c3IiH8vgW4O0OY0t",
+          "name": "Plesk"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "38903500-c7ba-49a8-8e9c-b229c302678a",
+              "leftValue": "={{ $json.value }}",
+              "rightValue": "=.sectigo.com",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "fc1c9f46-6d15-4ce3-bab1-f65417ca2684",
+      "name": "If",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        800,
+        -700
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://my.gogetssl.com/api/orders/ssl/change_validation_method/{{ $('Split Out').item.json.order_id }}/",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "domain",
+              "value": "={{ $('Split Out').item.json.domain }}"
+            },
+            {
+              "name": "new_method",
+              "value": "dns"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "e36a1476-cec4-47db-86d1-d448cc7033d7",
+      "name": "Change validation method to dns",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        820,
+        -200
+      ],
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "pskjhKSslGfoyCfJ",
+          "name": "GoGetSSL"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://{{ $json.pleskaddress }}:8443/api/v2/dns/records",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "domain",
+              "value": "={{ $json.name }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "type",
+              "value": "CNAME"
+            },
+            {
+              "name": "host",
+              "value": "={{ $('Split Out').item.json.approver_method.dns.record[0] }}"
+            },
+            {
+              "name": "value",
+              "value": "={{ $('Split Out').item.json.approver_method.dns.record[2] }}"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "id": "b6cb10b0-360a-41a4-97f5-16224a1c81ad",
+      "name": "dns add",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        860,
+        -400
+      ],
+      "executeOnce": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "c3IiH8vgW4O0OY0t",
+          "name": "Plesk"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4ab49ab1-f6f2-4792-b929-f35078d5e96f",
+              "name": "pleskaddress",
+              "value": "={{ $('Split Out').item.json.plesk_domainpool }}",
+              "type": "string"
+            },
+            {
+              "id": "25a68661-839f-4b72-8dd1-5c387829ae60",
+              "name": "zone",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "63d5bcb1-335e-4f77-b556-82e589e4f406",
+      "name": "Set active Plesk",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [
+        300,
+        -700
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "cdae252e-7977-4ec6-b863-3d13987eab57",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "looseTypeValidation": true
+        }
+      },
+      "id": "20b681c5-1471-4fe3-a5f1-ff9ea099faf3",
+      "name": "Zone found",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        20,
+        -500
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://{{ $json.plesk_domainpool }}:8443/api/v2/domains ",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "name",
+              "value": "={{ $json.baseDomain }}"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true,
+          "redirect": {
+            "redirect": {
+              "maxRedirects": 3
+            }
+          },
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          },
+          "timeout": 2000
+        }
+      },
+      "id": "08b89c72-488b-422d-a3b2-efe410962a0d",
+      "name": "Find zone in Plesk",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -200,
+        -500
+      ],
+      "alwaysOutputData": false,
+      "retryOnFail": false,
+      "notesInFlow": false,
+      "executeOnce": false,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "c3IiH8vgW4O0OY0t",
+          "name": "Plesk"
+        }
+      },
+      "disabled": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {},
+      "id": "7027584c-9581-4f8b-b229-93213fe59be2",
+      "name": "When clicking ‘Test workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -3420,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Split Out').item.json.dcv_method }}",
+                    "rightValue": "dns",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "dns"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose"
+                },
+                "conditions": [
+                  {
+                    "id": "35e97814-5b37-471e-8115-76d104c9089c",
+                    "leftValue": "={{ $('Split Out').item.json.dcv_method }}",
+                    "rightValue": "https",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "https"
+            }
+          ]
+        },
+        "options": {
+          "looseTypeValidation": true
+        }
+      },
+      "id": "11c54931-3b6f-4004-a56b-e3f5c2c279d0",
+      "name": "Switch",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [
+        580,
+        -500
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://my.gogetssl.com/api/orders/ssl/change_validation_method/{{ $json.orders.order_id }}/",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "domain",
+              "value": "={{ $json.orders.common_name }}"
+            },
+            {
+              "name": "new_method",
+              "value": "https"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "adc9f078-cd8d-4191-8e56-890ec145f932",
+      "name": "Change validation method to https",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        -2100,
+        0
+      ],
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "pskjhKSslGfoyCfJ",
+          "name": "GoGetSSL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "id": "ab82e89d-49d6-433e-8c73-57c3a811c578",
+      "name": "Merge",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        -1900,
+        580
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "29ef8d5b-0ed3-45d9-8e18-4337bdca6bab",
+              "leftValue": "={{ $json.orders.order_id }}",
+              "rightValue": "3087797",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "looseTypeValidation": true
+        }
+      },
+      "id": "77ec4bbb-7a84-46df-a7a3-64c2f9968ec0",
+      "name": "If1",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -2460,
+        20
+      ]
+    },
+    {
+      "parameters": {
+        "content": "MANUEL",
+        "height": 597.5429975429976,
+        "width": 1077.110565110565
+      },
+      "id": "95022edc-5e89-4870-9fc5-252b96f2eac8",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -2811.5675675675666,
+        -220
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "plesk_domainpool",
+        "include": "allOtherFields",
+        "options": {
+          "destinationFieldName": "hostname"
+        }
+      },
+      "id": "5fa2300c-d015-4c4d-9911-128140fd3af6",
+      "name": "Split Out",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -780,
+        900
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "83fcfdb2-4536-4e45-922a-4cc8b0bdbcdf",
+      "name": "Loop Over Items",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -440,
+        900
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "75f7657b-7717-4c36-90fa-30a42100978c",
+              "leftValue": "={{ $json.code }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "a977b91b-2080-43c7-a1b7-be76c4ac4197",
+      "name": "If3",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        740,
+        1020
+      ]
+    },
+    {
+      "parameters": {
+        "errorMessage": "Domain not found on our plesk servers"
+      },
+      "id": "43deb3c3-1fad-4d92-b12b-ae0e0035a677",
+      "name": "Domain not found",
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        -180,
+        820
+      ]
+    },
+    {
+      "parameters": {
+        "errorMessage": "={{ $json.stderr }}"
+      },
+      "id": "b7e96a29-adc3-4041-a042-7477dd1b6dce",
+      "name": "Could not search for vhost",
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        1040,
+        1120
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f53176f2-5673-4715-bcfb-c76508895782",
+              "name": "plesk_domainpool",
+              "value": "=[\"{{ $json.domain }}\", \"{{ $json.baseDomain }}\", \"plesk.{{ $json.domain }}\", \"plesk.{{ $json.baseDomain }}\", \"org-www.clicksports.de\"]",
+              "type": "array"
+            },
+            {
+              "id": "4a56981d-6e0b-46f9-8085-a281d72b09d1",
+              "name": "domain_name",
+              "value": "={{ $json.domain }}",
+              "type": "string"
+            },
+            {
+              "id": "29d958cf-fade-4465-aa99-8f86c871d935",
+              "name": "approver_method",
+              "value": "={{ $json.approver_method }}",
+              "type": "object"
+            },
+            {
+              "id": "9a43d22d-28ca-4e18-9bda-200a6f37e696",
+              "name": "order_id",
+              "value": "={{ $json.order_id }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {
+          "ignoreConversionErrors": false
+        }
+      },
+      "id": "e37c6e06-0210-4cda-b334-41ad2a9a985c",
+      "name": "Domain",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [
+        -1140,
+        900
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3f5a7a3f-0eea-4b88-8fb1-147cb7b4f2a7",
+              "name": "hostname",
+              "value": "={{ $('Host').item.json.hostname }}",
+              "type": "string"
+            },
+            {
+              "id": "5de1eb4f-773b-46bb-9d6f-3412fabfcfd6",
+              "name": "rootfolder",
+              "value": "={{ $json.stdout }}",
+              "type": "string"
+            },
+            {
+              "id": "f0017b93-d9ff-4326-82f6-6079872ef9e5",
+              "name": "validationfolder",
+              "value": "={{ $json.stdout }}/.well-known/pki-validation",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "2185ff0a-c762-49ff-948a-17834217babe",
+      "name": "Folders",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1040,
+        880
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 10
+      },
+      "id": "6c2905e7-3691-4924-bfb4-85936b90377f",
+      "name": "Wait",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1920,
+        660
+      ],
+      "webhookId": "a3a34f6c-9895-45fb-8472-73a6f36ada52"
+    },
+    {
+      "parameters": {
+        "operation": "toText",
+        "sourceProperty": "approver_method.https.content",
+        "options": {
+          "fileName": "={{ $json.approver_method.https.filename }}"
+        }
+      },
+      "id": "474c7f1e-1de1-4606-81c1-608f529697c6",
+      "name": "Convert to File",
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        -780,
+        660
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ea4f71b7-2f4a-4464-8b8b-99a0cc3d1451",
+              "name": "hostname",
+              "value": "={{ $json.hostname }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "67c0f670-6896-4796-8d34-362819300bfa",
+      "name": "Host",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -200,
+        1040
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "a944e985-f927-4e44-b4fa-8631e5064580",
+              "leftValue": "={{ $json.code }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "looseTypeValidation": true
+        }
+      },
+      "id": "2ee8c59e-7ec6-490a-be39-a08c8d76c64a",
+      "name": "If2",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        400,
+        1040
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "privateKey",
+        "command": "=plesk bin domain -i {{ $('Domain').item.json.domain_name }} | sed -n 's/.*--WWW-Root--: //p'",
+        "cwd": "=/"
+      },
+      "id": "3a260382-427d-426b-99d3-5881923bf11c",
+      "name": "Get domain root",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        100,
+        1040
+      ],
+      "credentials": {
+        "sshPrivateKey": {
+          "id": "7cM8UD60RNSc7v3k",
+          "name": "SSH"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "id": "7937ab14-a456-4f60-ad9e-2dc2af3b56b2",
+      "name": "Merge1",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        1380,
+        660
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "privateKey",
+        "resource": "file",
+        "path": "={{ $('Folders').first().json.validationfolder }}",
+        "options": {}
+      },
+      "id": "8bd9a87b-3c57-47eb-a8ae-3840d42edfd2",
+      "name": "SSH",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        1660,
+        660
+      ],
+      "credentials": {
+        "sshPrivateKey": {
+          "id": "7cM8UD60RNSc7v3k",
+          "name": "SSH"
+        }
+      },
+      "onError": "continueRegularOutput"
+    }
+  ],
+  "connections": {
+    "Authentication": {
+      "main": [
+        [
+          {
+            "node": "get processing orders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get processing orders": {
+      "main": [
+        [
+          {
+            "node": "Split out items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Authentication",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split out items": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "validation data": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Domain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get DNS records": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "dns remove",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set active Plesk": {
+      "main": [
+        [
+          {
+            "node": "Get DNS records",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Zone found": {
+      "main": [
+        [
+          {
+            "node": "Set active Plesk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find zone in Plesk": {
+      "main": [
+        [
+          {
+            "node": "Zone found",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Authentication",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "dns add",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Change validation method to dns",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Change validation method to https": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "validation data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Change validation method to https",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Domain not found",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Host",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If3": {
+      "main": [
+        [
+          {
+            "node": "Folders",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Could not search for vhost",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Domain": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Folders": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "try to revalidate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Host": {
+      "main": [
+        [
+          {
+            "node": "Get domain root",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get domain root": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "SSH",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SSH": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "oXwbRnZHgYHUkKj4",
+    "timezone": "Europe/Berlin"
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrencyRules": []
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "ce1379ad-9456-4331-8dae-a18973de08e2",
+  "triggerCount": 1,
+  "tags": [
+    {
+      "createdAt": "2024-07-18T13:44:20.701Z",
+      "updatedAt": "2024-07-18T13:44:20.701Z",
+      "id": "eg0pjrYy9dLUUASF",
+      "name": "ssl"
+    }
+  ]
+}

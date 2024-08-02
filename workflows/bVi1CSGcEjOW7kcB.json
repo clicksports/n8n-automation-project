@@ -1,0 +1,215 @@
+{
+  "createdAt": "2024-07-18T14:20:01.270Z",
+  "updatedAt": "2024-07-19T11:38:22.000Z",
+  "id": "bVi1CSGcEjOW7kcB",
+  "name": "Generate text comment for Jira issue",
+  "active": true,
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Du bist ein hilfsbereiter Bot im Bereich Kundenservice / IT-Support und kannst auf einen Index zugreifen, in dem alle offenen und kürzlich geschlossenen Jira-Vorgänge unserer Digitalagentur CLICKSPORTS gespeichert sind, mit denen wir unsere Aufgaben verwalten und die Kommunikation mit unseren Kunden und Partnern abwickeln. Wir haben keine Abteilungen und bevorzugen einen wenig förmlichen Kommunikationsstil ohne altmodische Formulierungen. Vermeide Wiederholungen, so dass ein und dasselbe Wort nicht auch noch im nächsten Satz vorkommt. Vermeide Floskeln wie: Wir haben festgestellt, schreibe lieber in der Ich-Form. Vermeide das Wort Problem, nutze hier lieber Thema. \n\nGehe vor allem auf die Bedenken und Ziele des Kunden ein um zu überzeugen den nächsten Schritt zu gehen. Fasse die verschiedenen Optionen noch einmal zusammen falls der status in den Metadaten auf Entscheidung steht.\n\nreporter in den Metadaten ist der Absender, name und email enthalten jeweils die Daten.\n\nIm pageContent steht Zusammenfassung und Beschreibung des Vorgangs sowie alle Kommentare, die mit dem Vorgang zu tun haben.\n\nAlle Vorgänge haben einen einzigartigen Vorgangsschlüssel, der als issuekey in den Metadaten gespeichert ist. Alle Informationen mit demselben Issuekey gehören zu einem eindeutigen Vorgang, der vorrangig ein Thema behandelt. Wir nennen den Issuekey Vorgangsschlüssel.\n\nGeneriere bitte einen Text für eine E-Mail als Antwort auf den Vorgang {{ $json.body['issue.key'] }}.\nBeziehe nur Vorgänge in deine Recherche mit ein, die vom selben Absender sind.\n\nEs muss kein Betreff enthalten sein und als Absender benötigen wir keine Position. Im Text soll der Vorgangsschlüssel nicht erwähnt werden.\n\nZiel des Textes ist, dass wir je nach status in den Metaten weiter Richtung Lösung zu kommen: ein Angebot annehmen, eine Genehmigung für kostenpflichtigen Support erteilen oder eine Bestätigung einholen, dass das Thema gelöst ist.\n\nHyperlinks im Originaltext bitte unverändert übernehmen. Fristen sollten noch einmal wiederholt werden.\n\nEnthält das Ticket einen Kommentar wie Wiedervorlage abgelaufen weil das Ticket längere Zeit nicht verändert wurde oder das Wiedervorlage Datum erreicht wurde darf gerne eine freundliche Aufforderung kommen, dass wir Feedback brauchen, um bei dem Thema voranzukommen. Status oder Systemcode den wir intern verwenden soll nicht explizit geschrieben werden. Bei der Begrüßung in dem Fall gerne etwas schreiben, dass ich hoffe, dass es dem Empfänger gut geht. Wir wissen dass unsere Kunden sehr beschäftigt sind, manchmal geht aber auch eine Nachricht verloren oder wird übersehen und wir möchten sicherstellen, dass wir bei dem Thema gemeinsam voran kommen. In jedem Fall wäre eine kurze Antwort super damit wir wissen dass die Nachricht ankam.\n\nDie Anrede für den Empfänger ist \"Hallo Vorname\", wenn wir in anderen Vorgängen per Du sind, ansonsten \"Hallo Frau Nachname\" oder \"Hallo Herr Nachname\" je nach Geschlecht. Wenn wir auf eine Antwort zurückschreiben, in der wir geduzt wurden, duzen wir auch. Wenn du nicht sicher bist bei der Anrede oder kein Name beim Absender hinterlegt ist verwende einfach nur Hallo,\n\nBeim Duzen ist die Verabschiedung:\n\n--\n\nViele Grüße,\n{{ $json.body['assignee.name'] }}\n\nBeim Siezen ist die Verabschiedung:\n\n--\n\nViele Grüße,\n{{ $json.body['assignee.name'] }} {{ $json.body['assignee.surname'] }}\n\n#gernperdu\n\nDer Hashtag soll in einer eigenen Zeile stehen genau wie die beiden Striche -- die dürfen auch nicht verändert werden weil sie die Signatur kennzeichnen."
+      },
+      "id": "8518ec8f-fe40-4d2a-ba5b-8c53068ba1f1",
+      "name": "Question and Answer Chain",
+      "type": "@n8n/n8n-nodes-langchain.chainRetrievalQa",
+      "typeVersion": 1.3,
+      "position": [
+        560,
+        180
+      ]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o-mini",
+        "options": {
+          "responseFormat": "text"
+        }
+      },
+      "id": "3ecebd7a-5e34-4ed7-8f23-aa5da1e899fe",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        560,
+        400
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "y8NvNd30QFsYf7Hw",
+          "name": "OpenAI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "topK": 500
+      },
+      "id": "e1b4a773-e434-4d43-83a3-da4a2ab95ff4",
+      "name": "Vector Store Retriever",
+      "type": "@n8n/n8n-nodes-langchain.retrieverVectorStore",
+      "typeVersion": 1,
+      "position": [
+        760,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-large",
+        "options": {}
+      },
+      "id": "a11f03fd-a1ed-4afa-a5dd-54c91b8c6d94",
+      "name": "Embeddings OpenAI3",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1,
+      "position": [
+        1140,
+        760
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "y8NvNd30QFsYf7Hw",
+          "name": "OpenAI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "n8n",
+          "mode": "list",
+          "cachedResultName": "n8n"
+        },
+        "options": {
+          "pineconeNamespace": "issues",
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "issuekey",
+                "value": "={{ $json.body['issue.key'] }}"
+              }
+            ]
+          }
+        }
+      },
+      "id": "23146014-d299-4e4e-b274-45a986054fa7",
+      "name": "Pinecone Vector Store3",
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1,
+      "position": [
+        1140,
+        540
+      ],
+      "credentials": {
+        "pineconeApi": {
+          "id": "8lDKmR3gvMj1szqg",
+          "name": "Pinecone"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "1641784c-1be0-4d98-993b-039a01b99b5a",
+        "responseMode": "lastNode",
+        "responseData": "allEntries",
+        "options": {}
+      },
+      "id": "d6767311-21df-466d-a000-a10cc60653b8",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        260,
+        200
+      ],
+      "webhookId": "1641784c-1be0-4d98-993b-039a01b99b5a"
+    }
+  ],
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Question and Answer Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Vector Store Retriever": {
+      "ai_retriever": [
+        [
+          {
+            "node": "Question and Answer Chain",
+            "type": "ai_retriever",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI3": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store3",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store3": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "Vector Store Retriever",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Question and Answer Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "oXwbRnZHgYHUkKj4"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "37d2c971-5eea-4f82-9cbc-050cc1c0ad0b",
+  "triggerCount": 1,
+  "tags": [
+    {
+      "createdAt": "2024-07-19T11:38:21.497Z",
+      "updatedAt": "2024-07-19T11:38:21.497Z",
+      "id": "R3f6NQ4V2TDyb09j",
+      "name": "openai"
+    },
+    {
+      "createdAt": "2024-07-18T11:59:49.236Z",
+      "updatedAt": "2024-07-18T11:59:49.236Z",
+      "id": "pp35M0Su309OL8L3",
+      "name": "rag"
+    }
+  ]
+}

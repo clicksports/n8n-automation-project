@@ -1,0 +1,1988 @@
+{
+  "createdAt": "2024-07-18T11:47:48.486Z",
+  "updatedAt": "2024-08-02T16:23:35.000Z",
+  "id": "taQ1njcTXVWU3ghh",
+  "name": "Mailhandler",
+  "active": true,
+  "nodes": [
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "946152d8-e0d0-41b7-9e45-2f1e3290975e",
+              "leftValue": "={{ $json['message-id'] }}",
+              "rightValue": "clicksports",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "looseTypeValidation": true
+        }
+      },
+      "id": "385f7771-07cd-42ca-aeae-e8241b8dc8ef",
+      "name": "Check Message ID",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -2900,
+        1100
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e2e734c8-8662-44a8-b807-63493eaa93e9",
+              "name": "subject",
+              "value": "={{ $json.subject }}",
+              "type": "string"
+            },
+            {
+              "id": "c639f0c6-7f03-4b9b-8387-cbf5b18e7e55",
+              "name": "from.value[0].address",
+              "value": "={{ $json.from.value[0].address }}",
+              "type": "string"
+            },
+            {
+              "id": "a0fb7f4b-7b5c-465a-a003-ba7a9c7a7d1e",
+              "name": "from.value[0].name",
+              "value": "={{ $json.from.value[0].name }}",
+              "type": "string"
+            },
+            {
+              "id": "d241ca40-ce93-4f3d-9904-bbe5faf9017c",
+              "name": "message-id",
+              "value": "={{ $json.messageId.trim() }}",
+              "type": "string"
+            },
+            {
+              "id": "487175de-3174-4b50-9d69-89697162b656",
+              "name": "html",
+              "value": "={{ $json.html }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "5638624a-b436-434b-b161-cea9f05f16dc",
+      "name": "Get Message ID",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [
+        -3240,
+        1100
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "privateKey",
+        "command": "=find /var/qmail/mailnames/clicksports.de/christian.gick/Maildir/cur/ -type f -exec sh -c 'grep -z \"{{ $json[\"message-id\"] }}\" \"$1\" && mv \"$1\" /var/qmail/mailnames/clicksports.de/christian.gick/Maildir/.N8N.Ham/cur/' sh {} \\; "
+      },
+      "id": "63ef0e33-7555-4531-ac5f-35e9997aceb8",
+      "name": "Move to ham",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        2680,
+        960
+      ],
+      "credentials": {
+        "sshPrivateKey": {
+          "id": "7cM8UD60RNSc7v3k",
+          "name": "SSH Hcloud"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "privateKey",
+        "command": "=find /var/qmail/mailnames/clicksports.de/christian.gick/Maildir/cur/ -type f -exec sh -c 'grep -z \"Message-ID:.*{{ $('Get Message ID').item.json['message-id'] }}\" \"$1\" && mv \"$1\" /var/qmail/mailnames/clicksports.de/christian.gick/Maildir/.N8N.Spam/cur/' sh {} \\;"
+      },
+      "id": "92f10003-2f6f-487b-b6f8-a06200efa40e",
+      "name": "Move to spam",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        540,
+        1320
+      ],
+      "credentials": {
+        "sshPrivateKey": {
+          "id": "7cM8UD60RNSc7v3k",
+          "name": "SSH Hcloud"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combinationMode": "mergeByPosition",
+        "options": {}
+      },
+      "id": "970a8f8c-c992-4867-b265-268068cfe2a0",
+      "name": "Merge1",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2.1,
+      "position": [
+        -1720,
+        1080
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combinationMode": "mergeByPosition",
+        "options": {}
+      },
+      "id": "f741660c-1da7-4cf7-b8c3-a2a1b97514e8",
+      "name": "Merge2",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2.1,
+      "position": [
+        -2640,
+        820
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "issueAttachment",
+        "issueKey": "={{ $json.key }}"
+      },
+      "id": "4238fca8-e886-4209-a50b-9104b624d554",
+      "name": "Attach audio",
+      "type": "n8n-nodes-base.jira",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        900
+      ],
+      "credentials": {
+        "jiraSoftwareCloudApi": {
+          "id": "HlsaLdc6YFfeasWO",
+          "name": "Jira christian.gick@clicksports.de"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "project": {
+          "__rl": true,
+          "value": "23449",
+          "mode": "list",
+          "cachedResultName": "FiBu"
+        },
+        "issueType": {
+          "__rl": true,
+          "value": "10004",
+          "mode": "list",
+          "cachedResultName": "Aufgabe"
+        },
+        "summary": "=Beleg von {{ $('Relevance and Reference').first().json.message.content.sender }} aus Portal laden",
+        "additionalFields": {
+          "description": "={{ $('Relevance and Reference').first().json.message.content.abstract }}\n{{ $('Relevance and Reference').first().json.message.content.sender }}\n{{ $('Relevance and Reference').first().json.message.content.invoicenumber }}\n{{ $('Relevance and Reference').first().json.message.content.ticketlink }}\n{{ $('Relevance and Reference').first().json.message.content.portallink }}"
+        }
+      },
+      "id": "ba82339f-d449-4c78-aa00-35c864f1d2d4",
+      "name": "Create issue for manual invoice fetching",
+      "type": "n8n-nodes-base.jira",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        660
+      ],
+      "credentials": {
+        "jiraSoftwareCloudApi": {
+          "id": "HlsaLdc6YFfeasWO",
+          "name": "Jira christian.gick@clicksports.de"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "={{ $json.fileName }}",
+        "driveId": {
+          "__rl": true,
+          "value": "My Drive",
+          "mode": "list",
+          "cachedResultName": "My Drive",
+          "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1U5MwT2uYFCKALy5pHnDLL2NOYZwyg2Ht",
+          "mode": "list",
+          "cachedResultName": "Dropzone",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1U5MwT2uYFCKALy5pHnDLL2NOYZwyg2Ht"
+        },
+        "options": {}
+      },
+      "id": "21ccf0f1-8763-4152-8f47-1e3f58506365",
+      "name": "Upload to Qonto",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1760,
+        460
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "BVkiHtheS61uART6",
+          "name": "Google christian.gick@clicksports.de"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "project": {
+          "__rl": true,
+          "value": "12700",
+          "mode": "list",
+          "cachedResultName": "Service"
+        },
+        "issueType": {
+          "__rl": true,
+          "value": "12401",
+          "mode": "list",
+          "cachedResultName": "Ticket"
+        },
+        "summary": "=Anruf von {{ $('Mail').item.json.subject.split(' ')[5] }}",
+        "additionalFields": {
+          "description": "={{ $json.text }}"
+        }
+      },
+      "id": "41508ef4-b135-49a6-9d7a-cb8abb1b523e",
+      "name": "Create call issue",
+      "type": "n8n-nodes-base.jira",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        1100
+      ],
+      "credentials": {
+        "jiraSoftwareCloudApi": {
+          "id": "HlsaLdc6YFfeasWO",
+          "name": "Jira christian.gick@clicksports.de"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "={{ $json.fileName }}",
+        "options": {
+          "append": false
+        }
+      },
+      "id": "d5e1de9e-b18c-44aa-8495-5efd791f4215",
+      "name": "Write attachment",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        -2440,
+        820
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "workflowId": "cqcJ992iflBy0Zb9",
+        "mode": "each",
+        "options": {}
+      },
+      "id": "a908011c-d784-4e7e-9808-3e7a2e223d1b",
+      "name": "Find related issue",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1,
+      "position": [
+        1280,
+        1760
+      ]
+    },
+    {
+      "parameters": {
+        "errorMessage": "Message ID missing"
+      },
+      "id": "3c006a01-b2a2-4b17-bc94-a6ce381ab8b3",
+      "name": "Stop and Error",
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        -2680,
+        1600
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {}
+      },
+      "id": "c7820708-959d-416a-ad79-54b400a5536f",
+      "name": "Transcribe Phone message",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.4,
+      "position": [
+        980,
+        1100
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "y8NvNd30QFsYf7Hw",
+          "name": "OpenAI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "8de39312-e249-4a4f-ac9b-4635d8615c2e",
+              "leftValue": "={{ $json.error }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notExists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "62d27e7f-a4bb-4997-9f02-bde19d2dee1e",
+      "name": "If",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -2220,
+        820
+      ]
+    },
+    {
+      "parameters": {
+        "html": "={{ $json.html }}",
+        "options": {
+          "maxConsecutiveNewlines": 1
+        }
+      },
+      "id": "4c6bf590-2333-4122-9655-ef5152220047",
+      "name": "Markdown",
+      "type": "n8n-nodes-base.markdown",
+      "typeVersion": 1,
+      "position": [
+        -1360,
+        580
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "b7abccc5-8e49-4862-8159-46d3314d82b3",
+              "leftValue": "={{ $json.statusCode }}",
+              "rightValue": "200",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "looseTypeValidation": true
+        }
+      },
+      "id": "7c44ab41-1664-4a4f-a34d-8d079929a900",
+      "name": "If1",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1860,
+        1760
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "privateKey",
+        "command": "=find /var/qmail/mailnames/clicksports.de/christian.gick/Maildir/cur/ -type f -exec sh -c 'grep -q \"{{ $json[\"message-id\"] }}\" \"$1\" && cp \"$1\" /tmp/n8n-mail-{{ $json[\"message-id\"].hash() }}.eml' sh {} \\; "
+      },
+      "id": "88b570a3-a622-46f5-9aa7-5a4614f21801",
+      "name": "SSH",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        -1900,
+        1500
+      ],
+      "credentials": {
+        "sshPrivateKey": {
+          "id": "7cM8UD60RNSc7v3k",
+          "name": "SSH Hcloud"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "authentication": "privateKey",
+        "resource": "file",
+        "operation": "download",
+        "path": "=/tmp/n8n-mail-{{ $('Get Message ID').item.json['message-id'].hash() }}.eml",
+        "options": {}
+      },
+      "id": "a810a8c2-4dea-4010-a373-96594bf76cfe",
+      "name": "SSH1",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        -1680,
+        1400
+      ],
+      "credentials": {
+        "sshPrivateKey": {
+          "id": "7cM8UD60RNSc7v3k",
+          "name": "SSH Hcloud"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "https://community.developer.atlassian.com/t/how-i-can-send-attachment-along-with-comment-to-jira-using-jira-rest-api-v3/73341/2",
+        "height": 150
+      },
+      "id": "84c3d544-c35e-4197-ae70-accaedb7cb0f",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        280,
+        1860
+      ]
+    },
+    {
+      "parameters": {
+        "html": "={{ $json.data }}",
+        "options": {}
+      },
+      "id": "d13e962d-a662-4d34-992c-48af9e3ebdd8",
+      "name": "Markdown1",
+      "type": "n8n-nodes-base.markdown",
+      "typeVersion": 1,
+      "position": [
+        1180,
+        1340
+      ]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o-mini",
+        "options": {}
+      },
+      "id": "94865ac3-93b7-4fce-b517-a17a9eceef71",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        1520
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "y8NvNd30QFsYf7Hw",
+          "name": "OpenAI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "function getContent() {\n  let content = '';\n\n  if ($json[\"text\"] && $json[\"text\"].trim() !== '') {\n    content = $json[\"text\"];\n  } else if ($json[\"textAsHtml\"] && $json[\"textAsHtml\"].trim() !== '') {\n    content = $json[\"textAsHtml\"];\n  } else if ($json[\"html\"] && $json[\"html\"] !== false) {\n    content = $json[\"html\"];\n  }\n\n  return content.substring(0, 1048576); // Limitiert auf 1MB\n}\n\n    return { json: { ...$json, html: getContent() } };\n\n\n"
+      },
+      "id": "d7d9472a-fb36-4d78-9c0c-767cbb95135b",
+      "name": "Code1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -4120,
+        1220
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "id": "d5a45c18-09d1-4186-8538-a1c19940135b",
+      "name": "Merge4",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        -1200,
+        960
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "63d4ed0c-7dc8-4d5d-b128-945ed71dd1e7",
+      "name": "When clicking ‘Test workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -4380,
+        280
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "25f7d12d-2142-42b6-9fcc-2df29023a3b7",
+              "name": "hostname",
+              "value": "mail.clicksports.de",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "07fed3a7-b404-42af-b18b-df86fea50ad6",
+      "name": "Hostname",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -4140,
+        280
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "authentication": "privateKey",
+        "command": "=for file in /var/qmail/mailnames/clicksports.de/christian.gick/Maildir/.N8N.Ham/cur/*; do mv \"$file\" /var/qmail/mailnames/clicksports.de/christian.gick/Maildir/new/\"$(basename \"$file\" | sed 's/:.*//')\"; done\n"
+      },
+      "id": "d74defce-bf47-46ce-817c-14c4139a2285",
+      "name": "Move to inbox",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        -3900,
+        280
+      ],
+      "credentials": {
+        "sshPrivateKey": {
+          "id": "7cM8UD60RNSc7v3k",
+          "name": "SSH Hcloud"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "249e8234-d2db-4ebb-95ed-d6222715c789",
+              "name": "hostname",
+              "value": "mail.clicksports.de",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "1ab7c34e-f4a8-40c0-857f-33471db5840f",
+      "name": "Hostname1",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2560,
+        1460
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "id": "78b91edf-826e-41de-8d0a-93211a9ed3f4",
+      "name": "Merge",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        -3840,
+        1100
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 2
+      },
+      "id": "f69ba8f0-8133-4a77-a1fd-c36496c419d2",
+      "name": "Wait",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -1940,
+        1300
+      ],
+      "webhookId": "06541f72-c05b-43bb-aa4a-250bf58a024d"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "id": "728c6e3a-f567-4b99-96d4-2423ea30ca88",
+      "name": "Merge8",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        -2260,
+        1440
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "share",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "permissionsUi": {
+          "permissionsValues": {
+            "role": "reader",
+            "type": "anyone"
+          }
+        },
+        "options": {}
+      },
+      "id": "5c8d82a4-c237-4a1c-8025-82ba3c6417d4",
+      "name": "Google Drive1",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -1040,
+        1400
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "BVkiHtheS61uART6",
+          "name": "Google christian.gick@clicksports.de"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "id": "a900d82b-0c8c-47ab-bf80-d5135545f41b",
+      "name": "Extract from File",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -2940,
+        640
+      ],
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n  if (item.binary) {\n    const binaryDataKeys = Object.keys(item.binary);\n    const results = [];\n\n    binaryDataKeys.forEach(key => {\n      const attachment = item.binary[key];\n      const attachmentName = attachment.fileName || '';\n      const fileExtension = attachmentName.split('.').pop();\n\n      results.push({\n        json: {\n          fileName: attachmentName,\n          fileExtension: fileExtension,\n        },\n        binary: {\n          data: attachment,\n        }\n      });\n    });\n\n    return results;\n  }\n\n  return { json: {} };\n}).flat();\n"
+      },
+      "id": "f4c4bc1b-315d-4fe3-afc7-0017ee690d18",
+      "name": "Code",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -3240,
+        840
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "a4a04a10-2b20-47d6-ab5e-1cbeca9a6353",
+              "leftValue": "={{ $json.message.content.relevance }}",
+              "rightValue": 70,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "looseTypeValidation": true
+        }
+      },
+      "id": "9d86d5bf-a0e2-4fc7-8dc2-6ac0836980be",
+      "name": "If relevant",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        20,
+        1040
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "28535bd9-3a26-45ca-883a-5ef1a7054231",
+              "leftValue": "={{ $json.fileType }}",
+              "rightValue": "pdf",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "f60df310-20e1-492f-a370-efa718dad29c",
+      "name": "If invoice pdf",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1460,
+        600
+      ]
+    },
+    {
+      "parameters": {
+        "fileSelector": "={{ $json.fileName }}",
+        "options": {}
+      },
+      "id": "522095d8-57b5-4fd7-a669-ddca5df8e785",
+      "name": "Read PDF",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        980,
+        620
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "numberInputs": 3,
+        "options": {}
+      },
+      "id": "c2d697a3-8e7d-4fb5-a356-b71fa42a5f1a",
+      "name": "Merge7",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        -280,
+        1040
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "id": "7b3606e8-8412-490c-bc5a-9988196882b0",
+      "name": "Merge6",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        1480,
+        900
+      ]
+    },
+    {
+      "parameters": {
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1HVFGRbg3byLakCU-Cl_nLw3K3SSgSe4G",
+          "mode": "list",
+          "cachedResultName": "n8n Mails for Jira",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1HVFGRbg3byLakCU-Cl_nLw3K3SSgSe4G"
+        },
+        "options": {}
+      },
+      "id": "a4fde497-1bf7-4cfd-841f-f8c6d95212e0",
+      "name": "Google Drive",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -1380,
+        1400
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "BVkiHtheS61uART6",
+          "name": "Google christian.gick@clicksports.de"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "format": "resolved",
+        "options": {}
+      },
+      "id": "59654ffe-7e3d-42e3-ab6b-4ec0054e5ef9",
+      "name": "Mail",
+      "type": "n8n-nodes-base.emailReadImap",
+      "typeVersion": 2,
+      "position": [
+        -4380,
+        1080
+      ],
+      "credentials": {
+        "imap": {
+          "id": "UqNP3sUYt7xALaXW",
+          "name": "Mailbox christian.gick@clicksports.de"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "6d205cd2-a7a3-4db8-adf0-d56433c59252",
+              "leftValue": "={{ $('Mail').item.json.headers.from }}",
+              "rightValue": "amazon",
+              "operator": {
+                "type": "string",
+                "operation": "notContains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "looseTypeValidation": true
+        }
+      },
+      "id": "b4232dae-384f-4091-beb5-9fa02f69d12b",
+      "name": "Filter out",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        620
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://automation.atlassian.com/pro/hooks/302ab0ad6f9da347c91fb6ac5bbf0b83bc479824",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "issue",
+              "value": "SE-19884"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "abstract",
+              "value": "={{ $('Relevance and Reference').first().json.message.content.abstract }}"
+            },
+            {
+              "name": "sender",
+              "value": "={{ $('Relevance and Reference').first().json.message.content.sender }}"
+            },
+            {
+              "name": "issue",
+              "value": "={{ $('Find related issue').item.json.issuekey }}"
+            },
+            {
+              "name": "ticketlink",
+              "value": "={{ $('Relevance and Reference').first().json.message.content.ticketlink }}  "
+            },
+            {
+              "name": "portallink",
+              "value": "={{ $('Relevance and Reference').first().json.message.content.portallink }} "
+            },
+            {
+              "name": "rawmail",
+              "value": "={{ $json.webViewLink }}"
+            },
+            {
+              "name": "intent",
+              "value": "={{ $('Relevance and Reference').first().json.message.content.intent }} "
+            },
+            {
+              "name": "actionresult",
+              "value": "={{ $json.actionresult }}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "id": "d23f21eb-d024-4e34-888d-a753013809fc",
+      "name": "Comment issue",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1580,
+        1760
+      ],
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "id": "a731668d-2b52-4799-9fcc-38eb73b07a95",
+      "name": "Merge3",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        980,
+        1760
+      ]
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Am Ende findest du eine E-Mail. \n\nAntworte mir bitte im JSON-Format mit einer deutschen Begründung unter Angabe der Aktion die der Sender deiner Einschätzung nach erwartet (Variable reason) und einer Ganzzahl (Variable relevance) die die Relevanz von 0 bis 100 einstuft. \n\nAußerdem brauche ich eine kurze Zusammenfassung von Betreff und Inhalt in einem Text mit allen eindeutigen E-Mail Adressen (Variable abstract). \n\nErkenne die Absicht des Senders - welches Ziel wird verfolgt? Optionen sind: call, verify, login, download, reply, buy, pay, meet, support (Variable intent). \n\nDen Absender kannst du unverändert übernehmen (Variable sender).\n\nIrrelevante Mails sind solche, die den Empfang eine automatische Verlängerung oder eine Zustellung bestätigen, darauf hinweisen dass der Vorgang in Bearbeitung ist oder geschlossen wurde oder eine Bewertung wollen oder nur darauf abzielen eine Antwort von mir zu bekommen indem sie mich erinnern oder erneut Hilfe anbieten und weder konkrete Informationen enhält die mit dem Vorgang zu tun haben noch eine einfache Aktion erfordern wie ein Limit anpassen, eine Anmeldung abschließen oder ein Dokument herunterzuladen. Falls die Nachricht konkrete Informationen enthält die aber von einem Monitoring kommen bewerte die Relevanz hoch wenn das Monitoring Fehler oder Sicherheitslücken entdeckt hat oder niedrig falls alles in Ordnung ist. Wenn alles in Ordnung ist ist es unwichtig einen Bericht herunterzuladen. Die Relevanz ist niedrig falls es zwar etwas zu tun gibt aber nicht für jemanden von CLICKSPORTS sondern z.B. für einen Kunden oder Partner - erkennbar wenn der Sender von CLICKSPORTS ist.\n\nSuche nach einem dynamischen Link zum Portal oder Servicedesk des Absenders (Variable ticketlink) in dem relevante Inhalte zum Dialog stehen könnten. Falls die URL Tracking-Parameter wie sda_source enthält entferne diese bitte. Kein Kommentar von dir davor oder danach. Gib mir nur Links zurück die einen variablen Parameter enthalten wie eine ID oder Ticketnummer enthalten, sonst gar keinen.\n\nWenn es bei der Mail um eine Eingangsrechnung geht extrahiere die Rechnungsnummer aus Betreff, Anhang oder Inhalt (Variable invoicenumber). Hängt eine Rechnung an oder muss ein Dokument heruntergeladen oder online angesehen werden um ist das sehr relevant und muss bearbeitet werden.\n\nExtrahiere einen Portallink des Absenders (Variable portallink).\n\nExtrahiere einen Adminlink des Absenders (Variable adminlink).\n\nExtrahiere einen Loginlink des Absenders (Variable loginlink).\n\nDie Mail mit dem Betreff {{ $json.subject }} hat folgenden Inhalt: \"{{ $json.data }}\" und kam von \"{{ $json.from.value[0].name }} {{ $json.from.value[0].address }}\" und hat folgenden Anhang: \"{{ $('Extract from File').item.json.text }}\"",
+              "role": "system"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {
+          "temperature": 0
+        }
+      },
+      "id": "46744148-9aa7-42c6-a75f-8ab0b3fedc7e",
+      "name": "Relevance and Reference",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.4,
+      "position": [
+        -960,
+        960
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "y8NvNd30QFsYf7Hw",
+          "name": "OpenAI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose"
+                },
+                "conditions": [
+                  {
+                    "id": "e87da39e-5206-4a90-ae49-5f1f0c03161a",
+                    "leftValue": "={{ $json.message.content.intent }}",
+                    "rightValue": "pay",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "pay"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose"
+                },
+                "conditions": [
+                  {
+                    "id": "e750c98b-c749-4387-910d-2204ddc25864",
+                    "leftValue": "={{ $json.message.content.intent }}",
+                    "rightValue": "download",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "download"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message.content.intent }}",
+                    "rightValue": "call",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "call"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose"
+                },
+                "conditions": [
+                  {
+                    "id": "e606ecfd-95e5-4b2f-993e-a4dd37caf324",
+                    "leftValue": "={{ $json.message.content.intent }}",
+                    "rightValue": "verify",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "verify"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose"
+                },
+                "conditions": [
+                  {
+                    "id": "a8795af5-8989-4309-84ff-94ed967303f3",
+                    "leftValue": "",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "other"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": 4,
+          "looseTypeValidation": true
+        }
+      },
+      "id": "79333954-a8d4-4a35-a493-e1f855cf22b6",
+      "name": "Intent",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [
+        620,
+        880
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.message.content.ticketlink }}",
+        "options": {}
+      },
+      "id": "7e75595d-a332-44ef-9713-bfb7b16c98dc",
+      "name": "Verify mail",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        980,
+        1420
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "653b4795-0976-4f2f-9d1c-b48d6b62bcfa",
+              "leftValue": "={{ $json.response.text }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "ignoreCase": true,
+          "looseTypeValidation": true
+        }
+      },
+      "id": "b813de03-402b-417e-8e90-d3e9bcfb553e",
+      "name": "If2",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1760,
+        1340
+      ]
+    },
+    {
+      "parameters": {
+        "errorMessage": "Could not verify"
+      },
+      "id": "c45982e2-a572-4aa5-a5f7-ee94e7ff9e28",
+      "name": "Stop and Error1",
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        1960,
+        1540
+      ]
+    },
+    {
+      "parameters": {
+        "errorMessage": "Could not send verification"
+      },
+      "id": "408c783c-34cb-4f2a-adee-9d1cc05c3ba2",
+      "name": "Stop and Error2",
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        1180,
+        1580
+      ]
+    },
+    {
+      "parameters": {
+        "options": {
+          "summarizationMethodAndPrompts": {
+            "values": {
+              "combineMapPrompt": "=",
+              "prompt": "=Fasse in deutsch zusammen und suche im Text nach Hinweisen darauf ob eine vorhergehende Aktion erfolgreich war:\n\n\"{{ $json.data }}\"\n\nAls Ergebnis bitte nur true oder false"
+            }
+          }
+        }
+      },
+      "id": "6a4384d9-3562-4b3d-9716-b7d6423f5ceb",
+      "name": "Summarization Chain",
+      "type": "@n8n/n8n-nodes-langchain.chainSummarization",
+      "typeVersion": 2,
+      "position": [
+        1400,
+        1340
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f71868bc-3f99-4279-b28e-2e2ccd83921c",
+              "name": "hostname",
+              "value": "mail.clicksports.de",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f1048fa5-6174-4bba-9fb6-d0cf6cb884c1",
+      "name": "Edit Fields",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        300,
+        1200
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f71868bc-3f99-4279-b28e-2e2ccd83921c",
+              "name": "hostname",
+              "value": "mail.clicksports.de",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ea72976a-baaf-45aa-89fa-39878413c2cc",
+      "name": "Edit Fields1",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2460,
+        960
+      ]
+    }
+  ],
+  "connections": {
+    "Check Message ID": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          },
+          {
+            "node": "Merge8",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Hostname1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Stop and Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Message ID": {
+      "main": [
+        [
+          {
+            "node": "Check Message ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Markdown",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge4",
+            "type": "main",
+            "index": 1
+          },
+          {
+            "node": "Merge7",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Merge2": {
+      "main": [
+        [
+          {
+            "node": "Write attachment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create call issue": {
+      "main": [
+        [
+          {
+            "node": "Merge6",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Write attachment": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribe Phone message": {
+      "main": [
+        [
+          {
+            "node": "Create call issue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Markdown": {
+      "main": [
+        [
+          {
+            "node": "Merge4",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SSH": {
+      "main": [
+        [
+          {
+            "node": "SSH1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SSH1": {
+      "main": [
+        [
+          {
+            "node": "Google Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Markdown1": {
+      "main": [
+        [
+          {
+            "node": "Summarization Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Summarization Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge4": {
+      "main": [
+        [
+          {
+            "node": "Relevance and Reference",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Hostname",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hostname": {
+      "main": [
+        [
+          {
+            "node": "Move to inbox",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hostname1": {
+      "main": [
+        [
+          {
+            "node": "Merge8",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Message ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "SSH1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge8": {
+      "main": [
+        [
+          {
+            "node": "SSH",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "If relevant": {
+      "main": [
+        [
+          {
+            "node": "Intent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If invoice pdf": {
+      "main": [
+        [
+          {
+            "node": "Upload to Qonto",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create issue for manual invoice fetching",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read PDF": {
+      "main": [
+        [
+          {
+            "node": "Filter out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge7": {
+      "main": [
+        [
+          {
+            "node": "If relevant",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge6": {
+      "main": [
+        [
+          {
+            "node": "Attach audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive": {
+      "main": [
+        [
+          {
+            "node": "Google Drive1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mail": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload to Qonto": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter out": {
+      "main": [
+        [
+          {
+            "node": "If invoice pdf",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Comment issue": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find related issue": {
+      "main": [
+        [
+          {
+            "node": "Comment issue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive1": {
+      "main": [
+        [
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge3": {
+      "main": [
+        [
+          {
+            "node": "Find related issue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Relevance and Reference": {
+      "main": [
+        [
+          {
+            "node": "Merge7",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Intent": {
+      "main": [
+        [
+          {
+            "node": "Read PDF",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Read PDF",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Transcribe Phone message",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge6",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Verify mail",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify mail": {
+      "main": [
+        [
+          {
+            "node": "Markdown1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Stop and Error2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Attach audio": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create issue for manual invoice fetching": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Stop and Error1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarization Chain": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Move to spam",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Move to ham",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "oXwbRnZHgYHUkKj4"
+  },
+  "staticData": {
+    "node:Mail": {
+      "lastMessageUid": 65404
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "5fdaa4f8-46f5-4cbe-804c-7d87c850b1a0",
+  "triggerCount": 1,
+  "tags": [
+    {
+      "createdAt": "2024-07-19T11:38:21.497Z",
+      "updatedAt": "2024-07-19T11:38:21.497Z",
+      "id": "R3f6NQ4V2TDyb09j",
+      "name": "openai"
+    }
+  ]
+}

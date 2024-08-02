@@ -1,0 +1,98 @@
+{
+  "createdAt": "2024-07-27T17:52:21.070Z",
+  "updatedAt": "2024-07-28T06:22:17.000Z",
+  "id": "hQncFW0oNHCqzPzi",
+  "name": "SSH Plesk API Key",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "f27c7984-7fdf-44c6-a8b5-4e4a4404ef7a",
+      "name": "When clicking ‘Test workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        620,
+        580
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "privateKey",
+        "command": "plesk bin secret_key -c"
+      },
+      "id": "d212e61b-b8ef-4e03-97f8-353f7670ce35",
+      "name": "SSH",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        580
+      ],
+      "credentials": {
+        "sshPrivateKey": {
+          "id": "7cM8UD60RNSc7v3k",
+          "name": "SSH"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3aea4943-7b27-4377-8d73-b2aaa5d7f2b7",
+              "name": "hostname",
+              "value": "shared4.clicksports.de",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c339b110-abfb-4839-9ff8-1355df323ce4",
+      "name": "Edit Fields",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        860,
+        580
+      ]
+    }
+  ],
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "SSH",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "4fc70593-b5ea-4189-b167-9a105e3e912a",
+  "triggerCount": 0,
+  "tags": []
+}

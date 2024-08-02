@@ -1,0 +1,115 @@
+{
+  "createdAt": "2024-07-22T06:14:01.837Z",
+  "updatedAt": "2024-07-22T08:32:04.000Z",
+  "id": "p2H0MWUrFeDth8J7",
+  "name": "Setup backup for server",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "8ba0eec7-d23a-4887-97d5-42b29c53211e",
+      "name": "When clicking ‘Test workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        720,
+        580
+      ]
+    },
+    {
+      "parameters": {
+        "workflowId": "TbCr07g9IGoSaxit",
+        "mode": "each",
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "id": "2028d745-36f3-4e1a-90eb-552516f49246",
+      "name": "Execute Workflow",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1,
+      "position": [
+        1260,
+        580
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "93ba3a81-00c2-4f96-bda1-9d995c2dd690",
+              "name": "serverId",
+              "value": "24508713",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d40d1c5a-f611-49f5-9c7e-2105d95f1682",
+      "name": "Set server id",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        980,
+        580
+      ]
+    },
+    {
+      "parameters": {
+        "content": "https://docs.plesk.com/en-US/onyx/cli-linux/using-command-line-utilities/pleskbackup-backing-up-content-and-configuration.74260/"
+      },
+      "id": "73bfb6c7-973c-4d39-a8ca-939703681ea2",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1220,
+        880
+      ]
+    }
+  ],
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Set server id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set server id": {
+      "main": [
+        [
+          {
+            "node": "Execute Workflow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "c5cbde88-731b-4106-a48e-120e28145979",
+  "triggerCount": 0,
+  "tags": [
+    {
+      "createdAt": "2024-07-22T06:04:30.790Z",
+      "updatedAt": "2024-07-22T06:04:30.790Z",
+      "id": "0T7Op5ZKbBRZRiWZ",
+      "name": "hetzner"
+    }
+  ]
+}

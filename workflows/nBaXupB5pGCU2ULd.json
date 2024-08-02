@@ -1,0 +1,374 @@
+{
+  "createdAt": "2024-07-18T13:57:52.509Z",
+  "updatedAt": "2024-07-19T13:11:28.000Z",
+  "id": "nBaXupB5pGCU2ULd",
+  "name": "Classify ticket",
+  "active": true,
+  "nodes": [
+    {
+      "parameters": {
+        "model": "text-embedding-3-large",
+        "options": {}
+      },
+      "id": "c25ef031-23b8-4efa-8153-6ac9781813e5",
+      "name": "Embeddings OpenAI",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1,
+      "position": [
+        -780,
+        520
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "y8NvNd30QFsYf7Hw",
+          "name": "OpenAI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "compare": "selectedFields",
+        "fieldsToCompare": "document.pageContent",
+        "options": {}
+      },
+      "id": "c065cb29-f312-4c7c-91d5-be8e92be5646",
+      "name": "Remove Duplicates",
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 1.1,
+      "position": [
+        -360,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "1aea6ac0-6c78-4a30-93a2-7717804cb0a4",
+              "leftValue": "={{ $json.document.pageContent.length }}",
+              "rightValue": 15,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "1e0aa69c-8905-4c49-b7fc-2b57da1c5739",
+      "name": "If",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -80,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "document.metadata.issuekey"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "3e48c132-d71b-4502-99ea-430046823d85",
+      "name": "Aggregate",
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        200,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $input.all();\nconst issueKeys = data[0]?.json?.issuekey;\nconst issuekeys = issueKeys.join(\", \");\n\nreturn { issuekeys };\n"
+      },
+      "id": "093f3dfe-0be3-4676-8f41-bdbbb3e012e7",
+      "name": "Code",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        420,
+        180
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "returnAll": true,
+        "options": {
+          "fields": "customfield_14753,customfield_14754,assignee",
+          "jql": "=key in ({{ $json.issuekeys }}) and assignee is not empty"
+        }
+      },
+      "id": "2956e56c-6db7-48bb-b2b1-0b235d17018c",
+      "name": "Jira Software",
+      "type": "n8n-nodes-base.jira",
+      "typeVersion": 1,
+      "position": [
+        640,
+        180
+      ],
+      "credentials": {
+        "jiraSoftwareCloudApi": {
+          "id": "HlsaLdc6YFfeasWO",
+          "name": "Jira christian.gick@clicksports.de"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "33e36387-b4be-4b92-803e-e4ab21fe127a",
+              "name": "assignee.accountId",
+              "value": "={{ $json.fields.assignee.accountId }}",
+              "type": "string"
+            },
+            {
+              "id": "e95ea846-3998-43d0-9f1f-61c82a8a68f2",
+              "name": "wordpress.objectId",
+              "value": "={{ $json.fields.customfield_14753[0].objectId }}",
+              "type": "string"
+            },
+            {
+              "id": "3408a455-6a53-44b5-a5c7-d8fcaef389cd",
+              "name": "fullstack.objectId",
+              "value": "={{ $json.fields.customfield_14754[0].objectId }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "ignoreConversionErrors": true
+        }
+      },
+      "id": "ddd41adc-1ad3-4ef6-a8cf-65e36afd1e97",
+      "name": "Edit Fields",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        860,
+        180
+      ]
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "jsonData",
+        "options": {}
+      },
+      "id": "33063e2b-1cef-4218-a2b2-546a22570316",
+      "name": "Aggregate1",
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1100,
+        180
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "acc67f22-9193-42cb-bacc-75dc3455a7f6",
+        "responseMode": "lastNode",
+        "responseData": "allEntries",
+        "options": {}
+      },
+      "id": "fa3335d0-b7d0-4eac-852d-8ba755f23b4c",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -1180,
+        300
+      ],
+      "webhookId": "acc67f22-9193-42cb-bacc-75dc3455a7f6"
+    },
+    {
+      "parameters": {
+        "mode": "load",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "n8n",
+          "mode": "list",
+          "cachedResultName": "n8n"
+        },
+        "prompt": "={{ $json.body[\"issue.summary\"] }} {{ $json.body[\"issue.description\"] }}",
+        "topK": 100,
+        "options": {
+          "pineconeNamespace": "issues"
+        }
+      },
+      "id": "1e755b85-c972-4202-b252-bd3691fa04b8",
+      "name": "Fetch issue content",
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1,
+      "position": [
+        -800,
+        300
+      ],
+      "credentials": {
+        "pineconeApi": {
+          "id": "8lDKmR3gvMj1szqg",
+          "name": "Pinecone"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "https://automate.clicksports.de/workflow/cqcJ992iflBy0Zb9"
+      },
+      "id": "5c701658-d261-457f-b221-eb3e57093caa",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -300,
+        -260
+      ]
+    }
+  ],
+  "connections": {
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Fetch issue content",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicates": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Jira Software",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Jira Software": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Aggregate1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Fetch issue content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch issue content": {
+      "main": [
+        [
+          {
+            "node": "Remove Duplicates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "oXwbRnZHgYHUkKj4"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "1d1c8dbd-7c0f-4574-8b0b-b7f640a86de9",
+  "triggerCount": 1,
+  "tags": [
+    {
+      "createdAt": "2024-07-19T11:38:21.497Z",
+      "updatedAt": "2024-07-19T11:38:21.497Z",
+      "id": "R3f6NQ4V2TDyb09j",
+      "name": "openai"
+    },
+    {
+      "createdAt": "2024-07-18T11:59:49.236Z",
+      "updatedAt": "2024-07-18T11:59:49.236Z",
+      "id": "pp35M0Su309OL8L3",
+      "name": "rag"
+    }
+  ]
+}

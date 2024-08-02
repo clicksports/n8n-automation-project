@@ -1,0 +1,469 @@
+{
+  "createdAt": "2024-07-18T14:00:48.814Z",
+  "updatedAt": "2024-07-30T14:06:19.000Z",
+  "id": "2eckgqjjN0Bvt75j",
+  "name": "Get all active CLICKSPORTS Maps subscriptions from WHMCS and activate them on cs-maps server",
+  "active": true,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "*/30 9-18 * * MON-FRI"
+            }
+          ]
+        }
+      },
+      "id": "8332b84f-ca8a-4618-8806-1cf2f27431b2",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        640,
+        380
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "jsonToBinary",
+        "convertAllData": false,
+        "sourceKey": "=entities",
+        "options": {
+          "mimeType": "text/plain",
+          "useRawData": true
+        }
+      },
+      "id": "062289c6-8d8f-4824-9b0c-fd838b2b7820",
+      "name": "Move Binary Data",
+      "type": "n8n-nodes-base.moveBinaryData",
+      "typeVersion": 1,
+      "position": [
+        1540,
+        380
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all().map(({json}) => json.customfields.customfield.find(field => field.id === 21).value);\n\n//add base domain from items that starts with www. or *.\nitems.forEach(i => {\n  if (i.match(/^www\\.|^\\*\\./)) {\n    items.push(i.replace(/^www\\.|^\\*\\./, ''));\n  }\n});\n\n// development\nitems.push('localhost');\nitems.push('*.local');\n\n// maps style editor\nitems.push('maputnik.github.io');\n\nreturn {entities: 'valid_referers none blocked server_names ' + items.join(' ') + ';'};"
+      },
+      "id": "c1a01e36-ddeb-4e14-8421-917f4943fd96",
+      "name": "Find domain in asset object and add base domain from items that starts with www. or *.",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [
+        1360,
+        380
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://www.clicksports.de/portal/includes/api.php",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpCustomAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "action",
+              "value": "GetClientsProducts"
+            },
+            {
+              "name": "responsetype",
+              "value": "json"
+            },
+            {
+              "name": "pid",
+              "value": "28"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "966612b4-a824-45e5-b683-2c44a6bbbe49",
+      "name": "GetClientsProducts",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        820,
+        380
+      ],
+      "credentials": {
+        "httpCustomAuth": {
+          "id": "aD4Z71wqUYZUL79C",
+          "name": "WHMCS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "products.product",
+        "options": {}
+      },
+      "id": "c646f550-b338-4d7a-933c-03d46943245d",
+      "name": "Split products",
+      "type": "n8n-nodes-base.itemLists",
+      "typeVersion": 3,
+      "position": [
+        1000,
+        380
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.status }}",
+              "value2": "Active"
+            },
+            {
+              "value1": "={{ $json.status }}",
+              "value2": "Pending"
+            }
+          ]
+        },
+        "combineConditions": "OR"
+      },
+      "id": "a292bb7e-fc5d-4d6d-b7f7-2368a7b10037",
+      "name": "Status is Active or Pending",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 1,
+      "position": [
+        1180,
+        380
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "chooseBranch"
+      },
+      "id": "12aab528-4b1c-47b0-aae8-c7c8965f455c",
+      "name": "Wait for both",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2.1,
+      "position": [
+        2720,
+        380
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://www.clicksports.de/portal/includes/api.php",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpCustomAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "action",
+              "value": "AcceptOrder"
+            },
+            {
+              "name": "responsetype",
+              "value": "json"
+            },
+            {
+              "name": "orderid",
+              "value": "={{ $json.orderid }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "cb56ddf2-215f-4ab5-8981-e0a9b1a66854",
+      "name": "Accept Pending Orders",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        2900,
+        380
+      ],
+      "credentials": {
+        "httpCustomAuth": {
+          "id": "aD4Z71wqUYZUL79C",
+          "name": "WHMCS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.status }}",
+              "value2": "Pending"
+            }
+          ]
+        }
+      },
+      "id": "3437c5b6-cd37-49df-a0db-7eda0bc962d2",
+      "name": "Status is Pending",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 1,
+      "position": [
+        1180,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "id": "e3aa423d-8215-435c-a34e-366aa6271fa6",
+      "name": "Merge",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        2040,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "privateKey",
+        "resource": "file",
+        "path": "/etc/nginx/",
+        "options": {
+          "fileName": "valid-refers.conf"
+        }
+      },
+      "id": "648dfb3b-39d2-4258-a3bf-e4ca61c8ede3",
+      "name": "upload config file",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        2200,
+        400
+      ],
+      "credentials": {
+        "sshPrivateKey": {
+          "id": "7cM8UD60RNSc7v3k",
+          "name": "SSH"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "authentication": "privateKey",
+        "command": "service nginx restart"
+      },
+      "id": "14db0111-253b-4879-b92d-28df8d9b7f25",
+      "name": "Restart nginx",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        2080,
+        700
+      ],
+      "credentials": {
+        "sshPrivateKey": {
+          "id": "7cM8UD60RNSc7v3k",
+          "name": "SSH"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "31c17551-1f22-4f7c-bcc7-7f0c2cfdc424",
+              "name": "hostname",
+              "value": "cs-maps.clicksports.de",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "9a4ee4e6-6549-479e-9cbc-af129f5eae29",
+      "name": "Set hostname",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1840,
+        560
+      ]
+    }
+  ],
+  "connections": {
+    "Move Binary Data": {
+      "main": [
+        [
+          {
+            "node": "Set hostname",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetClientsProducts": {
+      "main": [
+        [
+          {
+            "node": "Split products",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split products": {
+      "main": [
+        [
+          {
+            "node": "Status is Active or Pending",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Status is Pending",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find domain in asset object and add base domain from items that starts with www. or *.": {
+      "main": [
+        [
+          {
+            "node": "Move Binary Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "GetClientsProducts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Status is Active or Pending": {
+      "main": [
+        [
+          {
+            "node": "Find domain in asset object and add base domain from items that starts with www. or *.",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for both": {
+      "main": [
+        [
+          {
+            "node": "Accept Pending Orders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Status is Pending": {
+      "main": [
+        [
+          {
+            "node": "Wait for both",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "upload config file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "upload config file": {
+      "main": [
+        [
+          {
+            "node": "Wait for both",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Restart nginx": {
+      "main": [
+        [
+          {
+            "node": "Wait for both",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Set hostname": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          },
+          {
+            "node": "Restart nginx",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "oXwbRnZHgYHUkKj4"
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrencyRules": [],
+      "recurrenceRules": []
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "9d237106-60f5-4d15-9344-56c2a435d2a1",
+  "triggerCount": 1,
+  "tags": [
+    {
+      "createdAt": "2024-07-18T13:44:20.706Z",
+      "updatedAt": "2024-07-18T13:44:20.706Z",
+      "id": "wtXD0GeIgYeLUCv8",
+      "name": "whmcs"
+    }
+  ]
+}

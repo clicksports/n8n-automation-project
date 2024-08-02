@@ -1,0 +1,752 @@
+{
+  "createdAt": "2024-07-18T13:44:15.147Z",
+  "updatedAt": "2024-07-18T13:45:03.000Z",
+  "id": "gElq6nxVTtUvrMkN",
+  "name": "Order and deploy active SSL certs from WHMCS that expire within 30 days",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://www.clicksports.de/portal/includes/api.php",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "action",
+              "value": "GetClientsProducts"
+            },
+            {
+              "name": "identifier",
+              "value": "4g7HgFCWTHCLdM6H063BSf4fnysdkNVr"
+            },
+            {
+              "name": "secret",
+              "value": "GyxPdvhCxDnFr6egS7ac9o2CNczruX3g"
+            },
+            {
+              "name": "responsetype",
+              "value": "json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a68de296-9332-4552-af11-d047eb9b1629",
+      "name": "GetClientsProducts",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -1900,
+        1220
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "2585afbf-80d8-44c0-b7c2-ffdf0166aaa0",
+      "name": "Loop Over Items",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -1100,
+        1220
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "products.product",
+        "options": {}
+      },
+      "id": "fc696d62-8f02-42dd-b9ab-5a1ebee50fcb",
+      "name": "Split Out",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -1700,
+        1220
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "e3b06bcc-66a8-4063-bbaa-61b1f9236c09",
+              "leftValue": "={{ $json.pid }}",
+              "rightValue": 1,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "52f32da7-a92b-4465-ba28-f681fc6830a3",
+              "leftValue": "={{ $json.pid }}",
+              "rightValue": 20,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "7c832606-c876-4c1f-9b1d-3dec3e611c60",
+      "name": "Filter SSL Start and Wildcard",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2,
+      "position": [
+        -1500,
+        1220
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "e33d1be5-59ed-4995-9c83-5f55878b910e",
+              "leftValue": "={{ $json.nextduedate.toDateTime().format('y-MM-d') }}",
+              "rightValue": "={{ $today.plus({days: 54}).format('y-MM-d') }}",
+              "operator": {
+                "type": "dateTime",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "54006af1-6eff-4077-9b2e-e3043c1d14ee",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "Active",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "6ae33798-44b2-4bda-b87b-d1965c69caca",
+      "name": "Filter active and due",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2,
+      "position": [
+        -1300,
+        1220
+      ]
+    },
+    {
+      "parameters": {
+        "project": {
+          "__rl": true,
+          "value": "12700",
+          "mode": "list",
+          "cachedResultName": "Service"
+        },
+        "issueType": {
+          "__rl": true,
+          "value": "12401",
+          "mode": "list",
+          "cachedResultName": "Ticket"
+        },
+        "summary": "=Verlängerung {{ $json.translated_name }} {{ $json.domain }}",
+        "additionalFields": {
+          "assignee": {
+            "__rl": true,
+            "value": "5eba311706a3eb0b7e415e2c",
+            "mode": "list",
+            "cachedResultName": "Christian Gick"
+          },
+          "description": "=https://www.clicksports.de/portal/admin/clientsservices.php?productselect={{ $json.id }}",
+          "parentIssueKey": "86887"
+        }
+      },
+      "id": "8940d976-8443-4557-b5d0-f9a8248f6cf5",
+      "name": "Create issue",
+      "type": "n8n-nodes-base.jira",
+      "typeVersion": 1,
+      "position": [
+        -440,
+        1240
+      ],
+      "alwaysOutputData": false,
+      "notesInFlow": false,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "url": "https://www.clicksports.de/portal/includes/api.php",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpCustomAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "action",
+              "value": "ModuleCustom"
+            },
+            {
+              "name": "responsetype",
+              "value": "json"
+            },
+            {
+              "name": "func_name",
+              "value": "renew"
+            },
+            {
+              "name": "serviceid",
+              "value": "={{ $json.id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "bd686020-f20a-4d02-ba7f-7842207e1537",
+      "name": "Renew",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -820,
+        1600
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "workflowId": "EsdSaKg1VWRcsEvO",
+        "options": {}
+      },
+      "id": "b524661e-a1d6-4909-b5c7-8c69c2a45ca9",
+      "name": "Execute Workflow",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1,
+      "position": [
+        -640,
+        1600
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "e33d1be5-59ed-4995-9c83-5f55878b910e",
+              "leftValue": "={{ $json.domain }}",
+              "rightValue": "=ssldomain.de",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "54006af1-6eff-4077-9b2e-e3043c1d14ee",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "Active",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "4f1b987b-c62a-4dc6-b1b6-80959c23d74f",
+      "name": "temp: single domain",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2,
+      "position": [
+        -1300,
+        1000
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://clicksports.atlassian.net/rest/api/3/issue/{{ $('Webhook').first().json.body.issue.key }}/comment",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "jiraSoftwareCloudApi",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "body",
+              "value": "={{ {\n    type: 'doc',\n    version: 1,\n    content: [\n        {\n            type: 'paragraph',\n            content: [\n                {\n                    type: 'text',\n                    text: 'https://www.clicksports.de/portal/admin/clientsservices.php?productselect=' + $json.key,\n                }\n            ]\n        }\n    ]\n} }}"
+            },
+            {
+              "name": "properties",
+              "value": "={{ [\n    {\n        \"key\": \"sd.public.comment\",\n        \"value\": {\n            \"internal\": true\n        }\n    }\n] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a4c5bfd9-4949-41a1-9c4d-1f5b76353a45",
+      "name": "Create Comment with Link",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -120,
+        1080
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Funktion zum Laden der Public Suffix List\nasync function loadPublicSuffixList() {\n    const response = await this.helpers.request({\n        method: 'GET',\n        url: 'https://raw.githubusercontent.com/publicsuffix/list/master/public_suffix_list.dat',\n        json: false,\n    });\n    \n    const suffixes = response.split('\\n')\n        .map(line => line.trim())\n        .filter(line => line && !line.startsWith('//') && !line.startsWith('!'));\n\n    return suffixes;\n}\n\n// Funktion zum Extrahieren der Basisdomain\nfunction getBaseDomain(domain, publicSuffixList) {\n    const domainParts = domain.split('.');\n    const domainPartsLength = domainParts.length;\n\n    // Prüfe auf öffentliche Suffixe von der längsten zur kürzesten\n    for (let i = 0; i < publicSuffixList.length; i++) {\n        const suffix = publicSuffixList[i];\n        const suffixParts = suffix.split('.');\n        const suffixPartsLength = suffixParts.length;\n\n        // Wenn das Ende der Domain mit dem öffentlichen Suffix übereinstimmt\n        if (domainParts.slice(-suffixPartsLength).join('.') === suffix) {\n            // Nimm den Teil vor dem öffentlichen Suffix als Basisdomain\n            return domainParts.slice(-(suffixPartsLength + 1)).join('.');\n        }\n    }\n\n    // Standardlogik für zweigliedrige TLDs\n    if (domainPartsLength >= 2) {\n        return domainParts.slice(-2).join('.');\n    } else {\n        return domain;\n    }\n}\n\n// Public Suffix List wird nur einmal geladen und in einer globalen Variable gespeichert\nif (!global.publicSuffixList) {\n    global.publicSuffixList = await loadPublicSuffixList();\n}\n\n// Verarbeitung jedes Items einzeln\nconst domain = item.json.domain; // Ersetze dies durch den tatsächlichen Pfad zu deiner Domain\nconst baseDomain = getBaseDomain(domain, global.publicSuffixList);\n\nreturn {\n    json: { ...item.json, baseDomain },\n};\n"
+      },
+      "id": "d2c4ebd4-efdb-47d8-ba19-0419080374f4",
+      "name": "Code",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -940,
+        600
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fe1c8d10-2285-4aef-a540-6e710e24b9e6",
+              "name": "approver_method.dns.record",
+              "value": "={{ $json.approver_method.dns.record.split(\" \") }}",
+              "type": "array"
+            },
+            {
+              "id": "f53176f2-5673-4715-bcfb-c76508895782",
+              "name": "plesk_domainpool",
+              "value": "=[\"{{ $json.domain }}\", \"{{ $json.baseDomain }}\", \"plesk.{{ $json.domain }}\", \"plesk.{{ $json.baseDomain }}\"]",
+              "type": "array"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {
+          "ignoreConversionErrors": false
+        }
+      },
+      "id": "ab27bb67-9160-4d46-ac7f-3ee5c5b5f4d0",
+      "name": "Edit Fields",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [
+        -760,
+        600
+      ]
+    },
+    {
+      "parameters": {
+        "options": {
+          "reset": false
+        }
+      },
+      "id": "e0bf7ab7-bbe2-4afd-8bcb-bac39788cde2",
+      "name": "Loop Over Items1",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -540,
+        600
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4ab49ab1-f6f2-4792-b929-f35078d5e96f",
+              "name": "pleskaddress",
+              "value": "={{ $('Split Out1').item.json.plesk_domainpool }}",
+              "type": "string"
+            },
+            {
+              "id": "25a68661-839f-4b72-8dd1-5c387829ae60",
+              "name": "zone",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "2ce260b9-8276-415b-af51-e54cb047f427",
+      "name": "Set active Plesk",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [
+        460,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "plesk_domainpool",
+        "include": "allOtherFields",
+        "options": {}
+      },
+      "id": "f7507d51-542d-4870-b0af-563caae07ecf",
+      "name": "Split Out1",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -300,
+        600
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://{{ $json.plesk_domainpool }}:8443/api/v2/domains ",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "name",
+              "value": "={{ $json.baseDomain }}"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true,
+          "redirect": {
+            "redirect": {
+              "maxRedirects": 3
+            }
+          },
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          },
+          "timeout": 2000
+        }
+      },
+      "id": "14522e2e-d07b-4bc6-910c-0a92b5a758df",
+      "name": "Find certificate in Plesk",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -40,
+        600
+      ],
+      "alwaysOutputData": false,
+      "retryOnFail": false,
+      "notesInFlow": false,
+      "executeOnce": false,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "cdae252e-7977-4ec6-b863-3d13987eab57",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "looseTypeValidation": true
+        }
+      },
+      "id": "8df02103-3faa-4217-a3d2-678817da1810",
+      "name": "Certificate found",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        200,
+        600
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "fcfa9d61-d862-4281-970b-66b4b940607c",
+      "name": "When clicking ‘Test workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -2140,
+        1220
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://clicksports.atlassian.net/rest/api/3/issue",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "jiraSoftwareCloudApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"fields\": {\n    \"project\": {\n      \"id\": \"22001\"\n    }, \n    \"issuetype\": {\n        \"id\": \"12401\"\n    },\n    \"summary\": \"{{ $('Merge').item.json.product }}\",\n    \"parent\": {\n      \"key\": \"{{ $('Merge').item.json.key }}\"\n    }\n  }\n}          {{ $json.key }}",
+        "options": {}
+      },
+      "id": "e4acbbe1-8cb0-4e54-8209-c6bfc764aa9f",
+      "name": "Create issue with parent",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -340,
+        1480
+      ]
+    },
+    {
+      "parameters": {
+        "content": "https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issue-remote-links/#api-rest-api-3-issue-issueidorkey-remotelink-post"
+      },
+      "id": "9de9433a-afee-4c13-9ebb-7d998bbabdf5",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -140,
+        1360
+      ]
+    }
+  ],
+  "connections": {
+    "GetClientsProducts": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Create issue",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Renew",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Filter SSL Start and Wildcard",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter SSL Start and Wildcard": {
+      "main": [
+        [
+          {
+            "node": "Filter active and due",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create issue": {
+      "main": [
+        [
+          {
+            "node": "Create Comment with Link",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Renew": {
+      "main": [
+        [
+          {
+            "node": "Execute Workflow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Workflow": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter active and due": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items1": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Split Out1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Find certificate in Plesk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find certificate in Plesk": {
+      "main": [
+        [
+          {
+            "node": "Certificate found",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Certificate found": {
+      "main": [
+        [
+          {
+            "node": "Set active Plesk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "GetClientsProducts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "b1aeb599-dace-4284-a5a5-0f198a19bd9e",
+  "triggerCount": 0,
+  "tags": [
+    {
+      "createdAt": "2024-07-18T13:44:20.701Z",
+      "updatedAt": "2024-07-18T13:44:20.701Z",
+      "id": "eg0pjrYy9dLUUASF",
+      "name": "ssl"
+    },
+    {
+      "createdAt": "2024-07-18T13:44:20.706Z",
+      "updatedAt": "2024-07-18T13:44:20.706Z",
+      "id": "wtXD0GeIgYeLUCv8",
+      "name": "whmcs"
+    }
+  ]
+}

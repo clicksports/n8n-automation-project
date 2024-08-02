@@ -1,0 +1,102 @@
+{
+  "createdAt": "2024-07-18T13:45:52.660Z",
+  "updatedAt": "2024-07-19T11:40:57.000Z",
+  "id": "oXwbRnZHgYHUkKj4",
+  "name": "Error Workflow",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "359f4487-f82f-452c-9011-054b3be96a38",
+      "name": "Error Trigger",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        820,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.eu.opsgenie.com/v2/alerts",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "description",
+              "value": "={{ $json.execution.error.message }} in {{ $json.execution.url }}\n\n {{ $json.execution.error.stack }}"
+            },
+            {
+              "name": "alias",
+              "value": "={{ $json.execution.url }}"
+            },
+            {
+              "name": "message",
+              "value": "=N8N error in workflow {{ $json.workflow.name }}"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": false
+        }
+      },
+      "id": "f94be9df-64f8-458b-a03d-c36a7e5519c1",
+      "name": "Opsgenie",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1040,
+        260
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "z2IOBNvmwmpHWU4h",
+          "name": "Opsgenie"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Opsgenie",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "f2944de0-1633-4fc0-aa6e-ea86e28ec9d4",
+  "triggerCount": 0,
+  "tags": [
+    {
+      "createdAt": "2024-07-19T11:40:57.729Z",
+      "updatedAt": "2024-07-19T11:40:57.729Z",
+      "id": "1aORyKdZjViVm2wN",
+      "name": "opsgenie"
+    }
+  ]
+}

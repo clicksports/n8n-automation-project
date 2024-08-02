@@ -1,0 +1,468 @@
+{
+  "createdAt": "2024-07-18T14:14:17.477Z",
+  "updatedAt": "2024-07-18T14:15:44.000Z",
+  "id": "NQbJnzdlphGNAW1O",
+  "name": "WHMCS client to Jira and Tempo",
+  "active": true,
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.eu.tempo.io/4/account-links",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "accountKey",
+              "value": "={{ $json.key }}"
+            },
+            {
+              "name": "scopeType",
+              "value": "PROJECT"
+            },
+            {
+              "name": "scopeId",
+              "value": "12700"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "9d2451f8-8bae-447f-b066-ecc631fafbd1",
+      "name": "Link account to project",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1620,
+        780
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "5Hzvq0YJFPg5BAeY",
+          "name": "Tempo"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.eu.tempo.io/4/accounts",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "key",
+              "value": "={{ $('Webhook').item.json.body['vars[userid]'] }}-SUPPORT"
+            },
+            {
+              "name": "name",
+              "value": "=SUPPORT / {{ $json.companyname }}"
+            },
+            {
+              "name": "leadAccountId",
+              "value": "5eba311706a3eb0b7e415e2c"
+            },
+            {
+              "name": "status",
+              "value": "OPEN"
+            },
+            {
+              "name": "customerKey",
+              "value": "={{ $('Webhook').item.json.body['vars[userid]'] }}"
+            },
+            {
+              "name": "categoryKey",
+              "value": "100700"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "8fcada89-c38f-4d01-859c-867b9425b974",
+      "name": "Add tempo account",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        820,
+        440
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "5Hzvq0YJFPg5BAeY",
+          "name": "Tempo"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.eu.tempo.io/4/customers",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "key",
+              "value": "={{ $json.body['vars[userid]'] }}"
+            },
+            {
+              "name": "name",
+              "value": "={{ $json.companyname }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d871b546-e571-4059-8b86-f614d37fea08",
+      "name": "Add tempo client",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        820,
+        240
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "5Hzvq0YJFPg5BAeY",
+          "name": "Tempo"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b6e7ef2c-47f5-45b2-aa04-979b86db34a2",
+              "name": "companyname",
+              "value": "={{ $json.body['vars[companyname]'].replace(\"&amp;\", \"&\") }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "91905f6e-3a64-46a6-ab4c-3a588cec4ac7",
+      "name": "Clean Company Name",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [
+        280,
+        440
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "chooseBranch",
+        "output": "empty"
+      },
+      "id": "7af7466d-9dcc-4cc8-be5b-fc05ec476f12",
+      "name": "Merge",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2.1,
+      "position": [
+        1080,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "chooseBranch",
+        "output": "input2"
+      },
+      "id": "b2125927-9422-4e3d-913a-aa0a0d3cda1d",
+      "name": "Merge1",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2.1,
+      "position": [
+        1380,
+        780
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://clicksports.atlassian.net/rest/servicedeskapi/organization",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "jiraSoftwareCloudApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"name\": \"{{$json.companyname}}\"\n}",
+        "options": {}
+      },
+      "id": "3307976c-f47b-46b6-b415-802f764fe60a",
+      "name": "Create organization",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        680,
+        940
+      ],
+      "credentials": {
+        "jiraSoftwareCloudApi": {
+          "id": "HlsaLdc6YFfeasWO",
+          "name": "Jira christian.gick@clicksports.de"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://clicksports.atlassian.net/rest/servicedeskapi/servicedesk/7/organization",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "jiraSoftwareCloudApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"organizationId\": \"{{$json.id}}\"\n}",
+        "options": {}
+      },
+      "id": "1472eeed-a839-44f5-b90b-f0a8b1124058",
+      "name": "Add organization to Servicedesk",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        960,
+        940
+      ],
+      "credentials": {
+        "jiraSoftwareCloudApi": {
+          "id": "HlsaLdc6YFfeasWO",
+          "name": "Jira christian.gick@clicksports.de"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://clicksports.atlassian.net/rest/servicedeskapi/organization/{{ $json.id }}/property/whmcs",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "jiraSoftwareCloudApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"id\": \"{{ $('Webhook').item.json.body['vars[userid]'] }}\"\n}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "b0505ed5-747e-49eb-868d-2cbe070f1119",
+      "name": "Set customer id",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        960,
+        1200
+      ],
+      "credentials": {
+        "jiraSoftwareCloudApi": {
+          "id": "HlsaLdc6YFfeasWO",
+          "name": "Jira christian.gick@clicksports.de"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://clicksports.atlassian.net/api/v1/organization/{{ $json.id }}/details",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "jiraSoftwareCloudApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "fieldName",
+              "value": "WHMCS-Kundenprofil"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={ \"values\": [ \"https://www.clicksports.de/portal/admin/clientsprofile.php?userid={{ $('Webhook').item.json.body['vars[userid]']}}\" ] }  ",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "302c0f3a-cf28-4516-b8bc-9f557248340f",
+      "name": "Set WHMCS link",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        960,
+        1440
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "https://developer.atlassian.com/cloud/customer-service-management/rest/v1/api-group-organization/#api-api-v1-organization-details-fieldname-delete",
+        "height": 80,
+        "width": 547.6447368421051
+      },
+      "id": "de10756e-fdc5-4263-ac8e-a5bca1276262",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        760,
+        1620
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "d308e527-8049-45cf-830c-bd62a7ad19ce",
+        "options": {}
+      },
+      "id": "6a20be02-da5e-4d73-a834-ce8b63c95656",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -20,
+        440
+      ],
+      "webhookId": "d308e527-8049-45cf-830c-bd62a7ad19ce"
+    }
+  ],
+  "connections": {
+    "Add tempo account": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Add tempo client": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean Company Name": {
+      "main": [
+        [
+          {
+            "node": "Add tempo client",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Add tempo account",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          },
+          {
+            "node": "Create organization",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Link account to project",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create organization": {
+      "main": [
+        [
+          {
+            "node": "Add organization to Servicedesk",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Set customer id",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Set WHMCS link",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Clean Company Name",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "oXwbRnZHgYHUkKj4"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "9723ea45-472e-4a6d-92a9-ba2d64965324",
+  "triggerCount": 1,
+  "tags": [
+    {
+      "createdAt": "2024-07-18T13:44:20.706Z",
+      "updatedAt": "2024-07-18T13:44:20.706Z",
+      "id": "wtXD0GeIgYeLUCv8",
+      "name": "whmcs"
+    }
+  ]
+}

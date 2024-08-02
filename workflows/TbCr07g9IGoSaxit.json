@@ -1,0 +1,443 @@
+{
+  "createdAt": "2024-07-21T17:45:10.188Z",
+  "updatedAt": "2024-07-22T08:32:13.000Z",
+  "id": "TbCr07g9IGoSaxit",
+  "name": "Storagebox subaccount setup",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "toJson",
+        "options": {
+          "fileName": "n8n.json"
+        }
+      },
+      "id": "7b405b62-c700-4b2c-b7c0-d872ddac352f",
+      "name": "Convert to File",
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        2620,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "path": "=/home/{{ $('Edit Fields').item.json.serverId }}",
+        "options": {}
+      },
+      "id": "fee73545-8ec4-48bb-8dbf-ed293706a1b3",
+      "name": "Create folder",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        2880,
+        420
+      ],
+      "credentials": {
+        "sshPassword": {
+          "id": "9JgV4fXmLWdktjOp",
+          "name": "Storagebox"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fe171470-4405-4bd3-a3d0-052df42d9b67",
+              "name": "serverId",
+              "value": "3255785",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "00f4abe8-5505-4c73-844a-e4e3863804cb",
+      "name": "Edit Fields",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1340,
+        420
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "9d6c7e31-a561-4373-b24b-ea65070fc7cc",
+              "leftValue": "={{ $json.storagebox.login }}",
+              "rightValue": "u336430",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "6a5f303a-93a6-4170-8322-87cd8ec17e0c",
+      "name": "If",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        580
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://robot-ws.your-server.de/storagebox/{{ $('If').item.json.storagebox.id }}/subaccount",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "options": {}
+      },
+      "id": "fbd6329e-821c-488c-abb0-b0acfe5738a1",
+      "name": "Check if storagebox subaccount exists",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1640,
+        160
+      ],
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "kRhgbsaDhVJZpRle",
+          "name": "Hetzner Robot"
+        },
+        "httpQueryAuth": {
+          "id": "swqGZg5NIwaG3Czq",
+          "name": "Query Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "subaccount.homedirectory"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "fb326c56-9cca-4905-a203-8c924f7a010f",
+      "name": "Aggregate",
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1880,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "5ffe10f9-c2bc-45eb-9d60-9761c20415d2",
+              "leftValue": "={{ $json.homedirectory }}",
+              "rightValue": "={{ $('Execute Workflow Trigger').item.json.serverId }}",
+              "operator": {
+                "type": "array",
+                "operation": "contains",
+                "rightType": "any"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "7b060d1f-b48a-42ce-9828-13a7021075d3",
+      "name": "If1",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        2140,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://robot-ws.your-server.de/storagebox/{{ $('If').item.json.storagebox.id }}/subaccount",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "homedirectory",
+              "value": "={{ $('Execute Workflow Trigger').item.json.serverId }}"
+            },
+            {
+              "name": "ssh",
+              "value": "true"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "11536f00-5b52-40df-8e32-a7579238fe4f",
+      "name": "Create subaccount",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3120,
+        420
+      ],
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "kRhgbsaDhVJZpRle",
+          "name": "Hetzner Robot"
+        },
+        "httpQueryAuth": {
+          "id": "swqGZg5NIwaG3Czq",
+          "name": "Query Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "8846cba7-af7f-4aa6-bb46-91d09b756eea",
+      "name": "Execute Workflow Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        240,
+        580
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://robot-ws.your-server.de/storagebox/",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "options": {}
+      },
+      "id": "4e33c30b-2b40-4201-8221-691e13f08e12",
+      "name": "Get storageboxes",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        720,
+        580
+      ],
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "kRhgbsaDhVJZpRle",
+          "name": "Hetzner Robot"
+        },
+        "httpQueryAuth": {
+          "id": "swqGZg5NIwaG3Czq",
+          "name": "Query Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "36ab74c8-8a33-41eb-82e8-60b2c8ac91d4",
+              "leftValue": "=$json.serverId",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "eb6a2042-33c7-4e1a-9a05-211d55fd7de1",
+      "name": "If2",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        460,
+        580
+      ]
+    },
+    {
+      "parameters": {
+        "errorMessage": "Subaccount already exists"
+      },
+      "id": "82259aeb-08a8-4b80-950f-68f00bf881b4",
+      "name": "Stop and Error",
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        2420,
+        100
+      ]
+    }
+  ],
+  "connections": {
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Create folder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create folder": {
+      "main": [
+        [
+          {
+            "node": "Create subaccount",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Check if storagebox subaccount exists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check if storagebox subaccount exists": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Stop and Error",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Workflow Trigger": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get storageboxes": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Get storageboxes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "2b6a3ee9-5908-49f0-b926-662c6f3e66cf",
+  "triggerCount": 0,
+  "tags": [
+    {
+      "createdAt": "2024-07-22T06:04:30.790Z",
+      "updatedAt": "2024-07-22T06:04:30.790Z",
+      "id": "0T7Op5ZKbBRZRiWZ",
+      "name": "hetzner"
+    }
+  ]
+}

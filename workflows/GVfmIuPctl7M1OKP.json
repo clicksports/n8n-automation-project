@@ -1,0 +1,600 @@
+{
+  "createdAt": "2024-07-18T14:03:03.922Z",
+  "updatedAt": "2024-07-18T14:06:51.000Z",
+  "id": "GVfmIuPctl7M1OKP",
+  "name": "Create Billable item in WHMCS",
+  "active": true,
+  "nodes": [
+    {
+      "parameters": {
+        "url": "=https://api.tempo.io/4/worklogs/issue/{{ $json.body.issue.id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "limit",
+              "value": "100"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d476135a-df7e-49e4-833d-6f450b1b760e",
+      "name": "Get Worklogs for given issue",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        40,
+        780
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "5Hzvq0YJFPg5BAeY",
+          "name": "Tempo"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.first().json.results.reduce((prev, {timeSpentSeconds, billableSeconds}) => ({\n    timeSpentSeconds: prev.timeSpentSeconds + timeSpentSeconds,\n    billableSeconds: prev.billableSeconds + billableSeconds\n}), {timeSpentSeconds: 0, billableSeconds: 0});"
+      },
+      "id": "af4fd551-8503-4af6-be3a-815e5461f3c3",
+      "name": "Calculate billable and timeSpend",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        440,
+        780
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://www.clicksports.de/portal/includes/api.php",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpCustomAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "action",
+              "value": "AddBillableItem"
+            },
+            {
+              "name": "responsetype",
+              "value": "json"
+            },
+            {
+              "name": "clientid",
+              "value": "={{ $json.customer.key }}"
+            },
+            {
+              "name": "description",
+              "value": "={{ $('Webhook').first().json.body.issue.key }}: {{ $('Webhook').first().json.body.issue.fields.summary }}, \nLeistungszeitraum: {{ $('Webhook').item.json.body.issue.fields.customfield_14787.toDateTime().format('dd.MM.yyyy') }} - {{ $today.format('dd.MM.yyyy') }} "
+            },
+            {
+              "name": "amount",
+              "value": "={{ $json.billableSeconds / 60 / 60 * 120 }}"
+            },
+            {
+              "name": "unit",
+              "value": "hours"
+            },
+            {
+              "name": "quantity",
+              "value": "={{ $json.billableSeconds / 60 / 60 }}"
+            },
+            {
+              "name": "invoiceaction",
+              "value": "noinvoice"
+            },
+            {
+              "name": "duedate",
+              "value": "={{ $today.plus({days: 8}) }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d071c345-ed17-4e4b-899f-c2b5dcfae970",
+      "name": "AddBillableItem to WHMCS",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        900,
+        640
+      ],
+      "credentials": {
+        "httpCustomAuth": {
+          "id": "aD4Z71wqUYZUL79C",
+          "name": "WHMCS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://clicksports.atlassian.net/rest/api/3/issue/{{ $('Webhook').first().json.body.issue.key }}/comment",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "jiraSoftwareCloudApi",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "body",
+              "value": "={{ {\n    type: 'doc',\n    version: 1,\n    content: [\n        {\n            type: 'paragraph',\n            content: [\n                {\n                    type: 'text',\n                    text: 'Billable Item wurde in WHMCS angelegt https://www.clicksports.de/portal/admin/billableitems.php?action=manage&id=' + $json.billableid,\n                }\n            ]\n        }\n    ]\n} }}"
+            },
+            {
+              "name": "properties",
+              "value": "={{ [\n    {\n        \"key\": \"sd.public.comment\",\n        \"value\": {\n            \"internal\": true\n        }\n    }\n] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "960a76ef-d7d5-4921-9a4c-0060ab73d656",
+      "name": "Create Comment with Link",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1200,
+        200
+      ],
+      "credentials": {
+        "jiraSoftwareCloudApi": {
+          "id": "HlsaLdc6YFfeasWO",
+          "name": "Jira christian.gick@clicksports.de"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.tempo.io/4/accounts/{{ $json.body.issue.fields.customfield_14613.id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "id": "adb8b8d7-aaa8-4ba7-be75-ba8480efe52b",
+      "name": "Get Tempo Account with Tempo Customer",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        40,
+        620
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "5Hzvq0YJFPg5BAeY",
+          "name": "Tempo"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combinationMode": "multiplex",
+        "options": {}
+      },
+      "id": "41313c80-a28d-421d-9f20-b870284f108f",
+      "name": "Merge both",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2.1,
+      "position": [
+        620,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "4ad12d5a-3cff-4e3b-86cf-1f8ec0765c50",
+              "leftValue": "={{ $json.body.issue.fields.customfield_12300 }}",
+              "rightValue": "",
+              "operator": {
+                "type": "number",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "31fda1cf-71f6-4ccb-bad3-2ff89806c46f",
+      "name": "Is Festpreis",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -200,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "fields": {
+          "values": [
+            {
+              "name": "customfield_12300",
+              "type": "numberValue",
+              "numberValue": "={{ $json.body.issue.fields.customfield_12300 }}"
+            }
+          ]
+        },
+        "include": "none",
+        "options": {}
+      },
+      "id": "4a83d56e-02b0-402a-8275-ed5dc04fe72e",
+      "name": "Only customfield_12300",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.2,
+      "position": [
+        40,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://www.clicksports.de/portal/includes/api.php",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpCustomAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "action",
+              "value": "AddBillableItem"
+            },
+            {
+              "name": "responsetype",
+              "value": "json"
+            },
+            {
+              "name": "clientid",
+              "value": "={{ $json.customer.key }}"
+            },
+            {
+              "name": "description",
+              "value": "={{ $('Webhook').first().json.body.issue.fields.summary }} - {{ $('Webhook').first().json.body.issue.key }}"
+            },
+            {
+              "name": "amount",
+              "value": "={{ $json.customfield_12300 }}"
+            },
+            {
+              "name": "unit",
+              "value": "quantity"
+            },
+            {
+              "name": "quantity",
+              "value": "1"
+            },
+            {
+              "name": "invoiceaction",
+              "value": "noinvoice"
+            },
+            {
+              "name": "duedate",
+              "value": "={{ $today.plus({days: 7}) }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "417baf4c-856d-49d1-b7c6-7f84c0c8f40e",
+      "name": "AddBillableItem to WHMCS1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        580,
+        440
+      ],
+      "credentials": {
+        "httpCustomAuth": {
+          "id": "aD4Z71wqUYZUL79C",
+          "name": "WHMCS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combinationMode": "multiplex",
+        "options": {}
+      },
+      "id": "9d90ac8f-d666-4a16-b4c1-72e167b1cab2",
+      "name": "Merge both1",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2.1,
+      "position": [
+        400,
+        440
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://api.tempo.io/4/accounts/{{ $json.body.issue.fields.customfield_14613.id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "id": "46d30e66-3c95-4595-8414-455dfd56fb4c",
+      "name": "Get Tempo Account with Tempo Customer1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        40,
+        300
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "5Hzvq0YJFPg5BAeY",
+          "name": "Tempo"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "issueKey": "={{ $('Webhook').first().json.body.issue.key }}",
+        "updateFields": {
+          "labels": [],
+          "statusId": {
+            "__rl": true,
+            "value": "981",
+            "mode": "id"
+          }
+        }
+      },
+      "id": "2ba5a969-5b51-47d5-b22c-5f85e24b8e71",
+      "name": "Resolve issue",
+      "type": "n8n-nodes-base.jira",
+      "typeVersion": 1,
+      "position": [
+        960,
+        180
+      ],
+      "credentials": {
+        "jiraSoftwareCloudApi": {
+          "id": "HlsaLdc6YFfeasWO",
+          "name": "Jira christian.gick@clicksports.de"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "issueKey": "={{ $('Webhook').item.json.body.issue.key }}",
+        "updateFields": {
+          "customFieldsUi": {
+            "customFieldsValues": [
+              {
+                "fieldId": {
+                  "__rl": true,
+                  "value": "customfield_14787",
+                  "mode": "id"
+                },
+                "fieldValue": "={{  $today.plus(1, 'days').format('yyyy-MM-dd') }}"
+              }
+            ]
+          }
+        }
+      },
+      "id": "a9f5c375-e4b8-4f91-b2b8-384918e0a959",
+      "name": "Set billing period",
+      "type": "n8n-nodes-base.jira",
+      "typeVersion": 1,
+      "position": [
+        1180,
+        640
+      ],
+      "credentials": {
+        "jiraSoftwareCloudApi": {
+          "id": "HlsaLdc6YFfeasWO",
+          "name": "Jira christian.gick@clicksports.de"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "https://confluence.atlassian.com/jirakb/how-to-use-rest-api-to-add-remote-links-in-jira-issues-1206556936.html",
+        "height": 185.27631578947367
+      },
+      "id": "8d83b5fa-733e-4751-9474-5d35ad88e6e5",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1380,
+        360
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "50ce5def-019d-492d-a71b-79cb285c1d74",
+        "responseMode": "lastNode",
+        "responseData": "allEntries",
+        "options": {}
+      },
+      "id": "0ccaf7ea-e71c-4535-8c96-628517e22478",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -380,
+        560
+      ],
+      "webhookId": "50ce5def-019d-492d-a71b-79cb285c1d74"
+    }
+  ],
+  "connections": {
+    "Get Worklogs for given issue": {
+      "main": [
+        [
+          {
+            "node": "Calculate billable and timeSpend",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate billable and timeSpend": {
+      "main": [
+        [
+          {
+            "node": "Merge both",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Get Tempo Account with Tempo Customer": {
+      "main": [
+        [
+          {
+            "node": "Merge both",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge both": {
+      "main": [
+        [
+          {
+            "node": "AddBillableItem to WHMCS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Festpreis": {
+      "main": [
+        [
+          {
+            "node": "Only customfield_12300",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Tempo Account with Tempo Customer1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Worklogs for given issue",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Tempo Account with Tempo Customer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Only customfield_12300": {
+      "main": [
+        [
+          {
+            "node": "Merge both1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Get Tempo Account with Tempo Customer1": {
+      "main": [
+        [
+          {
+            "node": "Merge both1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge both1": {
+      "main": [
+        [
+          {
+            "node": "AddBillableItem to WHMCS1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Resolve issue": {
+      "main": [
+        [
+          {
+            "node": "Create Comment with Link",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AddBillableItem to WHMCS": {
+      "main": [
+        [
+          {
+            "node": "Set billing period",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Is Festpreis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "oXwbRnZHgYHUkKj4"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "4faf3ff0-b6af-4746-b733-808142bf089b",
+  "triggerCount": 1,
+  "tags": [
+    {
+      "createdAt": "2024-07-18T13:44:20.706Z",
+      "updatedAt": "2024-07-18T13:44:20.706Z",
+      "id": "wtXD0GeIgYeLUCv8",
+      "name": "whmcs"
+    }
+  ]
+}
