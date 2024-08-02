@@ -1,27 +1,10 @@
 {
   "createdAt": "2024-08-02T11:54:52.386Z",
-  "updatedAt": "2024-08-02T18:11:04.000Z",
+  "updatedAt": "2024-08-02T18:16:39.000Z",
   "id": "aN9drYUtOLOnn5E0",
   "name": "Backup n8n workflows",
   "active": false,
   "nodes": [
-    {
-      "parameters": {
-        "rule": {
-          "interval": [
-            {}
-          ]
-        }
-      },
-      "id": "ff46b8d0-3e20-4456-b5ae-b1e150e92a6d",
-      "name": "Schedule Trigger",
-      "type": "n8n-nodes-base.scheduleTrigger",
-      "typeVersion": 1.2,
-      "position": [
-        340,
-        260
-      ]
-    },
     {
       "parameters": {
         "authentication": "privateKey",
@@ -224,20 +207,20 @@
         1900,
         160
       ]
+    },
+    {
+      "parameters": {},
+      "id": "6542e561-5db3-4dcf-9ee0-d1809d981613",
+      "name": "When clicking ‘Test workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        300,
+        260
+      ]
     }
   ],
   "connections": {
-    "Schedule Trigger": {
-      "main": [
-        [
-          {
-            "node": "Edit Fields",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Edit Fields": {
       "main": [
         [
@@ -332,6 +315,17 @@
           }
         ]
       ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -342,7 +336,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "18a3c794-fbc4-49be-b08e-769a64917d01",
+  "versionId": "b5dbf9ab-3187-4650-8226-ccd7a1a4c05a",
   "triggerCount": 0,
   "tags": []
 }
