@@ -1,9 +1,9 @@
 {
   "createdAt": "2024-08-02T11:54:52.386Z",
-  "updatedAt": "2024-08-02T18:19:30.000Z",
+  "updatedAt": "2024-08-02T18:21:12.000Z",
   "id": "aN9drYUtOLOnn5E0",
   "name": "Backup n8n workflows",
-  "active": false,
+  "active": true,
   "nodes": [
     {
       "parameters": {
@@ -186,17 +186,6 @@
       ]
     },
     {
-      "parameters": {},
-      "id": "6542e561-5db3-4dcf-9ee0-d1809d981613",
-      "name": "When clicking ‘Test workflow’",
-      "type": "n8n-nodes-base.manualTrigger",
-      "typeVersion": 1,
-      "position": [
-        300,
-        260
-      ]
-    },
-    {
       "parameters": {
         "assignments": {
           "assignments": [
@@ -217,6 +206,25 @@
       "position": [
         1260,
         160
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours"
+            }
+          ]
+        }
+      },
+      "id": "de9478ed-9645-4cd4-b34e-e6fa6a86d32e",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        320,
+        260
       ]
     }
   ],
@@ -305,17 +313,6 @@
         ]
       ]
     },
-    "When clicking ‘Test workflow’": {
-      "main": [
-        [
-          {
-            "node": "Edit Fields",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Repo": {
       "main": [
         [
@@ -326,17 +323,32 @@
           }
         ]
       ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
     "executionOrder": "v1"
   },
-  "staticData": null,
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    }
+  },
   "meta": {
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "d3f3ed99-979d-4966-a127-e178146afe7e",
-  "triggerCount": 0,
+  "versionId": "8fadbb0c-f3c1-4a3e-b8c1-781ae918065a",
+  "triggerCount": 1,
   "tags": []
 }
