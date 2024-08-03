@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-07-18T14:16:00.169Z",
-  "updatedAt": "2024-08-03T05:59:36.000Z",
+  "updatedAt": "2024-08-03T06:03:33.000Z",
   "id": "Lzw399ANe04HZ6wK",
   "name": "Validate processing SSL orders",
   "active": false,
@@ -904,7 +904,7 @@
       "parameters": {
         "authentication": "privateKey",
         "resource": "file",
-        "path": "={{ $('Folders').first().json.validationfolder }}",
+        "path": "={{ $json.validationfolder }}",
         "options": {}
       },
       "id": "8bd9a87b-3c57-47eb-a8ae-3840d42edfd2",
@@ -925,21 +925,6 @@
     },
     {
       "parameters": {
-        "mode": "combine",
-        "combineBy": "combineByPosition",
-        "options": {}
-      },
-      "id": "7937ab14-a456-4f60-ad9e-2dc2af3b56b2",
-      "name": "Merge1",
-      "type": "n8n-nodes-base.merge",
-      "typeVersion": 3,
-      "position": [
-        1320,
-        660
-      ]
-    },
-    {
-      "parameters": {
         "compare": "selectedFields",
         "fieldsToCompare": "validationfolder",
         "options": {}
@@ -951,6 +936,21 @@
       "position": [
         1040,
         860
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "id": "7937ab14-a456-4f60-ad9e-2dc2af3b56b2",
+      "name": "Merge1",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        1320,
+        660
       ]
     }
   ],
@@ -1270,17 +1270,6 @@
         ]
       ]
     },
-    "Merge1": {
-      "main": [
-        [
-          {
-            "node": "SSH",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Remove Duplicates": {
       "main": [
         [
@@ -1288,6 +1277,17 @@
             "node": "Merge1",
             "type": "main",
             "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "SSH",
+            "type": "main",
+            "index": 0
           }
         ]
       ]
@@ -1309,7 +1309,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "8390fca8-ca91-4163-8a3f-52a0d75dcc07",
+  "versionId": "0c434bfa-e03e-49d4-9ce4-48ff3dc7a66b",
   "triggerCount": 1,
   "tags": [
     {
