@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-07-18T14:16:00.169Z",
-  "updatedAt": "2024-08-03T06:03:33.000Z",
+  "updatedAt": "2024-08-03T07:43:36.000Z",
   "id": "Lzw399ANe04HZ6wK",
   "name": "Validate processing SSL orders",
   "active": false,
@@ -37,71 +37,6 @@
     },
     {
       "parameters": {
-        "method": "POST",
-        "url": "https://my.gogetssl.com/api/orders",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpQueryAuth",
-        "sendQuery": true,
-        "queryParameters": {
-          "parameters": [
-            {
-              "name": "status",
-              "value": "processing"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "id": "87336115-4f84-4275-ae5f-a7f8355d2738",
-      "name": "get processing orders",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 3,
-      "position": [
-        -3160,
-        580
-      ],
-      "credentials": {
-        "httpQueryAuth": {
-          "id": "pskjhKSslGfoyCfJ",
-          "name": "GoGetSSL"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "=https://my.gogetssl.com/api/orders/ssl/revalidate/{{ $('Domain').first().json.order_id }}",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpQueryAuth",
-        "sendBody": true,
-        "contentType": "multipart-form-data",
-        "bodyParameters": {
-          "parameters": [
-            {
-              "name": "domain",
-              "value": "={{ $('Domain').first().json.domain_name }}"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "id": "55d65cd6-4aa2-4c14-8d88-d34b9be90506",
-      "name": "try to revalidate",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 3,
-      "position": [
-        2180,
-        660
-      ],
-      "credentials": {
-        "httpQueryAuth": {
-          "id": "pskjhKSslGfoyCfJ",
-          "name": "GoGetSSL"
-        }
-      }
-    },
-    {
-      "parameters": {
         "rule": {
           "interval": [
             {
@@ -119,21 +54,6 @@
         580
       ],
       "disabled": true
-    },
-    {
-      "parameters": {
-        "fieldToSplitOut": "orders",
-        "include": "allOtherFields",
-        "options": {}
-      },
-      "id": "98953c2f-8b45-466b-93e2-ff71bba84add",
-      "name": "Split out items",
-      "type": "n8n-nodes-base.itemLists",
-      "typeVersion": 3,
-      "position": [
-        -2880,
-        580
-      ]
     },
     {
       "parameters": {
@@ -172,8 +92,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1060,
-        -860
+        4060,
+        800
       ],
       "credentials": {
         "httpHeaderAuth": {
@@ -181,6 +101,7 @@
           "name": "Plesk"
         }
       },
+      "disabled": true,
       "onError": "continueRegularOutput"
     },
     {
@@ -196,41 +117,6 @@
         -1340,
         580
       ]
-    },
-    {
-      "parameters": {
-        "url": "=https://{{ $json.pleskaddress }}:8443/api/v2/dns/records",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
-        "sendQuery": true,
-        "queryParameters": {
-          "parameters": [
-            {
-              "name": "domain",
-              "value": "={{ $json.zone }}"
-            }
-          ]
-        },
-        "options": {
-          "allowUnauthorizedCerts": true,
-          "timeout": 10000
-        }
-      },
-      "id": "f469f416-c3c0-4733-b9bb-7abf6d00f0a6",
-      "name": "Get DNS records",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        580,
-        -700
-      ],
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "c3IiH8vgW4O0OY0t",
-          "name": "Plesk"
-        }
-      },
-      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
@@ -260,9 +146,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        800,
-        -700
-      ]
+        3800,
+        900
+      ],
+      "disabled": true
     },
     {
       "parameters": {
@@ -291,16 +178,15 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 3,
       "position": [
-        820,
-        -200
+        3340,
+        900
       ],
       "credentials": {
         "httpQueryAuth": {
           "id": "pskjhKSslGfoyCfJ",
           "name": "GoGetSSL"
         }
-      },
-      "disabled": true
+      }
     },
     {
       "parameters": {
@@ -343,123 +229,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        860,
-        -400
+        4300,
+        1020
       ],
       "executeOnce": true,
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "c3IiH8vgW4O0OY0t",
-          "name": "Plesk"
-        }
-      },
-      "onError": "continueRegularOutput"
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "4ab49ab1-f6f2-4792-b929-f35078d5e96f",
-              "name": "pleskaddress",
-              "value": "={{ $('Split Out').item.json.plesk_domainpool }}",
-              "type": "string"
-            },
-            {
-              "id": "25a68661-839f-4b72-8dd1-5c387829ae60",
-              "name": "zone",
-              "value": "={{ $json.name }}",
-              "type": "string"
-            }
-          ]
-        },
-        "includeOtherFields": true,
-        "options": {}
-      },
-      "id": "63d5bcb1-335e-4f77-b556-82e589e4f406",
-      "name": "Set active Plesk",
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.3,
-      "position": [
-        300,
-        -700
-      ]
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "loose"
-          },
-          "conditions": [
-            {
-              "id": "cdae252e-7977-4ec6-b863-3d13987eab57",
-              "leftValue": "={{ $json.id }}",
-              "rightValue": 0,
-              "operator": {
-                "type": "number",
-                "operation": "gt"
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {
-          "looseTypeValidation": true
-        }
-      },
-      "id": "20b681c5-1471-4fe3-a5f1-ff9ea099faf3",
-      "name": "Zone found",
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2,
-      "position": [
-        20,
-        -500
-      ]
-    },
-    {
-      "parameters": {
-        "url": "=https://{{ $json.plesk_domainpool }}:8443/api/v2/domains ",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
-        "sendQuery": true,
-        "queryParameters": {
-          "parameters": [
-            {
-              "name": "name",
-              "value": "={{ $json.baseDomain }}"
-            }
-          ]
-        },
-        "options": {
-          "allowUnauthorizedCerts": true,
-          "redirect": {
-            "redirect": {
-              "maxRedirects": 3
-            }
-          },
-          "response": {
-            "response": {
-              "neverError": true
-            }
-          },
-          "timeout": 2000
-        }
-      },
-      "id": "08b89c72-488b-422d-a3b2-efe410962a0d",
-      "name": "Find zone in Plesk",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        -200,
-        -500
-      ],
-      "alwaysOutputData": false,
-      "retryOnFail": false,
-      "notesInFlow": false,
-      "executeOnce": false,
       "credentials": {
         "httpHeaderAuth": {
           "id": "c3IiH8vgW4O0OY0t",
@@ -479,72 +252,6 @@
         -3580,
         340
       ]
-    },
-    {
-      "parameters": {
-        "rules": {
-          "values": [
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "loose"
-                },
-                "conditions": [
-                  {
-                    "leftValue": "={{ $('Split Out').item.json.dcv_method }}",
-                    "rightValue": "dns",
-                    "operator": {
-                      "type": "string",
-                      "operation": "equals"
-                    }
-                  }
-                ],
-                "combinator": "and"
-              },
-              "renameOutput": true,
-              "outputKey": "dns"
-            },
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "loose"
-                },
-                "conditions": [
-                  {
-                    "id": "35e97814-5b37-471e-8115-76d104c9089c",
-                    "leftValue": "={{ $('Split Out').item.json.dcv_method }}",
-                    "rightValue": "https",
-                    "operator": {
-                      "type": "string",
-                      "operation": "equals",
-                      "name": "filter.operator.equals"
-                    }
-                  }
-                ],
-                "combinator": "and"
-              },
-              "renameOutput": true,
-              "outputKey": "https"
-            }
-          ]
-        },
-        "options": {
-          "looseTypeValidation": true
-        }
-      },
-      "id": "11c54931-3b6f-4004-a56b-e3f5c2c279d0",
-      "name": "Switch",
-      "type": "n8n-nodes-base.switch",
-      "typeVersion": 3,
-      "position": [
-        580,
-        -500
-      ],
-      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
@@ -693,7 +400,7 @@
       "typeVersion": 2,
       "position": [
         380,
-        880
+        800
       ]
     },
     {
@@ -706,7 +413,7 @@
       "typeVersion": 1,
       "position": [
         740,
-        1060
+        980
       ]
     },
     {
@@ -784,7 +491,7 @@
       "typeVersion": 3.4,
       "position": [
         740,
-        860
+        780
       ]
     },
     {
@@ -797,7 +504,7 @@
       "typeVersion": 1.1,
       "position": [
         1860,
-        660
+        680
       ],
       "webhookId": "a3a34f6c-9895-45fb-8472-73a6f36ada52"
     },
@@ -913,7 +620,7 @@
       "typeVersion": 1,
       "position": [
         1600,
-        660
+        680
       ],
       "credentials": {
         "sshPrivateKey": {
@@ -935,7 +642,7 @@
       "typeVersion": 1.1,
       "position": [
         1040,
-        860
+        780
       ]
     },
     {
@@ -950,7 +657,211 @@
       "typeVersion": 3,
       "position": [
         1320,
-        660
+        680
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 300
+      },
+      "id": "e3ba8dd8-6111-472e-ba25-b2c47fc53820",
+      "name": "Wait1",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2600,
+        480
+      ],
+      "webhookId": "b0271979-7ac3-4b4e-9c6c-98d8b875fe11"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://my.gogetssl.com/api/orders/ssl/revalidate/{{ $('Domain').first().json.order_id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "domain",
+              "value": "={{ $('Domain').first().json.domain_name }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "55d65cd6-4aa2-4c14-8d88-d34b9be90506",
+      "name": "Try validate https",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        2100,
+        680
+      ],
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "pskjhKSslGfoyCfJ",
+          "name": "GoGetSSL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://my.gogetssl.com/api/orders/ssl/revalidate/{{ $('Domain').first().json.order_id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "domain",
+              "value": "={{ $('Domain').first().json.domain_name }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "877d53a7-4b62-4f67-ab94-53b32a7d4ece",
+      "name": "Try revalidate https",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        2840,
+        700
+      ],
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "pskjhKSslGfoyCfJ",
+          "name": "GoGetSSL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "45da48b1-89d0-460f-8e47-b5ba23e0afea",
+      "name": "If4",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        3080,
+        700
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "privateKey",
+        "command": "=plesk bin dns --info {{ $('Domain').item.json.domain_name.replace(/^www\\./, '') }} | grep sectigo",
+        "cwd": "=/"
+      },
+      "id": "f3e85cc1-fe1f-4087-8fbc-2b7208cab767",
+      "name": "Get DNS records",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        3560,
+        900
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "sshPrivateKey": {
+          "id": "7cM8UD60RNSc7v3k",
+          "name": "SSH Hcloud"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "orders",
+        "include": "allOtherFields",
+        "options": {}
+      },
+      "id": "98953c2f-8b45-466b-93e2-ff71bba84add",
+      "name": "Orders",
+      "type": "n8n-nodes-base.itemLists",
+      "typeVersion": 3,
+      "position": [
+        -2880,
+        580
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://my.gogetssl.com/api/orders",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "status",
+              "value": "processing"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "87336115-4f84-4275-ae5f-a7f8355d2738",
+      "name": "Get processing orders",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        -3160,
+        580
+      ],
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "pskjhKSslGfoyCfJ",
+          "name": "GoGetSSL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.description }}",
+                    "rightValue": "locked",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "locked"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "id": "37e7dcd5-160d-4ad2-a97f-81a28929714c",
+      "name": "Switch1",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [
+        2360,
+        680
       ]
     }
   ],
@@ -959,18 +870,7 @@
       "main": [
         [
           {
-            "node": "get processing orders",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "get processing orders": {
-      "main": [
-        [
-          {
-            "node": "Split out items",
+            "node": "Get processing orders",
             "type": "main",
             "index": 0
           }
@@ -982,22 +882,6 @@
         [
           {
             "node": "Authentication",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Split out items": {
-      "main": [
-        [
-          {
-            "node": "Change validation method to https",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "If1",
             "type": "main",
             "index": 0
           }
@@ -1026,17 +910,6 @@
         ]
       ]
     },
-    "Get DNS records": {
-      "main": [
-        [
-          {
-            "node": "If",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "If": {
       "main": [
         [
@@ -1045,41 +918,10 @@
             "type": "main",
             "index": 0
           }
-        ]
-      ]
-    },
-    "Set active Plesk": {
-      "main": [
+        ],
         [
           {
-            "node": "Get DNS records",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Switch",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Zone found": {
-      "main": [
-        [
-          {
-            "node": "Set active Plesk",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Find zone in Plesk": {
-      "main": [
-        [
-          {
-            "node": "Zone found",
+            "node": "dns add",
             "type": "main",
             "index": 0
           }
@@ -1091,24 +933,6 @@
         [
           {
             "node": "Authentication",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Switch": {
-      "main": [
-        [
-          {
-            "node": "dns add",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Change validation method to dns",
             "type": "main",
             "index": 0
           }
@@ -1208,7 +1032,7 @@
       "main": [
         [
           {
-            "node": "try to revalidate",
+            "node": "Try validate https",
             "type": "main",
             "index": 0
           }
@@ -1291,6 +1115,129 @@
           }
         ]
       ]
+    },
+    "Try validate https": {
+      "main": [
+        [
+          {
+            "node": "Switch1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "Try revalidate https",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Try revalidate https": {
+      "main": [
+        [
+          {
+            "node": "If4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If4": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Change validation method to dns",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Change validation method to dns": {
+      "main": [
+        [
+          {
+            "node": "Get DNS records",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "dns remove": {
+      "main": [
+        [
+          {
+            "node": "dns add",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Orders": {
+      "main": [
+        [
+          {
+            "node": "Change validation method to https",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get processing orders": {
+      "main": [
+        [
+          {
+            "node": "Orders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch1": {
+      "main": [
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Try revalidate https",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get DNS records": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -1309,7 +1256,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "0c434bfa-e03e-49d4-9ce4-48ff3dc7a66b",
+  "versionId": "f0c8f7aa-a700-47fd-8e8f-670e92aa87c8",
   "triggerCount": 1,
   "tags": [
     {
