@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-07-18T14:16:00.169Z",
-  "updatedAt": "2024-08-03T12:57:00.000Z",
+  "updatedAt": "2024-08-03T13:10:36.000Z",
   "id": "Lzw399ANe04HZ6wK",
   "name": "Validate processing SSL orders",
   "active": false,
@@ -169,27 +169,14 @@
         -2560,
         220
       ],
+      "alwaysOutputData": true,
       "credentials": {
         "httpQueryAuth": {
           "id": "pskjhKSslGfoyCfJ",
           "name": "GoGetSSL"
         }
-      }
-    },
-    {
-      "parameters": {
-        "mode": "combine",
-        "combineBy": "combineByPosition",
-        "options": {}
       },
-      "id": "ab82e89d-49d6-433e-8c73-57c3a811c578",
-      "name": "Merge",
-      "type": "n8n-nodes-base.merge",
-      "typeVersion": 3,
-      "position": [
-        -1980,
-        280
-      ]
+      "disabled": true
     },
     {
       "parameters": {
@@ -588,7 +575,8 @@
           "id": "pskjhKSslGfoyCfJ",
           "name": "GoGetSSL"
         }
-      }
+      },
+      "disabled": true
     },
     {
       "parameters": {
@@ -621,7 +609,8 @@
           "id": "pskjhKSslGfoyCfJ",
           "name": "GoGetSSL"
         }
-      }
+      },
+      "disabled": true
     },
     {
       "parameters": {
@@ -708,7 +697,7 @@
     {
       "parameters": {
         "authentication": "privateKey",
-        "command": "=plesk bin dns --del {{ $('Validation').item.json.domain.replace(/^www\\./, '') }} -cname $(plesk bin dns --info {{ $('Validation').item.json.domain.replace(/^www\\./, '') }} | grep 'sectigo' | awk '{print $1}' | sed 's/\\.{{ $('Validation').item.json.domain.replace(/^www\\./, '') }}//') -canonical $(plesk bin dns --info {{ $('Validation').item.json.domain.replace(/^www\\./, '') }} | grep 'sectigo' | awk '{print $5}')\n",
+        "command": "=plesk bin dns --del {{ $('Validation').item.json.domain.replace(/^www\\./, '') }} -cname $(plesk bin dns --info {{ $('Validation').item.json.domain.replace(/^www\\./, '') }} | grep 'sectigo' | awk '{print $1}' | sed 's/\\.{{ $('Validation').item.json.domain.replace(/^www\\./, '') }}//') -canonical $(plesk bin dns --info {{ $('Validation').item.json.domain.replace(/^www\\./, '') }} | grep 'sectigo' | awk '{print $3}')\n",
         "cwd": "=/"
       },
       "id": "f3e85cc1-fe1f-4087-8fbc-2b7208cab767",
@@ -716,7 +705,7 @@
       "type": "n8n-nodes-base.ssh",
       "typeVersion": 1,
       "position": [
-        4380,
+        4680,
         820
       ],
       "alwaysOutputData": true,
@@ -731,7 +720,7 @@
     {
       "parameters": {
         "authentication": "privateKey",
-        "command": "=plesk bin dns --add {{ $('Validation').item.json.domain.replace(/^www\\./, '') }} ",
+        "command": "=plesk bin dns --add {{ $('Validation').item.json.domain.replace(/^www\\./, '') }} -cname {{ $('DNS Validation').item.json.approver_method.dns.record.split(' ')[0]}}  -canonical {{ $('DNS Validation').item.json.approver_method.dns.record.split(' ')[2] }}",
         "cwd": "=/"
       },
       "id": "396b2c64-b437-4b23-924d-327fa0b0e731",
@@ -739,7 +728,7 @@
       "type": "n8n-nodes-base.ssh",
       "typeVersion": 1,
       "position": [
-        4380,
+        4680,
         1060
       ],
       "alwaysOutputData": true,
@@ -762,28 +751,6 @@
         700
       ],
       "webhookId": "d5f33be3-f06c-430f-a548-deb0fac283ad"
-    },
-    {
-      "parameters": {
-        "url": "=https://my.gogetssl.com/api/orders/status/{{ $('Validation').item.json.order_id }}",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpQueryAuth",
-        "options": {}
-      },
-      "id": "d0a5bbd1-7b97-4964-9687-a290d6c69a57",
-      "name": "Check validation status",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 3,
-      "position": [
-        3320,
-        700
-      ],
-      "credentials": {
-        "httpQueryAuth": {
-          "id": "pskjhKSslGfoyCfJ",
-          "name": "GoGetSSL"
-        }
-      }
     },
     {
       "parameters": {
@@ -860,9 +827,115 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        4080,
+        4380,
         940
       ]
+    },
+    {
+      "parameters": {
+        "url": "=https://my.gogetssl.com/api/orders/status/{{ $('Validation').item.json.order_id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "options": {}
+      },
+      "id": "d0a5bbd1-7b97-4964-9687-a290d6c69a57",
+      "name": "Validation status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        3320,
+        700
+      ],
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "pskjhKSslGfoyCfJ",
+          "name": "GoGetSSL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://my.gogetssl.com/api/orders/status/{{ $('Validation').item.json.order_id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "options": {}
+      },
+      "id": "7ea42742-d241-430e-a96a-dbf0c4741b56",
+      "name": "DNS Validation",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        4100,
+        940
+      ],
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "pskjhKSslGfoyCfJ",
+          "name": "GoGetSSL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "id": "ab82e89d-49d6-433e-8c73-57c3a811c578",
+      "name": "Merge",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        -2280,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://my.gogetssl.com/api/orders/ssl/revalidate/{{ $('Validation').item.json.order_id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "domain",
+              "value": "={{ $('Validation').item.json.domain }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "3362f745-bef3-499c-96a7-4a5bb07a5a1b",
+      "name": "Try revalidate https1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        5180,
+        1060
+      ],
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "pskjhKSslGfoyCfJ",
+          "name": "GoGetSSL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "unit": "minutes"
+      },
+      "id": "b341d4b4-f345-4943-881f-e6e8729a8715",
+      "name": "Wait3",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        4940,
+        1060
+      ],
+      "webhookId": "ac0669d7-afcc-4773-9654-2f86c503564f"
     }
   ],
   "connections": {
@@ -932,22 +1005,11 @@
         ]
       ]
     },
-    "Merge": {
-      "main": [
-        [
-          {
-            "node": "validation data",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "If1": {
       "main": [
         [
           {
-            "node": "Merge",
+            "node": "validation data",
             "type": "main",
             "index": 0
           }
@@ -1136,7 +1198,7 @@
       "main": [
         [
           {
-            "node": "Edit Fields",
+            "node": "DNS Validation",
             "type": "main",
             "index": 0
           }
@@ -1147,12 +1209,12 @@
       "main": [
         [
           {
-            "node": "Change validation method to https",
+            "node": "If1",
             "type": "main",
             "index": 0
           },
           {
-            "node": "If1",
+            "node": "Change validation method to https",
             "type": "main",
             "index": 0
           }
@@ -1170,27 +1232,11 @@
         ]
       ]
     },
-    "Remove old DNS records": {
-      "main": [
-        []
-      ]
-    },
     "Wait2": {
       "main": [
         [
           {
-            "node": "Check validation status",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Check validation status": {
-      "main": [
-        [
-          {
-            "node": "If4",
+            "node": "Validation status",
             "type": "main",
             "index": 0
           }
@@ -1241,6 +1287,55 @@
           }
         ]
       ]
+    },
+    "Validation status": {
+      "main": [
+        [
+          {
+            "node": "If4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DNS Validation": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        []
+      ]
+    },
+    "Add new DNS record": {
+      "main": [
+        [
+          {
+            "node": "Wait3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait3": {
+      "main": [
+        [
+          {
+            "node": "Try revalidate https1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -1259,7 +1354,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "93d25ab7-9d79-40c1-ba7e-551f8906ce66",
+  "versionId": "9054ebbb-713a-46e8-a771-58917824b0e6",
   "triggerCount": 1,
   "tags": [
     {
