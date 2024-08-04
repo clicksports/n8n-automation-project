@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-07-18T13:59:19.426Z",
-  "updatedAt": "2024-07-29T05:32:09.000Z",
+  "updatedAt": "2024-08-04T03:01:42.000Z",
   "id": "YDKcUujj3g5ZAtTF",
   "name": "Get all active SSL certs from WHMCS that expire within 30 days",
   "active": true,
@@ -127,7 +127,7 @@
             {
               "id": "e33d1be5-59ed-4995-9c83-5f55878b910e",
               "leftValue": "={{ $json.nextduedate.toDateTime().format('y-MM-d') }}",
-              "rightValue": "={{ $today.plus({days: 48}).format('y-MM-d') }}",
+              "rightValue": "={{ $today.plus({days: 29}).format('y-MM-d') }}",
               "operator": {
                 "type": "dateTime",
                 "operation": "equals"
@@ -213,7 +213,8 @@
       "position": [
         1540,
         700
-      ]
+      ],
+      "disabled": true
     },
     {
       "parameters": {
@@ -256,7 +257,8 @@
           "id": "aD4Z71wqUYZUL79C",
           "name": "WHMCS"
         }
-      }
+      },
+      "disabled": true
     }
   ],
   "connections": {
@@ -348,7 +350,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "ecc101e5-2918-4fa3-90ba-fab94eecaa68",
+  "versionId": "4ee47fbd-d4a8-4876-b260-3d904495f444",
   "triggerCount": 1,
   "tags": [
     {
