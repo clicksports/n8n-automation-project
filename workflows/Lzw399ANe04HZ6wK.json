@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-07-18T14:16:00.169Z",
-  "updatedAt": "2024-08-03T13:10:36.000Z",
+  "updatedAt": "2024-08-03T23:59:05.000Z",
   "id": "Lzw399ANe04HZ6wK",
   "name": "Validate processing SSL orders",
   "active": false,
@@ -697,30 +697,7 @@
     {
       "parameters": {
         "authentication": "privateKey",
-        "command": "=plesk bin dns --del {{ $('Validation').item.json.domain.replace(/^www\\./, '') }} -cname $(plesk bin dns --info {{ $('Validation').item.json.domain.replace(/^www\\./, '') }} | grep 'sectigo' | awk '{print $1}' | sed 's/\\.{{ $('Validation').item.json.domain.replace(/^www\\./, '') }}//') -canonical $(plesk bin dns --info {{ $('Validation').item.json.domain.replace(/^www\\./, '') }} | grep 'sectigo' | awk '{print $3}')\n",
-        "cwd": "=/"
-      },
-      "id": "f3e85cc1-fe1f-4087-8fbc-2b7208cab767",
-      "name": "Remove old DNS records",
-      "type": "n8n-nodes-base.ssh",
-      "typeVersion": 1,
-      "position": [
-        4680,
-        820
-      ],
-      "alwaysOutputData": true,
-      "credentials": {
-        "sshPrivateKey": {
-          "id": "7cM8UD60RNSc7v3k",
-          "name": "SSH Hcloud"
-        }
-      },
-      "onError": "continueRegularOutput"
-    },
-    {
-      "parameters": {
-        "authentication": "privateKey",
-        "command": "=plesk bin dns --add {{ $('Validation').item.json.domain.replace(/^www\\./, '') }} -cname {{ $('DNS Validation').item.json.approver_method.dns.record.split(' ')[0]}}  -canonical {{ $('DNS Validation').item.json.approver_method.dns.record.split(' ')[2] }}",
+        "command": "=plesk bin dns --add {{ $('Validation').item.json.domain.replace(/^www\\./, '') }} -cname $(echo {{ $('DNS Validation').item.json.approver_method.dns.record.split(' ')[0] }} | sed 's/\\.{{ $('Validation').item.json.domain.replace(/^www\\./, '')}}//') -canonical {{ $('DNS Validation').item.json.approver_method.dns.record.split(' ')[2] }}",
         "cwd": "=/"
       },
       "id": "396b2c64-b437-4b23-924d-327fa0b0e731",
@@ -728,7 +705,7 @@
       "type": "n8n-nodes-base.ssh",
       "typeVersion": 1,
       "position": [
-        4680,
+        4900,
         1060
       ],
       "alwaysOutputData": true,
@@ -892,6 +869,97 @@
     },
     {
       "parameters": {
+        "unit": "minutes"
+      },
+      "id": "b341d4b4-f345-4943-881f-e6e8729a8715",
+      "name": "Wait3",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        5160,
+        1060
+      ],
+      "webhookId": "ac0669d7-afcc-4773-9654-2f86c503564f"
+    },
+    {
+      "parameters": {
+        "authentication": "privateKey",
+        "command": "=plesk bin dns --info {{ $('Validation').item.json.domain.replace(/^www\\./, '') }} | grep 'sectigo'",
+        "cwd": "=/"
+      },
+      "id": "f3e85cc1-fe1f-4087-8fbc-2b7208cab767",
+      "name": "Find old DNS records",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        4900,
+        820
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "sshPrivateKey": {
+          "id": "7cM8UD60RNSc7v3k",
+          "name": "SSH Hcloud"
+        }
+      },
+      "disabled": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "authentication": "privateKey",
+        "command": "= plesk bin dns --del {{ $('Validation').item.json.domain.replace(/^www\\./, '') }} -cname  -canonical "
+      },
+      "id": "153ca7ed-1174-4d76-a521-06090fd03dce",
+      "name": "Delete",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        5720,
+        600
+      ],
+      "credentials": {
+        "sshPrivateKey": {
+          "id": "7cM8UD60RNSc7v3k",
+          "name": "SSH Hcloud"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "={{ $json.stdout.split('\\n')  }}",
+        "include": "allOtherFields",
+        "options": {}
+      },
+      "id": "91792b14-9749-4d52-9132-dc8e1a8c2a41",
+      "name": "Split Out1",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        5120,
+        820
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "id": "156f72a0-e964-43a4-842f-fc6fb0edae8a",
+      "name": "Merge1",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        5300,
+        480
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
         "method": "POST",
         "url": "=https://my.gogetssl.com/api/orders/ssl/revalidate/{{ $('Validation').item.json.order_id }}",
         "authentication": "genericCredentialType",
@@ -909,11 +977,11 @@
         "options": {}
       },
       "id": "3362f745-bef3-499c-96a7-4a5bb07a5a1b",
-      "name": "Try revalidate https1",
+      "name": "Validate DNS",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 3,
       "position": [
-        5180,
+        5400,
         1060
       ],
       "credentials": {
@@ -922,20 +990,6 @@
           "name": "GoGetSSL"
         }
       }
-    },
-    {
-      "parameters": {
-        "unit": "minutes"
-      },
-      "id": "b341d4b4-f345-4943-881f-e6e8729a8715",
-      "name": "Wait3",
-      "type": "n8n-nodes-base.wait",
-      "typeVersion": 1.1,
-      "position": [
-        4940,
-        1060
-      ],
-      "webhookId": "ac0669d7-afcc-4773-9654-2f86c503564f"
     }
   ],
   "connections": {
@@ -1276,12 +1330,17 @@
       "main": [
         [
           {
-            "node": "Remove old DNS records",
+            "node": "Find old DNS records",
             "type": "main",
             "index": 0
           },
           {
             "node": "Add new DNS record",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge1",
             "type": "main",
             "index": 0
           }
@@ -1310,11 +1369,6 @@
         ]
       ]
     },
-    "Merge": {
-      "main": [
-        []
-      ]
-    },
     "Add new DNS record": {
       "main": [
         [
@@ -1330,7 +1384,40 @@
       "main": [
         [
           {
-            "node": "Try revalidate https1",
+            "node": "Validate DNS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find old DNS records": {
+      "main": [
+        [
+          {
+            "node": "Split Out1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out1": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Delete",
             "type": "main",
             "index": 0
           }
@@ -1354,7 +1441,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "9054ebbb-713a-46e8-a771-58917824b0e6",
+  "versionId": "6fd1a4f1-7be4-49b0-9793-385542a45cd3",
   "triggerCount": 1,
   "tags": [
     {
