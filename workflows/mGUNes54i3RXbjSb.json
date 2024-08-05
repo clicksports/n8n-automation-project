@@ -1,0 +1,686 @@
+{
+  "createdAt": "2024-08-05T14:43:56.960Z",
+  "updatedAt": "2024-08-05T15:00:07.000Z",
+  "id": "mGUNes54i3RXbjSb",
+  "name": "My workflow",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "model": "text-embedding-3-large",
+        "options": {}
+      },
+      "id": "6ef3e0bf-594e-47f7-b824-9c2b92ef44b2",
+      "name": "Embeddings OpenAI",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "position": [
+        1260,
+        680
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "openAiApi": {
+          "id": "y8NvNd30QFsYf7Hw",
+          "name": "OpenAI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "file_name",
+                "value": "={{ $('Add in metadata').item.json.file_name }}"
+              }
+            ]
+          }
+        }
+      },
+      "id": "435b77d0-1324-41e3-abec-9233336b0ffe",
+      "name": "Default Data Loader",
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "position": [
+        1440,
+        680
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Add a new field called 'myNewField' to the JSON of the item\n$input.item.json.file_name = $input.item.binary.data.fileName;\n$input.item.json.file_ext = $input.item.binary.data.fileExtension;\n\nreturn $input.item;"
+      },
+      "id": "ec4383e9-dfa9-4c00-b5e3-0ba5623c78a9",
+      "name": "Add in metadata",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        1100,
+        460
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "id": "74e2776f-a026-43f0-ba47-7c33d6823ab5",
+      "name": "Download file",
+      "type": "n8n-nodes-base.googleDrive",
+      "position": [
+        880,
+        460
+      ],
+      "typeVersion": 3,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "BVkiHtheS61uART6",
+          "name": "Google christian.gick@clicksports.de"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chunkSize": 5000,
+        "options": {
+          "splitCode": "markdown"
+        }
+      },
+      "id": "71b9e0d6-386f-42cc-9cab-3cb376a4c8dd",
+      "name": "Recursive Character Text Splitter",
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "position": [
+        1440,
+        840
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "queryString": "*.pdf",
+        "returnAll": true,
+        "filter": {
+          "folderId": {
+            "__rl": true,
+            "value": "1--InOSXqwW1vm0z7D-HLHzAqy57ju2BX",
+            "mode": "list",
+            "cachedResultName": "n8n",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/1--InOSXqwW1vm0z7D-HLHzAqy57ju2BX"
+          },
+          "whatToSearch": "files"
+        },
+        "options": {}
+      },
+      "id": "0af96aa5-8dff-44f5-8396-a5a6bf1c69f6",
+      "name": "Google Drive",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        320,
+        560
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "BVkiHtheS61uART6",
+          "name": "Google christian.gick@clicksports.de"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "78dc145d-a6dd-44fd-a5f0-d645c9600ea7",
+      "name": "When clicking ‘Test workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        860
+      ]
+    },
+    {
+      "parameters": {
+        "name": "invoices",
+        "description": "Alle Dokumente",
+        "topK": 1000
+      },
+      "id": "8cc20fbb-c11c-4a7a-a221-d195ed084ab5",
+      "name": "Vector Store Tool",
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "typeVersion": 1,
+      "position": [
+        500,
+        1600
+      ]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o-mini",
+        "options": {
+          "temperature": 0
+        }
+      },
+      "id": "d8034120-5a8f-40d7-81aa-92e6cbb840c4",
+      "name": "OpenAI Chat Model1",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        700,
+        1820
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "y8NvNd30QFsYf7Hw",
+          "name": "OpenAI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-large",
+        "options": {}
+      },
+      "id": "2427b827-8776-4861-9dab-3b46ddcfb4fd",
+      "name": "Embeddings OpenAI1",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1,
+      "position": [
+        320,
+        2060
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "y8NvNd30QFsYf7Hw",
+          "name": "OpenAI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1pvMisn__G4QvkcRX2oj7znz4S7WcXzxi6GJNihvr0lw",
+          "mode": "list",
+          "cachedResultName": "n8n",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1pvMisn__G4QvkcRX2oj7znz4S7WcXzxi6GJNihvr0lw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1619249675,
+          "mode": "list",
+          "cachedResultName": "invoices",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1pvMisn__G4QvkcRX2oj7znz4S7WcXzxi6GJNihvr0lw/edit#gid=1619249675"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Rechnungsnummer",
+              "displayName": "Rechnungsnummer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Bezeichnung der Position",
+              "displayName": "Bezeichnung der Position",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Jahr",
+              "displayName": "Jahr",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Zeitraum",
+              "displayName": "Zeitraum",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Anzahl Tage",
+              "displayName": "Anzahl Tage",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Betrag pro Tag",
+              "displayName": "Betrag pro Tag",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Nettobetrag",
+              "displayName": "Nettobetrag",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Bruttobetrag",
+              "displayName": "Bruttobetrag",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Enthaltene Umsatzsteuer",
+              "displayName": "Enthaltene Umsatzsteuer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "1eb5d47d-3b17-40a1-87ac-548b319e79e2",
+      "name": "Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        1240,
+        1320
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "FsAH6WckeSIuyyxJ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "message.content.Positionen",
+        "options": {}
+      },
+      "id": "e31a47ee-1dd8-4151-9775-a5712026f803",
+      "name": "Split Out",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        980,
+        1320
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "3ea28988-e424-4682-a684-31358601f3a1",
+      "name": "Calculator",
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        940,
+        1600
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "1ab98cdb-90ad-41c7-b769-93ed3a3b63ff",
+              "leftValue": "={{ $json.name }}",
+              "rightValue": "_GS-",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "006c1b03-178d-4eea-a25f-72a410eceb50",
+              "leftValue": "={{ $json.name }}",
+              "rightValue": "_RE-",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "bf3c6c06-51fa-4c86-9d09-9c32fd976048",
+      "name": "If",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        540,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "n8n",
+          "mode": "list",
+          "cachedResultName": "n8n"
+        },
+        "options": {
+          "pineconeNamespace": "invoices"
+        }
+      },
+      "id": "6100f501-f24a-427b-b2e4-3fa54edef73d",
+      "name": "Pinecone Vector Store",
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1,
+      "position": [
+        320,
+        1840
+      ],
+      "credentials": {
+        "pineconeApi": {
+          "id": "8lDKmR3gvMj1szqg",
+          "name": "Pinecone"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "n8n",
+          "mode": "list",
+          "cachedResultName": "n8n"
+        },
+        "options": {
+          "clearNamespace": false,
+          "pineconeNamespace": "invoices"
+        }
+      },
+      "id": "156d17d0-33a1-4bb7-8c86-e4551abf44cc",
+      "name": "Add to Pinecone vector store",
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "position": [
+        1320,
+        460
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "pineconeApi": {
+          "id": "8lDKmR3gvMj1szqg",
+          "name": "Pinecone"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Du hast alle Dokumente mit einer einzigartigen Belegnummerin der Datenbank. Enthält der Dateiname _GS- ist es eine Gutschrift und alle Beträge müssen negativ werden. Enthält der Dateiname _RE- ist es eine Rechnung. \n\n-----\n\nDer Gesamtbetrag pro Belegposition aller Belege soll nach Leistungszeitraum abgegrenzt werden, sodass der jeweilige Anteil der Bilanz eines Geschäftsjahres zugeordnet werden kann.\n\nAnweisungen zur korrekten Aufteilung:\n\nBestimme den Gesamtzeitraum der Position (von bis) und die Anzahl der Tage in diesem Leistungszeitraum. Teile den Gesamtbetrag der Position durch die Anzahl der Tage des Gesamtzeitraums um den Betrag pro Tag zu errechnen.\n\nWenn das Ende des Leistungszeitraums über den 31.12.2023 hinausgeht, muss der jährliche Betrag taggenau auf 2023 und den Rest auf alle folgenden Jahre aufgeteilt werden. Der Betrag pro Tag ist für alle Jahre gleich. Für jedes Jahr soll eine eigene Zeile zurückgegeben werden die nur den Zeitraum enthält der auf ebendieses Jahr fällt.\n\nVermeide doppelte Einträge: Jeder Betrag für ein Jahr soll nur einmal pro Rechnungsnummer aufgeführt werden.\nFalls kein Leistungszeitraum angegeben ist, gilt der gesamte Betrag für das Jahr der Rechnung.\n\nDie Berechnungen dürfen soviele Nachkommastellen enthalten um Rundungsfehler zu vermeiden und folgende Schritte beinhalten:\n\nBestimme den Nettobetrag für jedes Jahr, indem du den Betrag pro Tag mit der Anzahl der Tage pro Jahr multiplizierst. Der erste und der letzte Tag müssen mitgezählt werden.\nBerechne die enthaltene Umsatzsteuer, indem du den Nettobetrag mit dem Umsatzsteuersatz multiplizierst.\nBestimme den Bruttobetrag, indem du den Nettobetrag und die enthaltene Umsatzsteuer addierst.\nJede Position darf nur einmal pro Jahr aufgeführt sein.\n\nGib mir die Variable \"Positionen\" mit folgenden Spalten zurück:\n\nBelegnummer\nBezeichnung der Position\nGesamtzeitraum\nAnteil Jahr\nZeitraum\nAnzahl Tage\nBetrag pro Tag\nNettobetrag\nBruttobetrag\nEnthaltene Umsatzsteuer"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {
+          "temperature": 0
+        }
+      },
+      "id": "4cc84885-9d47-4cec-a22e-480ad6cd48f4",
+      "name": "OpenAI",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.4,
+      "position": [
+        540,
+        1320
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "y8NvNd30QFsYf7Hw",
+          "name": "OpenAI"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Add in metadata",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add in metadata": {
+      "main": [
+        [
+          {
+            "node": "Add to Pinecone vector store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Add to Pinecone vector store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Add to Pinecone vector store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "OpenAI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Vector Store Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "OpenAI",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Vector Store Tool",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "OpenAI",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "Vector Store Tool",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "494d7fd9-0f57-48fb-be8d-9af5944a80b0",
+  "triggerCount": 0,
+  "tags": [
+    {
+      "createdAt": "2024-07-19T11:40:04.689Z",
+      "updatedAt": "2024-07-19T11:40:04.689Z",
+      "id": "wNSc3sQpRZI8CPoy",
+      "name": "pinecone"
+    },
+    {
+      "createdAt": "2024-07-18T13:44:20.706Z",
+      "updatedAt": "2024-07-18T13:44:20.706Z",
+      "id": "wtXD0GeIgYeLUCv8",
+      "name": "whmcs"
+    }
+  ]
+}

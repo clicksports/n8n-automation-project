@@ -1,22 +1,20 @@
 {
   "createdAt": "2024-07-25T13:22:57.253Z",
-  "updatedAt": "2024-08-05T13:52:40.000Z",
+  "updatedAt": "2024-08-05T14:42:10.000Z",
   "id": "DashuYgu4Vz1v9YY",
-  "name": "Annual invoice split",
+  "name": "Annual invoice split1",
   "active": false,
   "nodes": [
     {
       "parameters": {
         "model": "text-embedding-3-large",
-        "options": {
-          "stripNewLines": true
-        }
+        "options": {}
       },
       "id": "5a4b96c2-efc8-464f-acea-6294cf4f2ea5",
       "name": "Embeddings OpenAI",
       "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
       "position": [
-        1100,
+        1040,
         1880
       ],
       "typeVersion": 1,
@@ -32,11 +30,12 @@
         "dataType": "binary",
         "loader": "pdfLoader",
         "options": {
+          "splitPages": true,
           "metadata": {
             "metadataValues": [
               {
-                "name": "file_name",
-                "value": "={{ $('Add in metadata').item.json.file_name }}"
+                "name": "filename",
+                "value": "={{ $('Download file').item.json.name }}"
               }
             ]
           }
@@ -46,24 +45,10 @@
       "name": "Default Data Loader",
       "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
       "position": [
-        1280,
+        1220,
         1880
       ],
       "typeVersion": 1
-    },
-    {
-      "parameters": {
-        "mode": "runOnceForEachItem",
-        "jsCode": "// Add a new field called 'myNewField' to the JSON of the item\n$input.item.json.file_name = $input.item.binary.data.fileName;\n$input.item.json.file_ext = $input.item.binary.data.fileExtension;\n\nreturn $input.item;"
-      },
-      "id": "73f90891-99a1-4e0e-b873-154a0e42880d",
-      "name": "Add in metadata",
-      "type": "n8n-nodes-base.code",
-      "position": [
-        947,
-        1660
-      ],
-      "typeVersion": 2
     },
     {
       "parameters": {
@@ -79,7 +64,7 @@
       "name": "Download file",
       "type": "n8n-nodes-base.googleDrive",
       "position": [
-        720,
+        800,
         1660
       ],
       "typeVersion": 3,
@@ -89,22 +74,6 @@
           "name": "Google christian.gick@clicksports.de"
         }
       }
-    },
-    {
-      "parameters": {
-        "chunkSize": 10000,
-        "options": {
-          "splitCode": "html"
-        }
-      },
-      "id": "b7037dc4-5ea4-49ee-911f-f7df66b0c695",
-      "name": "Recursive Character Text Splitter",
-      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
-      "position": [
-        1280,
-        2040
-      ],
-      "typeVersion": 1
     },
     {
       "parameters": {
@@ -273,7 +242,7 @@
       "typeVersion": 4.4,
       "position": [
         3540,
-        1560
+        1800
       ],
       "credentials": {
         "googleSheetsOAuth2Api": {
@@ -321,7 +290,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        460,
+        500,
         1800
       ]
     },
@@ -336,7 +305,7 @@
       "typeVersion": 1,
       "position": [
         2460,
-        1780
+        2020
       ],
       "credentials": {
         "openAiApi": {
@@ -352,9 +321,54 @@
       "type": "@n8n/n8n-nodes-langchain.toolCalculator",
       "typeVersion": 1,
       "position": [
-        3140,
-        1800
+        3060,
+        2040
       ]
+    },
+    {
+      "parameters": {
+        "chunkSize": 300,
+        "chunkOverlap": 100,
+        "options": {}
+      },
+      "id": "4b002548-c43f-497c-9aa7-3e085f02c220",
+      "name": "Recursive Character Text Splitter",
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        1220,
+        2100
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "load",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "n8n",
+          "mode": "list",
+          "cachedResultName": "n8n"
+        },
+        "prompt": "Belege",
+        "topK": 10000,
+        "options": {
+          "pineconeNamespace": "receipts"
+        }
+      },
+      "id": "d9183ccb-4a3f-4ab9-84c3-60412cbf392c",
+      "name": "Pinecone Vector Store",
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1,
+      "position": [
+        2460,
+        1800
+      ],
+      "credentials": {
+        "pineconeApi": {
+          "id": "8lDKmR3gvMj1szqg",
+          "name": "Pinecone"
+        }
+      }
     },
     {
       "parameters": {
@@ -366,7 +380,7 @@
           "cachedResultName": "n8n"
         },
         "options": {
-          "clearNamespace": true,
+          "clearNamespace": false,
           "pineconeNamespace": "receipts"
         }
       },
@@ -374,7 +388,7 @@
       "name": "Add to Pinecone vector store",
       "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
       "position": [
-        1160,
+        1100,
         1660
       ],
       "typeVersion": 1,
@@ -387,27 +401,124 @@
       }
     },
     {
+      "parameters": {},
+      "id": "2f595c52-0330-4f01-aa68-0c472ea8acad",
+      "name": "Calculator1",
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        1720,
+        820
+      ]
+    },
+    {
       "parameters": {
-        "mode": "load",
+        "name": "receipts",
+        "description": "Get all documents",
+        "topK": 10000
+      },
+      "id": "dda77bef-c069-456d-93de-95cc893c371a",
+      "name": "Vector Store Tool",
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "typeVersion": 1,
+      "position": [
+        2020,
+        840
+      ]
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-large",
+        "options": {}
+      },
+      "id": "0d0686d7-d75f-4af4-a74f-25802121a2c4",
+      "name": "Embeddings OpenAI2",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1,
+      "position": [
+        1740,
+        1240
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "y8NvNd30QFsYf7Hw",
+          "name": "OpenAI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o-mini",
+        "options": {}
+      },
+      "id": "df08ed65-afc7-4aab-abd6-16180cd300f3",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        2140,
+        1080
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "y8NvNd30QFsYf7Hw",
+          "name": "OpenAI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Finde die einzigartige ID des Belegs. Die ID von Rechnungen beginnt mit RE- gefolgt von einer sechsstelligen Zahl. Die ID von Gutschriften beginnt mit GS- gefolgt von einer sechsstelligen Zahl. \n\nDer Gesamtbetrag pro Position des jeweiligen Belegs soll nach Leistungszeitraum abgegrenzt werden, sodass der jeweilige Anteil taggenau der Bilanz eines Geschäftsjahres zugeordnet werden kann.\n\nAnweisungen zur korrekten Aufteilung:\n\nBestimme die Anzahl der Tage im gesamten Leistungszeitraum der Position (von bis oft auch mit - ausgezeichnet). Teile den Gesamtbetrag der Position durch die Anzahl der Tage des Gesamtzeitraums um den Betrag pro Tag zu errechnen. \n\nWenn das Ende des Leistungszeitraums in das Folgejahr fällt, muss der Betrag taggenau bis Jahresende und der Rest auf die Folgejahre aufgeteilt werden. Der Betrag pro Tag ist fest. Für jedes Jahr soll eine eigene Zeile zurückgegeben werden die nur den jeweiligen Anteil enthält der auf ebendieses Jahr fällt.\n\nVermeide doppelte Einträge: Jeder Betrag für ein Jahr soll nur einmal pro ID aufgeführt werden.\nFalls kein Leistungszeitraum angegeben ist, gilt der gesamte Betrag für das Jahr des Belegs.\n\nDie Berechnungen dürfen soviele Nachkommastellen enthalten um Rundungsfehler zu vermeiden und folgende Schritte beinhalten:\n\nBestimme den Nettobetrag für jedes Jahr, indem du den Betrag pro Tag mit der Anzahl der Tage pro Jahr multiplizierst. Der erste und der letzte Tag müssen mitgezählt werden.\nBerechne die enthaltene Umsatzsteuer, indem du den Nettobetrag mit dem Umsatzsteuersatz multiplizierst.\nBestimme den Bruttobetrag, indem du den Nettobetrag und die enthaltene Umsatzsteuer addierst.\nJede Position darf nur einmal pro Jahr aufgeführt sein.\n\nGib mir das Ergebnis kommentarlos in Tabellenform mit folgenden Spalten zurück:\n\nID\nBezeichnung der Position\nGesamtzeitraum\nAnteil Jahr\nZeitraum\nAnzahl Tage\nBetrag pro Tag\nNettobetrag\nBruttobetrag\nEnthaltene Umsatzsteuer\nErklärung und Rechenweg\n\nDer Beleg heißt \"{{ $json.document.metadata.file_name }}\" und hat folgenden Inhalt: \"{{ $json.document.pageContent }}\"",
+              "role": "system"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "id": "dff79d7f-161c-474f-86b3-c9f7f7b3c5fd",
+      "name": "OpenAI",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.4,
+      "position": [
+        2880,
+        1800
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "y8NvNd30QFsYf7Hw",
+          "name": "OpenAI"
+        }
+      }
+    },
+    {
+      "parameters": {
         "pineconeIndex": {
           "__rl": true,
           "value": "n8n",
           "mode": "list",
           "cachedResultName": "n8n"
         },
-        "prompt": "Belege",
-        "topK": 1000,
         "options": {
           "pineconeNamespace": "receipts"
         }
       },
-      "id": "d9183ccb-4a3f-4ab9-84c3-60412cbf392c",
-      "name": "Pinecone Vector Store",
+      "id": "56a8a510-38c2-4ccb-ad43-e3104ebe55ad",
+      "name": "Pinecone Vector Store1",
       "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
       "typeVersion": 1,
       "position": [
-        2460,
-        1560
+        1800,
+        1060
       ],
       "credentials": {
         "pineconeApi": {
@@ -427,20 +538,21 @@
         "messages": {
           "values": [
             {
-              "content": "=Finde die einzigartige ID des Belegs. Die ID von Rechnungen beginnt mit RE- gefolgt von einer sechsstelligen Zahl. Die ID von Gutschriften beginnt mit GS- gefolgt von einer sechsstelligen Zahl. \n\nDer Gesamtbetrag pro Position des jeweiligen Belegs soll nach Leistungszeitraum abgegrenzt werden, sodass der jeweilige Anteil taggenau der Bilanz eines Geschäftsjahres zugeordnet werden kann.\n\nAnweisungen zur korrekten Aufteilung:\n\nBestimme die Anzahl der Tage im gesamten Leistungszeitraum der Position (von bis oft auch mit - ausgezeichnet). Teile den Gesamtbetrag der Position durch die Anzahl der Tage des Gesamtzeitraums um den Betrag pro Tag zu errechnen. \n\nWenn das Ende des Leistungszeitraums in das Folgejahr fällt, muss der Betrag taggenau bis Jahresende und der Rest auf die Folgejahre aufgeteilt werden. Der Betrag pro Tag ist fest. Für jedes Jahr soll eine eigene Zeile zurückgegeben werden die nur den jeweiligen Anteil enthält der auf ebendieses Jahr fällt.\n\nVermeide doppelte Einträge: Jeder Betrag für ein Jahr soll nur einmal pro ID aufgeführt werden.\nFalls kein Leistungszeitraum angegeben ist, gilt der gesamte Betrag für das Jahr des Belegs.\n\nDie Berechnungen dürfen soviele Nachkommastellen enthalten um Rundungsfehler zu vermeiden und folgende Schritte beinhalten:\n\nBestimme den Nettobetrag für jedes Jahr, indem du den Betrag pro Tag mit der Anzahl der Tage pro Jahr multiplizierst. Der erste und der letzte Tag müssen mitgezählt werden.\nBerechne die enthaltene Umsatzsteuer, indem du den Nettobetrag mit dem Umsatzsteuersatz multiplizierst.\nBestimme den Bruttobetrag, indem du den Nettobetrag und die enthaltene Umsatzsteuer addierst.\nJede Position darf nur einmal pro Jahr aufgeführt sein.\n\nGib mir das Ergebnis in Tabellenform mit folgenden Spalten zurück:\n\nID\nBezeichnung der Position\nGesamtzeitraum\nAnteil Jahr\nZeitraum\nAnzahl Tage\nBetrag pro Tag\nNettobetrag\nBruttobetrag\nEnthaltene Umsatzsteuer\nErklärung und Rechenweg\n\nDer Beleg heißt \"{{ $json.document.metadata.file_name }}\" und hat folgenden Inhalt: \"{{ $json.document.pageContent }}\"",
+              "content": "Hole alle Belege und finde jeweils die einzigartige ID des Belegs. Die ID von Rechnungen beginnt mit RE- gefolgt von einer sechsstelligen Zahl. Die ID von Gutschriften beginnt mit GS- gefolgt von einer sechsstelligen Zahl. \n\nDer Gesamtbetrag pro Position des jeweiligen Belegs soll nach Leistungszeitraum abgegrenzt werden, sodass der jeweilige Anteil taggenau der Bilanz eines Geschäftsjahres zugeordnet werden kann.\n\nAnweisungen zur korrekten Aufteilung:\n\nBestimme die Anzahl der Tage im gesamten Leistungszeitraum der Position (von bis oft auch mit - ausgezeichnet). Teile den Gesamtbetrag der Position durch die Anzahl der Tage des Gesamtzeitraums um den Betrag pro Tag zu errechnen. \n\nWenn das Ende des Leistungszeitraums in das Folgejahr fällt, muss der Betrag taggenau bis Jahresende und der Rest auf die Folgejahre aufgeteilt werden. Der Betrag pro Tag ist fest. Für jedes Jahr soll eine eigene Zeile zurückgegeben werden die nur den jeweiligen Anteil enthält der auf ebendieses Jahr fällt.\n\nVermeide doppelte Einträge: Jeder Betrag für ein Jahr soll nur einmal pro ID aufgeführt werden.\nFalls kein Leistungszeitraum angegeben ist, gilt der gesamte Betrag für das Jahr des Belegs.\n\nDie Berechnungen dürfen soviele Nachkommastellen enthalten um Rundungsfehler zu vermeiden und folgende Schritte beinhalten:\n\nBestimme den Nettobetrag für jedes Jahr, indem du den Betrag pro Tag mit der Anzahl der Tage pro Jahr multiplizierst. Der erste und der letzte Tag müssen mitgezählt werden.\nBerechne die enthaltene Umsatzsteuer, indem du den Nettobetrag mit dem Umsatzsteuersatz multiplizierst.\nBestimme den Bruttobetrag, indem du den Nettobetrag und die enthaltene Umsatzsteuer addierst.\nJede Position darf nur einmal pro Jahr aufgeführt sein.\n\nGib mir das Ergebnis kommentarlos in Tabellenform mit folgenden Spalten zurück:\n\nID\nBezeichnung der Position\nGesamtzeitraum\nAnteil Jahr\nZeitraum\nAnzahl Tage\nBetrag pro Tag\nNettobetrag\nBruttobetrag\nEnthaltene Umsatzsteuer\nErklärung und Rechenweg",
               "role": "system"
             }
           ]
         },
+        "jsonOutput": true,
         "options": {}
       },
-      "id": "dff79d7f-161c-474f-86b3-c9f7f7b3c5fd",
-      "name": "OpenAI",
+      "id": "9bbe0f31-ffaa-459f-bd87-3d4ba4fc1b4d",
+      "name": "OpenAI1",
       "type": "@n8n/n8n-nodes-langchain.openAi",
       "typeVersion": 1.4,
       "position": [
-        2940,
-        1560
+        1720,
+        600
       ],
       "credentials": {
         "openAiApi": {
@@ -452,17 +564,6 @@
   ],
   "connections": {
     "Download file": {
-      "main": [
-        [
-          {
-            "node": "Add in metadata",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Add in metadata": {
       "main": [
         [
           {
@@ -495,17 +596,6 @@
         ]
       ]
     },
-    "Recursive Character Text Splitter": {
-      "ai_textSplitter": [
-        [
-          {
-            "node": "Default Data Loader",
-            "type": "ai_textSplitter",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Google Drive": {
       "main": [
         [
@@ -532,7 +622,7 @@
       "main": [
         [
           {
-            "node": "Pinecone Vector Store",
+            "node": "OpenAI1",
             "type": "main",
             "index": 0
           }
@@ -561,12 +651,67 @@
         ]
       ]
     },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "Pinecone Vector Store": {
       "main": [
         [
           {
             "node": "OpenAI",
             "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculator1": {
+      "ai_tool": [
+        [
+          {
+            "node": "OpenAI1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Vector Store Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "OpenAI1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI2": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Vector Store Tool",
+            "type": "ai_languageModel",
             "index": 0
           }
         ]
@@ -582,6 +727,17 @@
           }
         ]
       ]
+    },
+    "Pinecone Vector Store1": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "Vector Store Tool",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -592,7 +748,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "0b188c94-5535-4c0e-8710-64583b602844",
+  "versionId": "d4c71ca8-0193-4d74-95de-900a3ffa6a4d",
   "triggerCount": 0,
   "tags": [
     {
