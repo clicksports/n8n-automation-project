@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-07-25T13:22:57.253Z",
-  "updatedAt": "2024-08-05T08:59:00.000Z",
+  "updatedAt": "2024-08-05T09:45:21.000Z",
   "id": "DashuYgu4Vz1v9YY",
   "name": "Annual invoice split",
   "active": false,
@@ -254,56 +254,6 @@
             {
               "id": "Enthaltene Umsatzsteuer",
               "displayName": "Enthaltene Umsatzsteuer",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "output",
-              "displayName": "output",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "index",
-              "displayName": "index",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "message",
-              "displayName": "message",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "logprobs",
-              "displayName": "logprobs",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "finish_reason",
-              "displayName": "finish_reason",
               "required": false,
               "defaultMatch": false,
               "display": true,
@@ -668,7 +618,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "e8ed0ec5-00f5-483b-85af-68bd8f706288",
+  "versionId": "d49cce8c-da3d-4b37-b2cb-9c0983c0b77f",
   "triggerCount": 0,
   "tags": [
     {
