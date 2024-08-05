@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-07-24T12:41:03.383Z",
-  "updatedAt": "2024-07-27T07:36:41.000Z",
+  "updatedAt": "2024-08-05T08:04:28.000Z",
   "id": "YWdyJSBjg4hoa4gx",
   "name": "Private chat",
   "active": false,
@@ -423,7 +423,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "90e3684c-ba3c-4ace-b2fe-d266d7d29468",
+  "versionId": "79f068e4-6495-474e-b6b3-c8436f4ffb4f",
   "triggerCount": 3,
   "tags": [
     {

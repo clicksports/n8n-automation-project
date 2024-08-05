@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-07-18T13:24:24.265Z",
-  "updatedAt": "2024-07-28T06:30:32.000Z",
+  "updatedAt": "2024-08-05T08:04:00.000Z",
   "id": "V9yXc37KTkVFYveT",
   "name": "Index issues",
   "active": true,
@@ -483,69 +483,6 @@
         },
         "options": {
           "clearNamespace": false,
-          "pineconeNamespace": "kb"
-        }
-      },
-      "id": "c382b03e-d38b-47a0-9a92-3edd03b1c11e",
-      "name": "Pinecone Vector Store3",
-      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
-      "typeVersion": 1,
-      "position": [
-        520,
-        320
-      ],
-      "credentials": {
-        "pineconeApi": {
-          "id": "8lDKmR3gvMj1szqg",
-          "name": "Pinecone"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "modelId": {
-          "__rl": true,
-          "value": "gpt-4o-mini",
-          "mode": "list",
-          "cachedResultName": "GPT-4O-MINI"
-        },
-        "messages": {
-          "values": [
-            {
-              "content": "=Verwende Normalisierung und Lemmatisierung um unnötige Tags, Trennzeichen und Satzzeichen zu entfernen. Das Ergebnis soll optimal sein um später für Pinecone vektorisiert zu werden. Keine Kommentare von dir. Kein HTML, nur reiner Text. Aus der Signatur musst du nur den Firmennamen, die Rolle / Position des Senders, sowie die Telefonnummern und Mailadresse berücksichtigen. Eine Variable (abstract) zurückgeben nach dem Schema Von Absendername: Textkörper. Sender und message sollen nicht getrennt werden. \n\nGib zusätzlich eine zweite Variable zurück (knowledgebase) die aus dem Inhalt nur das übernimmt was öffentlich im Internet stehen darf und geeignet ist und auch für andere Kunden und Partner unseres Unternehmens relevant sein könnte. Es dürfen keinerlei Namen, personenbezogene Daten gespeichert werden oder solche, die auf das jeweilige Projekt oder die Firma unserer Kunden schließen lassen.\n\nDas ist die ursprüngliche Nachricht:\n{{ $json.fields.description }}\n\nUnd das hier sind alle Kommentare zwischen Sender und unserer Firma:\n{{ $json.comments.join(', ') }}",
-              "role": "system"
-            }
-          ]
-        },
-        "jsonOutput": true,
-        "options": {}
-      },
-      "id": "3ccfd7e2-ec56-4628-a7f9-3d16cb4e1478",
-      "name": "OpenAI",
-      "type": "@n8n/n8n-nodes-langchain.openAi",
-      "typeVersion": 1.4,
-      "position": [
-        -480,
-        440
-      ],
-      "credentials": {
-        "openAiApi": {
-          "id": "y8NvNd30QFsYf7Hw",
-          "name": "OpenAI"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "mode": "insert",
-        "pineconeIndex": {
-          "__rl": true,
-          "value": "n8n",
-          "mode": "list",
-          "cachedResultName": "n8n"
-        },
-        "options": {
-          "clearNamespace": false,
           "pineconeNamespace": "issues"
         }
       },
@@ -717,6 +654,71 @@
         -3180,
         1740
       ]
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Verwende Normalisierung und Lemmatisierung um unnötige Tags, Trennzeichen und Satzzeichen zu entfernen. Das Ergebnis soll optimal sein um später für Pinecone vektorisiert zu werden. Keine Kommentare von dir. Kein HTML, nur reiner Text. Aus der Signatur musst du nur den Firmennamen, die Rolle / Position des Senders, sowie die Telefonnummern und Mailadresse berücksichtigen. Eine Variable (abstract) zurückgeben nach dem Schema Von Absendername: Textkörper. Sender und message sollen nicht getrennt werden. \n\nGib zusätzlich eine zweite Variable zurück (knowledgebase) die aus dem Inhalt nur das übernimmt was öffentlich im Internet stehen darf und geeignet ist und auch für andere Kunden und Partner unseres Unternehmens relevant sein könnte. Es dürfen keinerlei Namen, personenbezogene Daten gespeichert werden oder solche, die auf das jeweilige Projekt oder die Firma unserer Kunden schließen lassen.\n\nDas ist die ursprüngliche Nachricht:\n{{ $json.fields.description }}\n\nUnd das hier sind alle Kommentare zwischen Sender und unserer Firma:\n{{ $json.comments.join(', ') }}",
+              "role": "system"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {
+          "presence_penalty": 1
+        }
+      },
+      "id": "3ccfd7e2-ec56-4628-a7f9-3d16cb4e1478",
+      "name": "OpenAI",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.4,
+      "position": [
+        -480,
+        440
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "y8NvNd30QFsYf7Hw",
+          "name": "OpenAI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "n8n",
+          "mode": "list",
+          "cachedResultName": "n8n"
+        },
+        "options": {
+          "clearNamespace": false,
+          "pineconeNamespace": "kb"
+        }
+      },
+      "id": "c382b03e-d38b-47a0-9a92-3edd03b1c11e",
+      "name": "Pinecone Vector Store3",
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1,
+      "position": [
+        520,
+        320
+      ],
+      "credentials": {
+        "pineconeApi": {
+          "id": "8lDKmR3gvMj1szqg",
+          "name": "Pinecone"
+        }
+      }
     }
   ],
   "connections": {
@@ -918,22 +920,6 @@
         ]
       ]
     },
-    "OpenAI": {
-      "main": [
-        [
-          {
-            "node": "Merge",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Vector model kb",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Pinecone Vector Store": {
       "main": [
         [
@@ -1044,6 +1030,22 @@
           }
         ]
       ]
+    },
+    "OpenAI": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Vector model kb",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -1062,7 +1064,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "639bf6ca-aa05-4a88-81f7-008f3fcec349",
+  "versionId": "1a8bcd48-6dc1-4107-b3cd-52f1e9acce8e",
   "triggerCount": 1,
   "tags": [
     {
