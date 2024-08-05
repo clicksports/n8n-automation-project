@@ -1,67 +1,10 @@
 {
-  "createdAt": "2024-08-05T14:43:56.960Z",
-  "updatedAt": "2024-08-05T15:42:31.000Z",
-  "id": "mGUNes54i3RXbjSb",
-  "name": "Annual invoice split",
+  "createdAt": "2024-08-05T15:42:45.331Z",
+  "updatedAt": "2024-08-05T15:59:25.000Z",
+  "id": "12IdNZEx46KHoySV",
+  "name": "Annual invoice split direct",
   "active": false,
   "nodes": [
-    {
-      "parameters": {
-        "model": "text-embedding-3-large",
-        "options": {}
-      },
-      "id": "6ef3e0bf-594e-47f7-b824-9c2b92ef44b2",
-      "name": "Embeddings OpenAI",
-      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
-      "position": [
-        1260,
-        680
-      ],
-      "typeVersion": 1,
-      "credentials": {
-        "openAiApi": {
-          "id": "y8NvNd30QFsYf7Hw",
-          "name": "OpenAI"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "dataType": "binary",
-        "options": {
-          "metadata": {
-            "metadataValues": [
-              {
-                "name": "file_name",
-                "value": "={{ $('Add in metadata').item.json.file_name }}"
-              }
-            ]
-          }
-        }
-      },
-      "id": "435b77d0-1324-41e3-abec-9233336b0ffe",
-      "name": "Default Data Loader",
-      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
-      "position": [
-        1440,
-        680
-      ],
-      "typeVersion": 1
-    },
-    {
-      "parameters": {
-        "mode": "runOnceForEachItem",
-        "jsCode": "// Add a new field called 'myNewField' to the JSON of the item\n$input.item.json.file_name = $input.item.binary.data.fileName;\n$input.item.json.file_ext = $input.item.binary.data.fileExtension;\n\nreturn $input.item;"
-      },
-      "id": "ec4383e9-dfa9-4c00-b5e3-0ba5623c78a9",
-      "name": "Add in metadata",
-      "type": "n8n-nodes-base.code",
-      "position": [
-        1100,
-        460
-      ],
-      "typeVersion": 2
-    },
     {
       "parameters": {
         "operation": "download",
@@ -72,12 +15,12 @@
         },
         "options": {}
       },
-      "id": "74e2776f-a026-43f0-ba47-7c33d6823ab5",
+      "id": "9566437e-b4d9-4e7b-af26-c11462c9b246",
       "name": "Download file",
       "type": "n8n-nodes-base.googleDrive",
       "position": [
-        880,
-        460
+        720,
+        480
       ],
       "typeVersion": 3,
       "credentials": {
@@ -86,22 +29,6 @@
           "name": "Google christian.gick@clicksports.de"
         }
       }
-    },
-    {
-      "parameters": {
-        "chunkSize": 5000,
-        "options": {
-          "splitCode": "markdown"
-        }
-      },
-      "id": "71b9e0d6-386f-42cc-9cab-3cb376a4c8dd",
-      "name": "Recursive Character Text Splitter",
-      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
-      "position": [
-        1440,
-        840
-      ],
-      "typeVersion": 1
     },
     {
       "parameters": {
@@ -120,86 +47,18 @@
         },
         "options": {}
       },
-      "id": "0af96aa5-8dff-44f5-8396-a5a6bf1c69f6",
+      "id": "57c8c8e0-e320-4aa5-b7af-16814476d0ea",
       "name": "Google Drive",
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
       "position": [
-        320,
-        560
+        160,
+        580
       ],
       "credentials": {
         "googleDriveOAuth2Api": {
           "id": "BVkiHtheS61uART6",
           "name": "Google christian.gick@clicksports.de"
-        }
-      }
-    },
-    {
-      "parameters": {},
-      "id": "78dc145d-a6dd-44fd-a5f0-d645c9600ea7",
-      "name": "When clicking ‘Test workflow’",
-      "type": "n8n-nodes-base.manualTrigger",
-      "typeVersion": 1,
-      "position": [
-        -160,
-        860
-      ]
-    },
-    {
-      "parameters": {
-        "name": "invoices",
-        "description": "Alle Dokumente",
-        "topK": 100
-      },
-      "id": "8cc20fbb-c11c-4a7a-a221-d195ed084ab5",
-      "name": "Vector Store Tool",
-      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
-      "typeVersion": 1,
-      "position": [
-        500,
-        1600
-      ]
-    },
-    {
-      "parameters": {
-        "model": "gpt-4o-mini",
-        "options": {
-          "temperature": 0
-        }
-      },
-      "id": "d8034120-5a8f-40d7-81aa-92e6cbb840c4",
-      "name": "OpenAI Chat Model1",
-      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
-      "typeVersion": 1,
-      "position": [
-        700,
-        1820
-      ],
-      "credentials": {
-        "openAiApi": {
-          "id": "y8NvNd30QFsYf7Hw",
-          "name": "OpenAI"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "model": "text-embedding-3-large",
-        "options": {}
-      },
-      "id": "2427b827-8776-4861-9dab-3b46ddcfb4fd",
-      "name": "Embeddings OpenAI1",
-      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
-      "typeVersion": 1,
-      "position": [
-        320,
-        2060
-      ],
-      "credentials": {
-        "openAiApi": {
-          "id": "y8NvNd30QFsYf7Hw",
-          "name": "OpenAI"
         }
       }
     },
@@ -329,13 +188,13 @@
         },
         "options": {}
       },
-      "id": "1eb5d47d-3b17-40a1-87ac-548b319e79e2",
+      "id": "8ea39b5e-3f37-48a3-a8c8-59c13815e25c",
       "name": "Google Sheets",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.4,
       "position": [
-        1240,
-        1320
+        2220,
+        500
       ],
       "credentials": {
         "googleSheetsOAuth2Api": {
@@ -349,24 +208,24 @@
         "fieldToSplitOut": "message.content.Positionen",
         "options": {}
       },
-      "id": "e31a47ee-1dd8-4151-9775-a5712026f803",
+      "id": "5b3ab604-2277-4d33-b39b-2d864fd374d3",
       "name": "Split Out",
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1,
       "position": [
-        980,
-        1320
+        1960,
+        500
       ]
     },
     {
       "parameters": {},
-      "id": "3ea28988-e424-4682-a684-31358601f3a1",
+      "id": "1595c34d-286e-45fc-901a-4205bf4d339a",
       "name": "Calculator",
       "type": "@n8n/n8n-nodes-langchain.toolCalculator",
       "typeVersion": 1,
       "position": [
-        940,
-        1600
+        1500,
+        760
       ]
     },
     {
@@ -401,70 +260,54 @@
         },
         "options": {}
       },
-      "id": "bf3c6c06-51fa-4c86-9d09-9c32fd976048",
+      "id": "c6664989-51ed-443f-98e1-a1510526695a",
       "name": "If",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        540,
-        560
+        380,
+        580
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "fc8ce73f-fc4f-4f19-a9d2-e483c2de6fbc",
+      "name": "When clicking ‘Test workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -100,
+        580
       ]
     },
     {
       "parameters": {
-        "pineconeIndex": {
-          "__rl": true,
-          "value": "n8n",
-          "mode": "list",
-          "cachedResultName": "n8n"
-        },
-        "options": {
-          "pineconeNamespace": "invoices"
-        }
+        "operation": "pdf",
+        "options": {}
       },
-      "id": "6100f501-f24a-427b-b2e4-3fa54edef73d",
-      "name": "Pinecone Vector Store",
-      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "id": "8d6ab376-83ec-4c37-b508-fe85e17082d7",
+      "name": "Extract from File",
+      "type": "n8n-nodes-base.extractFromFile",
       "typeVersion": 1,
       "position": [
-        320,
-        1840
-      ],
-      "credentials": {
-        "pineconeApi": {
-          "id": "8lDKmR3gvMj1szqg",
-          "name": "Pinecone"
-        }
-      }
+        960,
+        680
+      ]
     },
     {
       "parameters": {
-        "mode": "insert",
-        "pineconeIndex": {
-          "__rl": true,
-          "value": "n8n",
-          "mode": "list",
-          "cachedResultName": "n8n"
-        },
-        "options": {
-          "clearNamespace": false,
-          "pineconeNamespace": "invoices"
-        }
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
       },
-      "id": "156d17d0-33a1-4bb7-8c86-e4551abf44cc",
-      "name": "Add to Pinecone vector store",
-      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "id": "69f85f48-5a69-4463-9cd7-e224f5e55374",
+      "name": "Merge",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
       "position": [
-        1320,
-        460
-      ],
-      "typeVersion": 1,
-      "credentials": {
-        "pineconeApi": {
-          "id": "8lDKmR3gvMj1szqg",
-          "name": "Pinecone"
-        }
-      }
+        1220,
+        500
+      ]
     },
     {
       "parameters": {
@@ -477,7 +320,7 @@
         "messages": {
           "values": [
             {
-              "content": "=Du hast alle Dokumente mit einer einzigartigen Belegnummerin der Datenbank. Enthält der Dateiname _GS- ist es eine Gutschrift und alle Beträge müssen negativ werden. Enthält der Dateiname _RE- ist es eine Rechnung. Die Belegnummer besteht aus dem Präfix RE oder GS + exakt 6 Ganzzahlen und steht im Dateinamen. \n\n-----\n\nDer Gesamtbetrag pro Belegposition aller Belege soll nach Leistungszeitraum abgegrenzt werden, sodass der jeweilige Anteil der Bilanz eines Geschäftsjahres zugeordnet werden kann.\n\nAnweisungen zur korrekten Aufteilung:\n\nBestimme den Gesamtzeitraum der Position anhand von Start- und Enddatum (von bis) oder anhand des Rechnungsdatums + Anzahl der Jahre im Beschreibungstext der Position. \nBestimme die Anzahl der Tage in diesem Leistungszeitraum. Teile den Gesamtbetrag der Position durch die Anzahl der Tage des Gesamtzeitraums um den Betrag pro Tag zu errechnen.\n\nWenn das Ende des Leistungszeitraums über den 31.12.2023 hinausgeht, müssen alle Beträge taggenau bis Jahresende 2023 berechnet und der Rest auf alle folgenden Jahre aufgeteilt werden. Der Betrag pro Tag ist für alle Jahre gleich. Für jedes Jahr soll eine eigene Zeile zurückgegeben werden die nur den Zeitraum enthält der auf ebendieses Jahr fällt.\n\nDie Berechnungen dürfen soviele Nachkommastellen enthalten um Rundungsfehler zu vermeiden und folgende Schritte beinhalten:\n\nBestimme den Nettobetrag für jedes Jahr, indem du den Betrag pro Tag mit der Anzahl der Tage pro Jahr multiplizierst. Der erste und der letzte Tag müssen mitgezählt werden.\nBerechne die enthaltene Umsatzsteuer, indem du den Nettobetrag mit dem Umsatzsteuersatz multiplizierst.\nBestimme den Bruttobetrag, indem du den Nettobetrag und die enthaltene Umsatzsteuer addierst.\n Belege ohne Dateinamen dürfen niemals aufgeführt werden.\n\nGib mir die Variable \"Positionen\" mit folgenden Spalten zurück:\n\nBelegnummer\nBezeichnung der Position\nGesamtzeitraum\nAnteil Jahr\nZeitraum\nAnzahl Tage\nBetrag pro Tag\nNettobetrag\nBruttobetrag\nEnthaltene Umsatzsteuer"
+              "content": "=Du hast alle Dokumente mit einer einzigartigen Belegnummerin der Datenbank. Enthält der Dateiname _GS- ist es eine Gutschrift und alle Beträge müssen negativ werden. Enthält der Dateiname _RE- ist es eine Rechnung. Die Belegnummer besteht aus dem Präfix RE oder GS + exakt 6 Ganzzahlen und steht im Dateinamen. \n\n-----\n\nDer Gesamtbetrag pro Belegposition aller Belege soll nach Leistungszeitraum abgegrenzt werden, sodass der jeweilige Anteil der Bilanz eines Geschäftsjahres zugeordnet werden kann.\n\nAnweisungen zur korrekten Aufteilung:\n\nBestimme den Gesamtzeitraum der Position anhand von Start- und Enddatum (von bis) oder anhand des Rechnungsdatums + Anzahl der Jahre im Beschreibungstext der Position. \nBestimme die Anzahl der Tage in diesem Leistungszeitraum. Teile den Gesamtbetrag der Position durch die Anzahl der Tage des Gesamtzeitraums um den Betrag pro Tag zu errechnen.\n\nWenn das Ende des Leistungszeitraums über den 31.12.2023 hinausgeht, müssen alle Beträge taggenau bis Jahresende 2023 berechnet und der Rest auf alle folgenden Jahre aufgeteilt werden. Der Betrag pro Tag ist für alle Jahre gleich. Für jedes Jahr soll eine eigene Zeile zurückgegeben werden die nur die anteiligen Daten aus dem Zeitraum enthält der auf ebendieses Jahr fällt.\n\nDie Berechnungen dürfen soviele Nachkommastellen enthalten um Rundungsfehler zu vermeiden und folgende Schritte beinhalten:\n\nBestimme den anteiligen Nettobetrag für jedes Jahr, indem du den Betrag pro Tag mit der Anzahl der Tage pro Jahr multiplizierst. Der erste und der letzte Tag müssen mitgezählt werden.\nBerechne die anteilige enthaltene Umsatzsteuer, indem du den Nettobetrag mit dem Umsatzsteuersatz multiplizierst.\nBestimme den anteiligen Bruttobetrag, indem du den anteiligen Nettobetrag und die enthaltene anteilige Umsatzsteuer addierst.\n Belege ohne Dateinamen dürfen niemals aufgeführt werden.\n\nGib mir die Variable \"Positionen\" mit folgenden Spalten zurück:\n\nBelegnummer\nBezeichnung der Position\nGesamtzeitraum\nAnteil Jahr\nZeitraum\nAnzahl Tage\nBetrag pro Tag\nAnteil Nettobetrag\nAnteil Bruttobetrag\nAnteil Enthaltene Umsatzsteuer\n\nDie Datei \"{{ $json.name }}\" enhält: \"{{ $json.text }}\""
             }
           ]
         },
@@ -486,13 +329,13 @@
           "temperature": 0
         }
       },
-      "id": "4cc84885-9d47-4cec-a22e-480ad6cd48f4",
+      "id": "78415303-5eb4-4692-a6f4-e3154fe62122",
       "name": "OpenAI",
       "type": "@n8n/n8n-nodes-langchain.openAi",
       "typeVersion": 1.4,
       "position": [
-        540,
-        1320
+        1480,
+        500
       ],
       "credentials": {
         "openAiApi": {
@@ -507,52 +350,13 @@
       "main": [
         [
           {
-            "node": "Add in metadata",
+            "node": "Extract from File",
             "type": "main",
             "index": 0
-          }
-        ]
-      ]
-    },
-    "Add in metadata": {
-      "main": [
-        [
+          },
           {
-            "node": "Add to Pinecone vector store",
+            "node": "Merge",
             "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Embeddings OpenAI": {
-      "ai_embedding": [
-        [
-          {
-            "node": "Add to Pinecone vector store",
-            "type": "ai_embedding",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Default Data Loader": {
-      "ai_document": [
-        [
-          {
-            "node": "Add to Pinecone vector store",
-            "type": "ai_document",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Recursive Character Text Splitter": {
-      "ai_textSplitter": [
-        [
-          {
-            "node": "Default Data Loader",
-            "type": "ai_textSplitter",
             "index": 0
           }
         ]
@@ -564,50 +368,6 @@
           {
             "node": "If",
             "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "When clicking ‘Test workflow’": {
-      "main": [
-        [
-          {
-            "node": "OpenAI",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Vector Store Tool": {
-      "ai_tool": [
-        [
-          {
-            "node": "OpenAI",
-            "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "OpenAI Chat Model1": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "Vector Store Tool",
-            "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Embeddings OpenAI1": {
-      "ai_embedding": [
-        [
-          {
-            "node": "Pinecone Vector Store",
-            "type": "ai_embedding",
             "index": 0
           }
         ]
@@ -646,12 +406,34 @@
         ]
       ]
     },
-    "Pinecone Vector Store": {
-      "ai_vectorStore": [
+    "When clicking ‘Test workflow’": {
+      "main": [
         [
           {
-            "node": "Vector Store Tool",
-            "type": "ai_vectorStore",
+            "node": "Google Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "OpenAI",
+            "type": "main",
             "index": 0
           }
         ]
@@ -677,15 +459,9 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "f5cb6585-c9df-4f60-838e-5701831b3ad6",
+  "versionId": "eca66a27-e271-499d-93c3-18eaa168bfdf",
   "triggerCount": 0,
   "tags": [
-    {
-      "createdAt": "2024-07-19T11:40:04.689Z",
-      "updatedAt": "2024-07-19T11:40:04.689Z",
-      "id": "wNSc3sQpRZI8CPoy",
-      "name": "pinecone"
-    },
     {
       "createdAt": "2024-07-18T13:44:20.706Z",
       "updatedAt": "2024-07-18T13:44:20.706Z",
