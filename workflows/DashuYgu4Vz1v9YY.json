@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-07-25T13:22:57.253Z",
-  "updatedAt": "2024-08-05T11:58:36.000Z",
+  "updatedAt": "2024-08-05T13:52:40.000Z",
   "id": "DashuYgu4Vz1v9YY",
   "name": "Annual invoice split",
   "active": false,
@@ -92,9 +92,9 @@
     },
     {
       "parameters": {
-        "chunkSize": 5000,
+        "chunkSize": 10000,
         "options": {
-          "splitCode": "markdown"
+          "splitCode": "html"
         }
       },
       "id": "b7037dc4-5ea4-49ee-911f-f7df66b0c695",
@@ -143,8 +143,8 @@
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
       "position": [
-        2140,
-        1560
+        -80,
+        740
       ]
     },
     {
@@ -272,7 +272,7 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.4,
       "position": [
-        3720,
+        3540,
         1560
       ],
       "credentials": {
@@ -327,17 +327,33 @@
     },
     {
       "parameters": {
-        "options": {
-          "reset": false
-        }
+        "model": "text-embedding-3-large",
+        "options": {}
       },
-      "id": "ba867492-4a46-4a1b-90ad-5a9f2c75db6e",
-      "name": "Loop Over Items",
-      "type": "n8n-nodes-base.splitInBatches",
-      "typeVersion": 3,
+      "id": "d4e1c44d-5649-4e49-a6e4-78604f2a9935",
+      "name": "Embeddings OpenAI1",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1,
       "position": [
-        1600,
-        1660
+        2460,
+        1780
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "y8NvNd30QFsYf7Hw",
+          "name": "OpenAI"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "d99cd923-22f8-4761-8b74-e9bb63452dc2",
+      "name": "Calculator",
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        3140,
+        1800
       ]
     },
     {
@@ -372,26 +388,6 @@
     },
     {
       "parameters": {
-        "model": "text-embedding-3-large",
-        "options": {}
-      },
-      "id": "d4e1c44d-5649-4e49-a6e4-78604f2a9935",
-      "name": "Embeddings OpenAI1",
-      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
-      "typeVersion": 1,
-      "position": [
-        2460,
-        1780
-      ],
-      "credentials": {
-        "openAiApi": {
-          "id": "y8NvNd30QFsYf7Hw",
-          "name": "OpenAI"
-        }
-      }
-    },
-    {
-      "parameters": {
         "mode": "load",
         "pineconeIndex": {
           "__rl": true,
@@ -421,17 +417,6 @@
       }
     },
     {
-      "parameters": {},
-      "id": "d99cd923-22f8-4761-8b74-e9bb63452dc2",
-      "name": "Calculator",
-      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
-      "typeVersion": 1,
-      "position": [
-        3140,
-        1760
-      ]
-    },
-    {
       "parameters": {
         "modelId": {
           "__rl": true,
@@ -442,11 +427,11 @@
         "messages": {
           "values": [
             {
-              "content": "=Finde die einzigartige ID des Belegs. Die ID von Rechnungen beginnt mit RE- gefolgt von einer sechsstelligen Zahl. Die ID von Gutschriften beginnt mit GS- gefolgt von einer sechsstelligen Zahl. \n\nDer Gesamtbetrag pro Position aller Belege soll nach Leistungszeitraum abgegrenzt werden, sodass der jeweilige Anteil der Bilanz eines Geschäftsjahres zugeordnet werden kann.\n\nAnweisungen zur korrekten Aufteilung:\n\nBestimme die Anzahl der Tage im Leistungszeitraum der Position (von bis). Teile den Gesamtbetrag der Position durch die Anzahl der Tage des Gesamtzeitraums um den Betrag pro Tag zu errechnen. \n\nWenn das Ende des Leistungszeitraums über den 31.12.2023 hinausgeht, muss der jährliche Betrag taggenau auf 2023 und den Rest auf alle folgenden Jahre aufgeteilt werden. Der Betrag pro Tag ist für alle Jahre gleich. Für jedes Jahr soll eine eigene Zeile zurückgegeben werden die nur den Zeitraum enthält der auf ebendieses Jahr fällt.\n\nVermeide doppelte Einträge: Jeder Betrag für ein Jahr soll nur einmal pro Rechnungsnummer aufgeführt werden.\nFalls kein Leistungszeitraum angegeben ist, gilt der gesamte Betrag für das Jahr der Rechnung.\n\nDie Berechnungen dürfen soviele Nachkommastellen enthalten um Rundungsfehler zu vermeiden und folgende Schritte beinhalten:\n\nBestimme den Nettobetrag für jedes Jahr, indem du den Betrag pro Tag mit der Anzahl der Tage pro Jahr multiplizierst. Der erste und der letzte Tag müssen mitgezählt werden.\nBerechne die enthaltene Umsatzsteuer, indem du den Nettobetrag mit dem Umsatzsteuersatz multiplizierst.\nBestimme den Bruttobetrag, indem du den Nettobetrag und die enthaltene Umsatzsteuer addierst.\nJede Position darf nur einmal pro Jahr aufgeführt sein.\n\nGib mir folgenden Spalten im passenden Format zurück so dass sie vom nächsten Node in ein Google Sheet gespeichert werden können:\n\nID\nBezeichnung der Position\nJahr\nZeitraum\nAnzahl Tage\nBetrag pro Tag\nNettobetrag\nBruttobetrag\nEnthaltene Umsatzsteuer\n\nDer Beleg heißt \"{{ $json.document.metadata.file_name }}\" und hat folgenden Inhalt: \"{{ $json.document.pageContent }}\""
+              "content": "=Finde die einzigartige ID des Belegs. Die ID von Rechnungen beginnt mit RE- gefolgt von einer sechsstelligen Zahl. Die ID von Gutschriften beginnt mit GS- gefolgt von einer sechsstelligen Zahl. \n\nDer Gesamtbetrag pro Position des jeweiligen Belegs soll nach Leistungszeitraum abgegrenzt werden, sodass der jeweilige Anteil taggenau der Bilanz eines Geschäftsjahres zugeordnet werden kann.\n\nAnweisungen zur korrekten Aufteilung:\n\nBestimme die Anzahl der Tage im gesamten Leistungszeitraum der Position (von bis oft auch mit - ausgezeichnet). Teile den Gesamtbetrag der Position durch die Anzahl der Tage des Gesamtzeitraums um den Betrag pro Tag zu errechnen. \n\nWenn das Ende des Leistungszeitraums in das Folgejahr fällt, muss der Betrag taggenau bis Jahresende und der Rest auf die Folgejahre aufgeteilt werden. Der Betrag pro Tag ist fest. Für jedes Jahr soll eine eigene Zeile zurückgegeben werden die nur den jeweiligen Anteil enthält der auf ebendieses Jahr fällt.\n\nVermeide doppelte Einträge: Jeder Betrag für ein Jahr soll nur einmal pro ID aufgeführt werden.\nFalls kein Leistungszeitraum angegeben ist, gilt der gesamte Betrag für das Jahr des Belegs.\n\nDie Berechnungen dürfen soviele Nachkommastellen enthalten um Rundungsfehler zu vermeiden und folgende Schritte beinhalten:\n\nBestimme den Nettobetrag für jedes Jahr, indem du den Betrag pro Tag mit der Anzahl der Tage pro Jahr multiplizierst. Der erste und der letzte Tag müssen mitgezählt werden.\nBerechne die enthaltene Umsatzsteuer, indem du den Nettobetrag mit dem Umsatzsteuersatz multiplizierst.\nBestimme den Bruttobetrag, indem du den Nettobetrag und die enthaltene Umsatzsteuer addierst.\nJede Position darf nur einmal pro Jahr aufgeführt sein.\n\nGib mir das Ergebnis in Tabellenform mit folgenden Spalten zurück:\n\nID\nBezeichnung der Position\nGesamtzeitraum\nAnteil Jahr\nZeitraum\nAnzahl Tage\nBetrag pro Tag\nNettobetrag\nBruttobetrag\nEnthaltene Umsatzsteuer\nErklärung und Rechenweg\n\nDer Beleg heißt \"{{ $json.document.metadata.file_name }}\" und hat folgenden Inhalt: \"{{ $json.document.pageContent }}\"",
+              "role": "system"
             }
           ]
         },
-        "jsonOutput": true,
         "options": {}
       },
       "id": "dff79d7f-161c-474f-86b3-c9f7f7b3c5fd",
@@ -463,20 +448,6 @@
           "name": "OpenAI"
         }
       }
-    },
-    {
-      "parameters": {
-        "fieldToSplitOut": "message.content.results",
-        "options": {}
-      },
-      "id": "c06076f3-0233-456e-9ca0-fca1586dfdbf",
-      "name": "Split Out",
-      "type": "n8n-nodes-base.splitOut",
-      "typeVersion": 1,
-      "position": [
-        3400,
-        1560
-      ]
     }
   ],
   "connections": {
@@ -557,17 +528,6 @@
         ]
       ]
     },
-    "Add to Pinecone vector store": {
-      "main": [
-        [
-          {
-            "node": "Loop Over Items",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "When clicking ‘Test workflow’": {
       "main": [
         [
@@ -590,17 +550,6 @@
         ]
       ]
     },
-    "Pinecone Vector Store": {
-      "main": [
-        [
-          {
-            "node": "OpenAI",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Calculator": {
       "ai_tool": [
         [
@@ -612,18 +561,18 @@
         ]
       ]
     },
-    "OpenAI": {
+    "Pinecone Vector Store": {
       "main": [
         [
           {
-            "node": "Split Out",
+            "node": "OpenAI",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Split Out": {
+    "OpenAI": {
       "main": [
         [
           {
@@ -643,7 +592,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "2f54e322-6d85-49b6-8b36-1536c0d2f0a9",
+  "versionId": "0b188c94-5535-4c0e-8710-64583b602844",
   "triggerCount": 0,
   "tags": [
     {
