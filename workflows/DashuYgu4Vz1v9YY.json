@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-07-25T13:22:57.253Z",
-  "updatedAt": "2024-08-05T09:45:21.000Z",
+  "updatedAt": "2024-08-05T11:58:36.000Z",
   "id": "DashuYgu4Vz1v9YY",
   "name": "Annual invoice split",
   "active": false,
@@ -272,7 +272,7 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.4,
       "position": [
-        3500,
+        3720,
         1560
       ],
       "credentials": {
@@ -463,6 +463,20 @@
           "name": "OpenAI"
         }
       }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "message.content.results",
+        "options": {}
+      },
+      "id": "c06076f3-0233-456e-9ca0-fca1586dfdbf",
+      "name": "Split Out",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        3400,
+        1560
+      ]
     }
   ],
   "connections": {
@@ -602,6 +616,17 @@
       "main": [
         [
           {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
             "node": "Google Sheets",
             "type": "main",
             "index": 0
@@ -618,7 +643,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "d49cce8c-da3d-4b37-b2cb-9c0983c0b77f",
+  "versionId": "2f54e322-6d85-49b6-8b36-1536c0d2f0a9",
   "triggerCount": 0,
   "tags": [
     {
