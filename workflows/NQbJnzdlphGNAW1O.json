@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-07-18T14:14:17.477Z",
-  "updatedAt": "2024-07-18T14:15:44.000Z",
+  "updatedAt": "2024-08-05T12:54:58.000Z",
   "id": "NQbJnzdlphGNAW1O",
   "name": "WHMCS client to Jira and Tempo",
   "active": true,
@@ -455,7 +455,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "9723ea45-472e-4a6d-92a9-ba2d64965324",
+  "versionId": "503eee12-adbe-452d-998a-7d594190bde4",
   "triggerCount": 1,
   "tags": [
     {
