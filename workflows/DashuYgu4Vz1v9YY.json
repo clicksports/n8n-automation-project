@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-07-25T13:22:57.253Z",
-  "updatedAt": "2024-07-27T17:37:10.000Z",
+  "updatedAt": "2024-08-05T05:48:23.000Z",
   "id": "DashuYgu4Vz1v9YY",
   "name": "Annual invoice split",
   "active": false,
@@ -14,8 +14,8 @@
       "name": "Embeddings OpenAI",
       "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
       "position": [
-        1480,
-        1480
+        1320,
+        1580
       ],
       "typeVersion": 1,
       "credentials": {
@@ -43,8 +43,8 @@
       "name": "Default Data Loader",
       "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
       "position": [
-        1660,
-        1480
+        1500,
+        1580
       ],
       "typeVersion": 1
     },
@@ -57,8 +57,8 @@
       "name": "Add in metadata",
       "type": "n8n-nodes-base.code",
       "position": [
-        1327,
-        1260
+        1167,
+        1360
       ],
       "typeVersion": 2
     },
@@ -76,8 +76,8 @@
       "name": "Download file",
       "type": "n8n-nodes-base.googleDrive",
       "position": [
-        1100,
-        1260
+        940,
+        1360
       ],
       "typeVersion": 3,
       "credentials": {
@@ -98,22 +98,23 @@
       "name": "Recursive Character Text Splitter",
       "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
       "position": [
-        1660,
-        1640
+        1500,
+        1740
       ],
       "typeVersion": 1
     },
     {
       "parameters": {
         "resource": "fileFolder",
+        "queryString": "*_??-??????_*.pdf",
         "returnAll": true,
         "filter": {
           "folderId": {
             "__rl": true,
-            "value": "111N6Tp1FPegwH-p-xLg8a29YvLzMq8TL",
+            "value": "1--InOSXqwW1vm0z7D-HLHzAqy57ju2BX",
             "mode": "list",
-            "cachedResultName": "Rechnungen 2023-2024",
-            "cachedResultUrl": "https://drive.google.com/drive/folders/111N6Tp1FPegwH-p-xLg8a29YvLzMq8TL"
+            "cachedResultName": "n8n",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/1--InOSXqwW1vm0z7D-HLHzAqy57ju2BX"
           }
         },
         "options": {}
@@ -123,7 +124,7 @@
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
       "position": [
-        900,
+        300,
         1260
       ],
       "credentials": {
@@ -140,8 +141,8 @@
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
       "position": [
-        280,
-        1660
+        -640,
+        1960
       ]
     },
     {
@@ -155,8 +156,8 @@
       "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
       "typeVersion": 1,
       "position": [
-        940,
-        2400
+        340,
+        2520
       ]
     },
     {
@@ -171,8 +172,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1,
       "position": [
-        1140,
-        2620
+        540,
+        2740
       ],
       "credentials": {
         "openAiApi": {
@@ -191,8 +192,8 @@
       "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
       "typeVersion": 1,
       "position": [
-        760,
-        2860
+        160,
+        2980
       ],
       "credentials": {
         "openAiApi": {
@@ -322,8 +323,8 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.4,
       "position": [
-        1680,
-        2120
+        1080,
+        2240
       ],
       "credentials": {
         "googleSheetsOAuth2Api": {
@@ -342,8 +343,8 @@
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1,
       "position": [
-        1420,
-        2120
+        820,
+        2240
       ]
     },
     {
@@ -353,8 +354,8 @@
       "type": "@n8n/n8n-nodes-langchain.toolCalculator",
       "typeVersion": 1,
       "position": [
-        1380,
-        2400
+        780,
+        2520
       ]
     },
     {
@@ -374,8 +375,8 @@
       "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
       "typeVersion": 1,
       "position": [
-        760,
-        2640
+        160,
+        2760
       ],
       "credentials": {
         "pineconeApi": {
@@ -383,6 +384,19 @@
           "name": "Pinecone"
         }
       }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "da2f6fdf-7c18-4b8d-b759-5970c778c35b",
+      "name": "If",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        600,
+        1260
+      ]
     },
     {
       "parameters": {
@@ -402,8 +416,8 @@
       "name": "Add to Pinecone vector store",
       "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
       "position": [
-        1540,
-        1260
+        1380,
+        1360
       ],
       "typeVersion": 1,
       "credentials": {
@@ -424,7 +438,7 @@
         "messages": {
           "values": [
             {
-              "content": "=Du hast alle Rechnungen mit einer einzigartigen Rechnungsnummer die mit RE- beginnt in der Datenbank. Der Gesamtbetrag pro Rechnungsposition aller Rechnungen soll nach Leistungszeitraum abgegrenzt werden, sodass der jeweilige Anteil der Bilanz eines Geschäftsjahres zugeordnet werden kann.\n\nAnweisungen zur korrekten Aufteilung:\n\nBestimme den Gesamtzeitraum der Position (von bis) und die Anzahl der Tage in diesem Leistungszeitraum. Teile den Gesamtbetrag der Position durch die Anzahl der Tage des Gesamtzeitraums um den Betrag pro Tag zu errechnen.\n\nWenn das Ende des Leistungszeitraums über den 31.12.2023 hinausgeht, muss der jährliche Betrag taggenau auf 2023 und den Rest auf alle folgenden Jahre aufgeteilt werden. Der Betrag pro Tag ist für alle Jahre gleich. Für jedes Jahr soll eine eigene Zeile zurückgegeben werden die nur den Zeitraum enthält der auf ebendieses Jahr fällt.\n\nVermeide doppelte Einträge: Jeder Betrag für ein Jahr soll nur einmal pro Rechnungsnummer aufgeführt werden.\nFalls kein Leistungszeitraum angegeben ist, gilt der gesamte Betrag für das Jahr der Rechnung.\n\nDie Berechnungen dürfen soviele Nachkommastellen enthalten um Rundungsfehler zu vermeiden und folgende Schritte beinhalten:\n\nBestimme den Nettobetrag für jedes Jahr, indem du den Betrag pro Tag mit der Anzahl der Tage pro Jahr multiplizierst. Der erste und der letzte Tag müssen mitgezählt werden.\nBerechne die enthaltene Umsatzsteuer, indem du den Nettobetrag mit dem Umsatzsteuersatz multiplizierst.\nBestimme den Bruttobetrag, indem du den Nettobetrag und die enthaltene Umsatzsteuer addierst.\nJede Position darf nur einmal pro Jahr aufgeführt sein.\n\nGib mir die Variable \"Positionen\" mit folgenden Spalten zurück:\n\nRechnungsnummer\nBezeichnung der Position\nJahr\nZeitraum\nAnzahl Tage\nBetrag pro Tag\nNettobetrag\nBruttobetrag\nEnthaltene Umsatzsteuer"
+              "content": "=Du hast alle Rechnungen mit einer einzigartigen Rechnungsnummer die mit RE- beginnt in der Datenbank. Der Gesamtbetrag pro Rechnungsposition aller Rechnungen soll nach Leistungszeitraum abgegrenzt werden, sodass der jeweilige Anteil der Bilanz eines Geschäftsjahres zugeordnet werden kann.\n\nAnweisungen zur korrekten Aufteilung:\n\nBestimme die Anzahl der Tage im Leistungszeitraum der Position (von bis). Teile den Gesamtbetrag der Position durch die Anzahl der Tage des Gesamtzeitraums um den Betrag pro Tag zu errechnen. \n\nWenn das Ende des Leistungszeitraums über den 31.12.2023 hinausgeht, muss der jährliche Betrag taggenau auf 2023 und den Rest auf alle folgenden Jahre aufgeteilt werden. Der Betrag pro Tag ist für alle Jahre gleich. Für jedes Jahr soll eine eigene Zeile zurückgegeben werden die nur den Zeitraum enthält der auf ebendieses Jahr fällt.\n\nVermeide doppelte Einträge: Jeder Betrag für ein Jahr soll nur einmal pro Rechnungsnummer aufgeführt werden.\nFalls kein Leistungszeitraum angegeben ist, gilt der gesamte Betrag für das Jahr der Rechnung.\n\nDie Berechnungen dürfen soviele Nachkommastellen enthalten um Rundungsfehler zu vermeiden und folgende Schritte beinhalten:\n\nBestimme den Nettobetrag für jedes Jahr, indem du den Betrag pro Tag mit der Anzahl der Tage pro Jahr multiplizierst. Der erste und der letzte Tag müssen mitgezählt werden.\nBerechne die enthaltene Umsatzsteuer, indem du den Nettobetrag mit dem Umsatzsteuersatz multiplizierst.\nBestimme den Bruttobetrag, indem du den Nettobetrag und die enthaltene Umsatzsteuer addierst.\nJede Position darf nur einmal pro Jahr aufgeführt sein.\n\nGib mir die Variable \"Positionen\" mit folgenden Spalten zurück:\n\nRechnungsnummer\nBezeichnung der Position\nJahr\nZeitraum\nAnzahl Tage\nBetrag pro Tag\nNettobetrag\nBruttobetrag\nEnthaltene Umsatzsteuer"
             }
           ]
         },
@@ -438,8 +452,8 @@
       "type": "@n8n/n8n-nodes-langchain.openAi",
       "typeVersion": 1.4,
       "position": [
-        980,
-        2120
+        380,
+        2240
       ],
       "credentials": {
         "openAiApi": {
@@ -447,6 +461,21 @@
           "name": "OpenAI"
         }
       }
+    },
+    {
+      "parameters": {
+        "content": "",
+        "height": 80,
+        "width": 2431.9552165833215
+      },
+      "id": "e913496b-bcee-4459-88e5-fc54432f6b62",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -49.878408832342075,
+        1980
+      ]
     }
   ],
   "connections": {
@@ -509,7 +538,7 @@
       "main": [
         [
           {
-            "node": "Download file",
+            "node": "If",
             "type": "main",
             "index": 0
           }
@@ -520,7 +549,7 @@
       "main": [
         [
           {
-            "node": "OpenAI",
+            "node": "Google Drive",
             "type": "main",
             "index": 0
           }
@@ -593,6 +622,18 @@
         ]
       ]
     },
+    "If": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "OpenAI": {
       "main": [
         [
@@ -613,7 +654,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "e6b22f29-d98a-4003-9f98-70cb7e112464",
+  "versionId": "becd77fc-1a7e-4ca8-83ab-a32d6bd4939a",
   "triggerCount": 0,
   "tags": [
     {
