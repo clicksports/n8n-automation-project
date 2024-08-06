@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-08-05T15:42:45.331Z",
-  "updatedAt": "2024-08-06T10:06:32.000Z",
+  "updatedAt": "2024-08-06T13:50:14.000Z",
   "id": "12IdNZEx46KHoySV",
   "name": "Annual invoice split direct",
   "active": false,
@@ -360,6 +360,18 @@
       }
     },
     {
+      "parameters": {},
+      "id": "ae327e6a-d0ae-4254-a930-ba0f0d48476a",
+      "name": "Calculator",
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        1600,
+        700
+      ],
+      "disabled": true
+    },
+    {
       "parameters": {
         "mode": "combine",
         "combineBy": "combineByPosition",
@@ -375,18 +387,6 @@
       ]
     },
     {
-      "parameters": {},
-      "id": "ae327e6a-d0ae-4254-a930-ba0f0d48476a",
-      "name": "Calculator",
-      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
-      "typeVersion": 1,
-      "position": [
-        1580,
-        700
-      ],
-      "disabled": true
-    },
-    {
       "parameters": {
         "modelId": {
           "__rl": true,
@@ -397,7 +397,7 @@
         "messages": {
           "values": [
             {
-              "content": "=Du hast alle Dokumente mit einer einzigartigen Belegnummerin der Datenbank. Enthält der Dateiname _GS- ist es eine Gutschrift und alle Beträge müssen negativ werden. Enthält der Dateiname _RE- ist es eine Rechnung. Die Belegnummer besteht aus dem Präfix RE oder GS + exakt 6 Ganzzahlen und steht im Dateinamen. \n\n-----\n\nDer Gesamtbetrag pro Belegposition aller Belege soll nach Leistungszeitraum abgegrenzt werden, sodass der jeweilige Anteil der Bilanz eines Geschäftsjahres zugeordnet werden kann.\n\nAnweisungen zur korrekten Aufteilung:\n\nBestimme den Gesamtzeitraum der Position anhand von Start- und Enddatum (von bis) oder anhand des Rechnungsdatums + Anzahl der Jahre im Beschreibungstext der Position. \nBestimme die Anzahl der Tage in diesem Leistungszeitraum. Teile den Gesamtbetrag der Position durch die Anzahl der Tage des Gesamtzeitraums um den Betrag pro Tag zu errechnen.\n\nWenn das Ende des Leistungszeitraums über den 31.12.2023 hinausgeht, müssen alle Beträge taggenau bis Jahresende 2023 berechnet und der Rest auf alle folgenden Jahre aufgeteilt werden. Der Betrag pro Tag ist für alle Jahre gleich. Für jedes Jahr soll eine eigene Zeile zurückgegeben werden die nur die anteiligen Daten aus dem Zeitraum enthält der auf ebendieses Jahr fällt.\n\nDie Berechnungen dürfen soviele Nachkommastellen enthalten um Rundungsfehler zu vermeiden und folgende Schritte beinhalten:\n\nBestimme den anteiligen Nettobetrag für jedes Jahr, indem du den Betrag pro Tag mit der Anzahl der Tage pro Jahr multiplizierst. Der erste und der letzte Tag müssen mitgezählt werden.\nBerechne die anteilige enthaltene Umsatzsteuer, indem du den Nettobetrag mit dem Umsatzsteuersatz multiplizierst.\nBestimme den anteiligen Bruttobetrag, indem du den anteiligen Nettobetrag und die enthaltene anteilige Umsatzsteuer addierst.\n Belege ohne Dateinamen dürfen niemals aufgeführt werden.\n\nGib mir die Variable \"Positionen\" mit folgenden Spalten zurück:\n\nBelegnummer\nBezeichnung der Position\nGesamtzeitraum\nAnteil Jahr\nZeitraum\nAnzahl Tage\nBetrag pro Tag\nAnteil Nettobetrag\nAnteil Bruttobetrag\nAnteil Enthaltene Umsatzsteuer\n\nDie Datei \"{{ $json.name }}\" enhält: \"{{ $json.text }}\""
+              "content": "=Du hast alle Dokumente mit einer einzigartigen Belegnummerin der Datenbank. Enthält der Dateiname _GS- ist es eine Gutschrift und alle Beträge müssen negativ werden. Enthält der Dateiname _RE- ist es eine Rechnung. Die Belegnummer besteht aus dem Präfix RE oder GS + exakt 6 Ganzzahlen und steht im Dateinamen. \n\n-----\n\nDer Gesamtbetrag pro Belegposition aller Belege soll nach Leistungszeitraum abgegrenzt werden, sodass der jeweilige Anteil der Bilanz eines Geschäftsjahres zugeordnet werden kann.\n\nAnweisungen zur korrekten Aufteilung:\n\nBestimme den Gesamtzeitraum der Position anhand von Start- und Enddatum (von bis) oder anhand des Rechnungsdatums + Anzahl der Jahre im Beschreibungstext der Position. \nBestimme die Anzahl der Tage in diesem Leistungszeitraum. Teile den Gesamtbetrag der Position durch die Anzahl der Tage des Gesamtzeitraums um den Betrag pro Tag zu errechnen.\n\nWenn das Ende des Leistungszeitraums über den 31.12.2023 hinausgeht, müssen alle Beträge taggenau bis Jahresende 2023 berechnet und der Rest auf alle folgenden Jahre aufgeteilt werden. Der Betrag pro Tag ist für alle Jahre gleich. Für jedes Jahr soll eine eigene Zeile zurückgegeben werden die nur die anteiligen Daten aus dem Zeitraum enthält der auf ebendieses Jahr fällt.\n\nDie Berechnungen dürfen soviele Nachkommastellen enthalten um Rundungsfehler zu vermeiden und folgende Schritte beinhalten:\n\nBestimme den anteiligen Nettobetrag für jedes Jahr, indem du den Betrag pro Tag mit der Anzahl der Tage pro Jahr multiplizierst. Der erste und der letzte Tag müssen mitgezählt werden.\nBerechne die anteilige enthaltene Umsatzsteuer, indem du den Nettobetrag mit dem Umsatzsteuersatz multiplizierst.\nBestimme den anteiligen Bruttobetrag, indem du den anteiligen Nettobetrag und die enthaltene anteilige Umsatzsteuer addierst.\n Belege ohne Dateinamen dürfen niemals aufgeführt werden.\n\nGib mir die Variable \"Positionen\" als Array mit folgenden Spalten zurück:\n\nBelegnummer\nBezeichnung der Position\nGesamtzeitraum\nAnteil Jahr\nZeitraum\nAnzahl Tage\nBetrag pro Tag\nAnteil Nettobetrag\nAnteil Bruttobetrag\nAnteil Enthaltene Umsatzsteuer\n\nDie Datei \"{{ $json.name }}\" enhält: \"{{ $json.text }}\""
             }
           ]
         },
@@ -411,7 +411,7 @@
       "type": "@n8n/n8n-nodes-langchain.openAi",
       "typeVersion": 1.4,
       "position": [
-        1480,
+        1520,
         500
       ],
       "credentials": {
@@ -512,23 +512,23 @@
         ]
       ]
     },
-    "Merge": {
-      "main": [
-        [
-          {
-            "node": "OpenAI",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Calculator": {
       "ai_tool": [
         [
           {
             "node": "OpenAI",
             "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "OpenAI",
+            "type": "main",
             "index": 0
           }
         ]
@@ -554,7 +554,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "4d41c0a7-9939-42ad-9d78-a7c741390552",
+  "versionId": "ff9ee1ad-42ec-4d46-a55c-7fa5d205db8a",
   "triggerCount": 0,
   "tags": [
     {
