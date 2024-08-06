@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-08-05T15:42:45.331Z",
-  "updatedAt": "2024-08-05T15:59:25.000Z",
+  "updatedAt": "2024-08-06T07:54:22.000Z",
   "id": "12IdNZEx46KHoySV",
   "name": "Annual invoice split direct",
   "active": false,
@@ -155,8 +155,8 @@
               "removed": false
             },
             {
-              "id": "Nettobetrag",
-              "displayName": "Nettobetrag",
+              "id": "Anteil Nettobetrag",
+              "displayName": "Anteil Nettobetrag",
               "required": false,
               "defaultMatch": false,
               "display": true,
@@ -165,8 +165,8 @@
               "removed": false
             },
             {
-              "id": "Bruttobetrag",
-              "displayName": "Bruttobetrag",
+              "id": "Anteil Bruttobetrag",
+              "displayName": "Anteil Bruttobetrag",
               "required": false,
               "defaultMatch": false,
               "display": true,
@@ -175,8 +175,8 @@
               "removed": false
             },
             {
-              "id": "Enthaltene Umsatzsteuer",
-              "displayName": "Enthaltene Umsatzsteuer",
+              "id": "Anteil Enthaltene Umsatzsteuer",
+              "displayName": "Anteil Enthaltene Umsatzsteuer",
               "required": false,
               "defaultMatch": false,
               "display": true,
@@ -186,7 +186,11 @@
             }
           ]
         },
-        "options": {}
+        "options": {
+          "cellFormat": "USER_ENTERED",
+          "handlingExtraData": "insertInNewColumn",
+          "useAppend": true
+        }
       },
       "id": "8ea39b5e-3f37-48a3-a8c8-59c13815e25c",
       "name": "Google Sheets",
@@ -224,8 +228,8 @@
       "type": "@n8n/n8n-nodes-langchain.toolCalculator",
       "typeVersion": 1,
       "position": [
-        1500,
-        760
+        1580,
+        700
       ]
     },
     {
@@ -293,6 +297,78 @@
         960,
         680
       ]
+    },
+    {
+      "parameters": {
+        "operation": "move",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1rNkINqRbbfS8A6wfLE1jc9JTq5t5miBC",
+          "mode": "list",
+          "cachedResultName": "Invalid",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1rNkINqRbbfS8A6wfLE1jc9JTq5t5miBC"
+        }
+      },
+      "id": "4ac11ab4-71bd-4e5d-8b77-f234a5f4916c",
+      "name": "Google Drive1",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        600,
+        840
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "BVkiHtheS61uART6",
+          "name": "Google christian.gick@clicksports.de"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "move",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Google Drive').item.json.id }}",
+          "mode": "id"
+        },
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1rIblLgQnZDnmattulJGpHOW7oLwxNa5B",
+          "mode": "list",
+          "cachedResultName": "Done",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1rIblLgQnZDnmattulJGpHOW7oLwxNa5B"
+        }
+      },
+      "id": "db30f994-9cd1-4aa4-a99f-3c4e1ed7f386",
+      "name": "Google Drive2",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2500,
+        500
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "BVkiHtheS61uART6",
+          "name": "Google christian.gick@clicksports.de"
+        }
+      }
     },
     {
       "parameters": {
@@ -403,6 +479,13 @@
             "type": "main",
             "index": 0
           }
+        ],
+        [
+          {
+            "node": "Google Drive1",
+            "type": "main",
+            "index": 0
+          }
         ]
       ]
     },
@@ -424,6 +507,17 @@
             "node": "Merge",
             "type": "main",
             "index": 1
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Google Drive2",
+            "type": "main",
+            "index": 0
           }
         ]
       ]
@@ -459,7 +553,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "eca66a27-e271-499d-93c3-18eaa168bfdf",
+  "versionId": "0bd0bce5-ddbf-4ddd-8001-c9c8f9271e79",
   "triggerCount": 0,
   "tags": [
     {
