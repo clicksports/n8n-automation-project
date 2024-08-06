@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-08-05T15:42:45.331Z",
-  "updatedAt": "2024-08-06T13:50:14.000Z",
+  "updatedAt": "2024-08-06T14:12:29.000Z",
   "id": "12IdNZEx46KHoySV",
   "name": "Annual invoice split direct",
   "active": false,
@@ -554,7 +554,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "ff9ee1ad-42ec-4d46-a55c-7fa5d205db8a",
+  "versionId": "ce12a1ed-2ba7-4669-a9e6-3145d722a363",
   "triggerCount": 0,
   "tags": [
     {
