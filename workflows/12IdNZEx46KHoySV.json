@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-08-05T15:42:45.331Z",
-  "updatedAt": "2024-08-06T08:56:31.000Z",
+  "updatedAt": "2024-08-06T09:01:19.000Z",
   "id": "12IdNZEx46KHoySV",
   "name": "Annual invoice split direct",
   "active": false,
@@ -222,17 +222,6 @@
       ]
     },
     {
-      "parameters": {},
-      "id": "1595c34d-286e-45fc-901a-4205bf4d339a",
-      "name": "Calculator",
-      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
-      "typeVersion": 1,
-      "position": [
-        1580,
-        700
-      ]
-    },
-    {
       "parameters": {
         "conditions": {
           "options": {
@@ -419,6 +408,18 @@
           "name": "OpenAI"
         }
       }
+    },
+    {
+      "parameters": {},
+      "id": "ae327e6a-d0ae-4254-a930-ba0f0d48476a",
+      "name": "Calculator",
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        1580,
+        700
+      ],
+      "disabled": true
     }
   ],
   "connections": {
@@ -455,17 +456,6 @@
           {
             "node": "Google Sheets",
             "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Calculator": {
-      "ai_tool": [
-        [
-          {
-            "node": "OpenAI",
-            "type": "ai_tool",
             "index": 0
           }
         ]
@@ -543,6 +533,17 @@
           }
         ]
       ]
+    },
+    "Calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "OpenAI",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -553,7 +554,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "cb2e8a3c-5fdc-4625-b686-5983cf52c6e4",
+  "versionId": "72efe9fc-c1ba-452d-ba6c-6bfa27dab477",
   "triggerCount": 0,
   "tags": [
     {
