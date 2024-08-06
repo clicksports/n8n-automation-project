@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-08-05T15:42:45.331Z",
-  "updatedAt": "2024-08-06T09:01:19.000Z",
+  "updatedAt": "2024-08-06T10:06:32.000Z",
   "id": "12IdNZEx46KHoySV",
   "name": "Annual invoice split direct",
   "active": false,
@@ -375,6 +375,18 @@
       ]
     },
     {
+      "parameters": {},
+      "id": "ae327e6a-d0ae-4254-a930-ba0f0d48476a",
+      "name": "Calculator",
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        1580,
+        700
+      ],
+      "disabled": true
+    },
+    {
       "parameters": {
         "modelId": {
           "__rl": true,
@@ -408,18 +420,6 @@
           "name": "OpenAI"
         }
       }
-    },
-    {
-      "parameters": {},
-      "id": "ae327e6a-d0ae-4254-a930-ba0f0d48476a",
-      "name": "Calculator",
-      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
-      "typeVersion": 1,
-      "position": [
-        1580,
-        700
-      ],
-      "disabled": true
     }
   ],
   "connections": {
@@ -523,23 +523,23 @@
         ]
       ]
     },
-    "OpenAI": {
-      "main": [
-        [
-          {
-            "node": "Split Out",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Calculator": {
       "ai_tool": [
         [
           {
             "node": "OpenAI",
             "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
             "index": 0
           }
         ]
@@ -554,7 +554,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "72efe9fc-c1ba-452d-ba6c-6bfa27dab477",
+  "versionId": "4d41c0a7-9939-42ad-9d78-a7c741390552",
   "triggerCount": 0,
   "tags": [
     {
