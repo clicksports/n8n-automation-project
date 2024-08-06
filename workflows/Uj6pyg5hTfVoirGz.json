@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-08-06T09:34:05.300Z",
-  "updatedAt": "2024-08-06T11:59:00.000Z",
+  "updatedAt": "2024-08-06T12:28:11.000Z",
   "id": "Uj6pyg5hTfVoirGz",
   "name": "FLM messages to Sheet",
   "active": true,
@@ -41,7 +41,9 @@
             }
           ]
         },
-        "options": {}
+        "options": {
+          "cellFormat": "USER_ENTERED"
+        }
       },
       "id": "dabf6ee2-f99f-4ff6-86db-b26b1bedd981",
       "name": "Google Sheets",
@@ -131,7 +133,7 @@
     },
     {
       "parameters": {
-        "content": "8 Nachrichten",
+        "content": "9 Nachrichten",
         "height": 80,
         "width": 150
       },
@@ -223,7 +225,7 @@
         "messages": {
           "values": [
             {
-              "content": "=Füge relativen URLs das Präfix https://www.freelancermap.de hinzu. Extrahiere diese Spalten aus der nächsten Nachricht und gebe nur die Ergebniszeilen als Variable freelancers im JSON-Format zurück:\n\nAbsender\nURL\nZeitpunkt",
+              "content": "=Füge relativen URLs das Präfix https://www.freelancermap.de hinzu. Extrahiere diese Spalten aus der nächsten Nachricht und gebe nur die Ergebniszeilen als Variable freelancers im JSON-Format zurück. Erst kommt der Absender dann der Zeitpunkt dann der Empfänger und dann die URL. Empfänger nicht zurückgeben. Keine Zeile ausgeben wenn Absender leer oder Christian Gick. Zeitpunkt im Format DD.MM.YYYY - HH:mm\n\nAbsender\nURL\nZeitpunkt",
               "role": "system"
             },
             {
@@ -338,7 +340,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "15c9978f-c657-473f-889b-1f551ecd6e09",
+  "versionId": "7c305fd1-adf1-475e-a6c4-d7bfdc3f67d3",
   "triggerCount": 2,
   "tags": []
 }
