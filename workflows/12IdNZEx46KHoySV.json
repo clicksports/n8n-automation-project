@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-08-05T15:42:45.331Z",
-  "updatedAt": "2024-08-06T14:12:29.000Z",
+  "updatedAt": "2024-08-06T15:59:58.000Z",
   "id": "12IdNZEx46KHoySV",
   "name": "Annual invoice split direct",
   "active": false,
@@ -19,7 +19,7 @@
       "name": "Download file",
       "type": "n8n-nodes-base.googleDrive",
       "position": [
-        720,
+        640,
         480
       ],
       "typeVersion": 3,
@@ -52,8 +52,8 @@
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
       "position": [
-        160,
-        580
+        140,
+        640
       ],
       "credentials": {
         "googleDriveOAuth2Api": {
@@ -197,8 +197,8 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.4,
       "position": [
-        2220,
-        500
+        2400,
+        800
       ],
       "credentials": {
         "googleSheetsOAuth2Api": {
@@ -217,8 +217,8 @@
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1,
       "position": [
-        1960,
-        500
+        2160,
+        640
       ]
     },
     {
@@ -258,8 +258,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        380,
-        580
+        360,
+        640
       ]
     },
     {
@@ -269,8 +269,8 @@
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
       "position": [
-        -100,
-        580
+        -80,
+        640
       ]
     },
     {
@@ -283,8 +283,8 @@
       "type": "n8n-nodes-base.extractFromFile",
       "typeVersion": 1,
       "position": [
-        960,
-        680
+        880,
+        660
       ]
     },
     {
@@ -313,8 +313,8 @@
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
       "position": [
-        600,
-        840
+        640,
+        800
       ],
       "credentials": {
         "googleDriveOAuth2Api": {
@@ -324,11 +324,35 @@
       }
     },
     {
+      "parameters": {},
+      "id": "3254b104-f06f-4faf-80a7-b18c1a24b5ac",
+      "name": "Calculator",
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        1820,
+        780
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "25ec5438-ab1a-4dfb-926e-633c9b79682d",
+      "name": "Loop Over Items",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1440,
+        500
+      ]
+    },
+    {
       "parameters": {
         "operation": "move",
         "fileId": {
           "__rl": true,
-          "value": "={{ $('Google Drive').item.json.id }}",
+          "value": "={{ $('Merge').item.json.id }}",
           "mode": "id"
         },
         "driveId": {
@@ -345,12 +369,12 @@
         }
       },
       "id": "db30f994-9cd1-4aa4-a99f-3c4e1ed7f386",
-      "name": "Google Drive2",
+      "name": "Move file to done",
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
       "position": [
-        2500,
-        500
+        2160,
+        400
       ],
       "credentials": {
         "googleDriveOAuth2Api": {
@@ -358,18 +382,6 @@
           "name": "Google christian.gick@clicksports.de"
         }
       }
-    },
-    {
-      "parameters": {},
-      "id": "ae327e6a-d0ae-4254-a930-ba0f0d48476a",
-      "name": "Calculator",
-      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
-      "typeVersion": 1,
-      "position": [
-        1600,
-        700
-      ],
-      "disabled": true
     },
     {
       "parameters": {
@@ -382,7 +394,7 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3,
       "position": [
-        1220,
+        1140,
         500
       ]
     },
@@ -397,7 +409,7 @@
         "messages": {
           "values": [
             {
-              "content": "=Du hast alle Dokumente mit einer einzigartigen Belegnummerin der Datenbank. Enthält der Dateiname _GS- ist es eine Gutschrift und alle Beträge müssen negativ werden. Enthält der Dateiname _RE- ist es eine Rechnung. Die Belegnummer besteht aus dem Präfix RE oder GS + exakt 6 Ganzzahlen und steht im Dateinamen. \n\n-----\n\nDer Gesamtbetrag pro Belegposition aller Belege soll nach Leistungszeitraum abgegrenzt werden, sodass der jeweilige Anteil der Bilanz eines Geschäftsjahres zugeordnet werden kann.\n\nAnweisungen zur korrekten Aufteilung:\n\nBestimme den Gesamtzeitraum der Position anhand von Start- und Enddatum (von bis) oder anhand des Rechnungsdatums + Anzahl der Jahre im Beschreibungstext der Position. \nBestimme die Anzahl der Tage in diesem Leistungszeitraum. Teile den Gesamtbetrag der Position durch die Anzahl der Tage des Gesamtzeitraums um den Betrag pro Tag zu errechnen.\n\nWenn das Ende des Leistungszeitraums über den 31.12.2023 hinausgeht, müssen alle Beträge taggenau bis Jahresende 2023 berechnet und der Rest auf alle folgenden Jahre aufgeteilt werden. Der Betrag pro Tag ist für alle Jahre gleich. Für jedes Jahr soll eine eigene Zeile zurückgegeben werden die nur die anteiligen Daten aus dem Zeitraum enthält der auf ebendieses Jahr fällt.\n\nDie Berechnungen dürfen soviele Nachkommastellen enthalten um Rundungsfehler zu vermeiden und folgende Schritte beinhalten:\n\nBestimme den anteiligen Nettobetrag für jedes Jahr, indem du den Betrag pro Tag mit der Anzahl der Tage pro Jahr multiplizierst. Der erste und der letzte Tag müssen mitgezählt werden.\nBerechne die anteilige enthaltene Umsatzsteuer, indem du den Nettobetrag mit dem Umsatzsteuersatz multiplizierst.\nBestimme den anteiligen Bruttobetrag, indem du den anteiligen Nettobetrag und die enthaltene anteilige Umsatzsteuer addierst.\n Belege ohne Dateinamen dürfen niemals aufgeführt werden.\n\nGib mir die Variable \"Positionen\" als Array mit folgenden Spalten zurück:\n\nBelegnummer\nBezeichnung der Position\nGesamtzeitraum\nAnteil Jahr\nZeitraum\nAnzahl Tage\nBetrag pro Tag\nAnteil Nettobetrag\nAnteil Bruttobetrag\nAnteil Enthaltene Umsatzsteuer\n\nDie Datei \"{{ $json.name }}\" enhält: \"{{ $json.text }}\""
+              "content": "=Du hast alle Dokumente mit einer einzigartigen Belegnummerin der Datenbank. Enthält der Dateiname _GS- ist es eine Gutschrift und alle Beträge müssen negativ werden. Enthält der Dateiname _RE- ist es eine Rechnung. Die Belegnummer besteht aus dem Präfix RE oder GS + exakt 6 Ganzzahlen und steht im Dateinamen. \n\n-----\n\nDer Gesamtbetrag pro Belegposition aller Belege soll nach Leistungszeitraum abgegrenzt werden, sodass der jeweilige Anteil der Bilanz eines Geschäftsjahres zugeordnet werden kann.\n\nAnweisungen zur korrekten Aufteilung:\n\nExtrahiere alle Positionen des Belegs und stelle folgende Berechnungen für jeden Beleg an:\n\n1. Bestimme den Gesamtzeitraum der Position anhand von Start- und Enddatum oder anhand des Rechnungsdatums + Anzahl der Jahre im Beschreibungstext der Position. \n\n2. Bestimme die Anzahl der Tage im Gestzeitraum. \n\n3. Teile den Gesamtbetrag der Position durch die Anzahl der Tage im Gesamtzeitraum um den Betrag pro Tag zu errechnen.\n\nWenn das Ende des Gesamtzeitraums im nächsten Jahr liegt, müssen alle Beträge taggenau bis Jahresende berechnet und der Rest auf alle folgenden Jahre aufgeteilt werden. Der anteilige Betrag pro Tag ist für alle Jahre gleich. Für jedes Jahr soll eine eigene Zeile zurückgegeben werden die nur die anteiligen Daten aus dem Zeitraum enthält der auf ebendieses Jahr fällt.\n\nDie Berechnungen dürfen soviele Nachkommastellen enthalten um Rundungsfehler zu vermeiden und folgende Schritte beinhalten:\n\nBestimme den anteiligen Nettobetrag für jedes Jahr, indem du den Betrag pro Tag mit der Anzahl der Tage pro Jahr multiplizierst. Der erste und der letzte Tag müssen mitgezählt werden.\nBerechne die anteilige enthaltene Umsatzsteuer, indem du den Nettobetrag mit dem Umsatzsteuersatz multiplizierst.\nBestimme den anteiligen Bruttobetrag, indem du den anteiligen Nettobetrag und die enthaltene anteilige Umsatzsteuer addierst.\n Belege ohne Dateinamen dürfen niemals aufgeführt werden. Eine Position darf pro Jahr nur einmal aufgeführt werden.\n\nGib mir die Variable \"Positionen\" als Array mit folgenden Spalten zurück:\n\nBelegnummer\nBezeichnung der Position\nGesamtzeitraum\nAnzahl Tage im Gestamtzeitraum\nBetrag pro Tag\nJahr\nAnteiliger Zeitraum\nAnzahl Tage im anteiligen Zeitraum\nAnteiliger Anteil Nettobetrag\nAnteiliger Anteil Bruttobetrag\nAnteiliger Anteil Enthaltene Umsatzsteuer\n\nDie Datei \"{{ $('Merge').item.json.name }}\" enhält: \"{{ $('Merge').item.json.text }}\""
             }
           ]
         },
@@ -411,8 +423,8 @@
       "type": "@n8n/n8n-nodes-langchain.openAi",
       "typeVersion": 1.4,
       "position": [
-        1520,
-        500
+        1740,
+        640
       ],
       "credentials": {
         "openAiApi": {
@@ -505,7 +517,7 @@
       "main": [
         [
           {
-            "node": "Google Drive2",
+            "node": "Loop Over Items",
             "type": "main",
             "index": 0
           }
@@ -523,11 +535,23 @@
         ]
       ]
     },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "OpenAI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "Merge": {
       "main": [
         [
           {
-            "node": "OpenAI",
+            "node": "Loop Over Items",
             "type": "main",
             "index": 0
           }
@@ -539,6 +563,11 @@
         [
           {
             "node": "Split Out",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Move file to done",
             "type": "main",
             "index": 0
           }
@@ -554,7 +583,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "ce12a1ed-2ba7-4669-a9e6-3145d722a363",
+  "versionId": "df3f2851-c8c4-473f-9939-d2625a99930f",
   "triggerCount": 0,
   "tags": [
     {

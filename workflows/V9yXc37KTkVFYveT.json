@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-07-18T13:24:24.265Z",
-  "updatedAt": "2024-08-05T08:04:00.000Z",
+  "updatedAt": "2024-08-06T15:22:08.000Z",
   "id": "V9yXc37KTkVFYveT",
   "name": "Index issues",
   "active": true,
@@ -105,33 +105,6 @@
           "name": "Jira christian.gick@clicksports.de"
         }
       }
-    },
-    {
-      "parameters": {
-        "resource": "issueComment",
-        "operation": "getAll",
-        "issueKey": "={{ $json.key }}",
-        "returnAll": true,
-        "options": {
-          "expand": "renderedBody"
-        }
-      },
-      "id": "3bd11624-7940-40ba-98e3-d5644cea9de8",
-      "name": "Get comments",
-      "type": "n8n-nodes-base.jira",
-      "typeVersion": 1,
-      "position": [
-        -3400,
-        1740
-      ],
-      "alwaysOutputData": true,
-      "credentials": {
-        "jiraSoftwareCloudApi": {
-          "id": "HlsaLdc6YFfeasWO",
-          "name": "Jira christian.gick@clicksports.de"
-        }
-      },
-      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
@@ -584,30 +557,6 @@
     },
     {
       "parameters": {
-        "resource": "issueAttachment",
-        "operation": "getAll",
-        "issueKey": "={{ $json.key }}",
-        "returnAll": true,
-        "download": true
-      },
-      "id": "0fc0724d-69b3-4c3d-a562-64410f5d2b77",
-      "name": "Jira Software",
-      "type": "n8n-nodes-base.jira",
-      "typeVersion": 1,
-      "position": [
-        -3120,
-        880
-      ],
-      "credentials": {
-        "jiraSoftwareCloudApi": {
-          "id": "HlsaLdc6YFfeasWO",
-          "name": "Jira christian.gick@clicksports.de"
-        }
-      },
-      "onError": "continueRegularOutput"
-    },
-    {
-      "parameters": {
         "mode": "combine",
         "combineBy": "combineByPosition",
         "numberInputs": 3,
@@ -657,6 +606,87 @@
     },
     {
       "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "n8n",
+          "mode": "list",
+          "cachedResultName": "n8n"
+        },
+        "options": {
+          "clearNamespace": false,
+          "pineconeNamespace": "kb"
+        }
+      },
+      "id": "c382b03e-d38b-47a0-9a92-3edd03b1c11e",
+      "name": "Pinecone Vector Store3",
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1,
+      "position": [
+        520,
+        320
+      ],
+      "credentials": {
+        "pineconeApi": {
+          "id": "8lDKmR3gvMj1szqg",
+          "name": "Pinecone"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "issueAttachment",
+        "operation": "getAll",
+        "issueKey": "={{ $json.key }}",
+        "returnAll": true,
+        "download": true
+      },
+      "id": "0fc0724d-69b3-4c3d-a562-64410f5d2b77",
+      "name": "Issue attachments",
+      "type": "n8n-nodes-base.jira",
+      "typeVersion": 1,
+      "position": [
+        -3120,
+        880
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "jiraSoftwareCloudApi": {
+          "id": "HlsaLdc6YFfeasWO",
+          "name": "Jira christian.gick@clicksports.de"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "resource": "issueComment",
+        "operation": "getAll",
+        "issueKey": "={{ $json.key }}",
+        "returnAll": true,
+        "options": {
+          "expand": "renderedBody"
+        }
+      },
+      "id": "3bd11624-7940-40ba-98e3-d5644cea9de8",
+      "name": "Issue comments",
+      "type": "n8n-nodes-base.jira",
+      "typeVersion": 1,
+      "position": [
+        -3400,
+        1740
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "jiraSoftwareCloudApi": {
+          "id": "HlsaLdc6YFfeasWO",
+          "name": "Jira christian.gick@clicksports.de"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
         "modelId": {
           "__rl": true,
           "value": "gpt-4o-mini",
@@ -690,35 +720,6 @@
           "name": "OpenAI"
         }
       }
-    },
-    {
-      "parameters": {
-        "mode": "insert",
-        "pineconeIndex": {
-          "__rl": true,
-          "value": "n8n",
-          "mode": "list",
-          "cachedResultName": "n8n"
-        },
-        "options": {
-          "clearNamespace": false,
-          "pineconeNamespace": "kb"
-        }
-      },
-      "id": "c382b03e-d38b-47a0-9a92-3edd03b1c11e",
-      "name": "Pinecone Vector Store3",
-      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
-      "typeVersion": 1,
-      "position": [
-        520,
-        320
-      ],
-      "credentials": {
-        "pineconeApi": {
-          "id": "8lDKmR3gvMj1szqg",
-          "name": "Pinecone"
-        }
-      }
     }
   ],
   "connections": {
@@ -744,17 +745,6 @@
         ]
       ]
     },
-    "Get comments": {
-      "main": [
-        [
-          {
-            "node": "If1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Get issues to index": {
       "main": [
         [
@@ -764,12 +754,12 @@
             "index": 0
           },
           {
-            "node": "Jira Software",
+            "node": "Issue attachments",
             "type": "main",
             "index": 0
           },
           {
-            "node": "Get comments",
+            "node": "Issue comments",
             "type": "main",
             "index": 0
           },
@@ -986,17 +976,6 @@
         ]
       ]
     },
-    "Jira Software": {
-      "main": [
-        [
-          {
-            "node": "Extract from File",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Merge1": {
       "main": [
         [
@@ -1027,6 +1006,28 @@
             "node": "Merge1",
             "type": "main",
             "index": 2
+          }
+        ]
+      ]
+    },
+    "Issue attachments": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Issue comments": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
           }
         ]
       ]
@@ -1064,7 +1065,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "1a8bcd48-6dc1-4107-b3cd-52f1e9acce8e",
+  "versionId": "31473c0d-02c3-4716-8b8c-b1d34d21d797",
   "triggerCount": 1,
   "tags": [
     {
