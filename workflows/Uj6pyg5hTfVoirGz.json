@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-08-06T09:34:05.300Z",
-  "updatedAt": "2024-08-06T12:28:11.000Z",
+  "updatedAt": "2024-08-07T07:26:28.000Z",
   "id": "Uj6pyg5hTfVoirGz",
   "name": "FLM messages to Sheet",
   "active": true,
@@ -64,7 +64,7 @@
       "parameters": {
         "path": "91476e25-9a88-4b02-92d3-46f24acdef73",
         "formTitle": "HTML2Table",
-        "formDescription": "HTML-Tabelle einfügen, Ergebnis siehe https://t.ly/E0x-v",
+        "formDescription": "HTML-Tabelle einfügen",
         "formFields": {
           "values": [
             {
@@ -74,7 +74,14 @@
             }
           ]
         },
-        "options": {}
+        "options": {
+          "respondWithOptions": {
+            "values": {
+              "respondWith": "redirect",
+              "redirectUrl": "https://docs.google.com/spreadsheets/d/1uZrHfuqpBLHgwFKf5Jhup1DcQKdoita6cfMzykxELtU/edit?gid=0#gid=0"
+            }
+          }
+        }
       },
       "id": "55454d21-9f99-467d-8eea-c9b152660adc",
       "name": "n8n Form Trigger",
@@ -340,7 +347,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "7c305fd1-adf1-475e-a6c4-d7bfdc3f67d3",
+  "versionId": "e6f24634-5524-4a1a-8cf0-668c20bb4555",
   "triggerCount": 2,
   "tags": []
 }
