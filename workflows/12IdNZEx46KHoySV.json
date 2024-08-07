@@ -1,10 +1,137 @@
 {
   "createdAt": "2024-08-05T15:42:45.331Z",
-  "updatedAt": "2024-08-06T16:08:25.000Z",
+  "updatedAt": "2024-08-07T05:50:28.000Z",
   "id": "12IdNZEx46KHoySV",
   "name": "Annual invoice split direct",
   "active": false,
   "nodes": [
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "1ab98cdb-90ad-41c7-b769-93ed3a3b63ff",
+              "leftValue": "={{ $json.name }}",
+              "rightValue": "_GS-",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "006c1b03-178d-4eea-a25f-72a410eceb50",
+              "leftValue": "={{ $json.name }}",
+              "rightValue": "_RE-",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "c6664989-51ed-443f-98e1-a1510526695a",
+      "name": "If",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        360,
+        640
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "fc8ce73f-fc4f-4f19-a9d2-e483c2de6fbc",
+      "name": "When clicking ‘Test workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        640
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "3254b104-f06f-4faf-80a7-b18c1a24b5ac",
+      "name": "Calculator",
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        1820,
+        780
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "25ec5438-ab1a-4dfb-926e-633c9b79682d",
+      "name": "Loop Over Items",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1440,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "id": "69f85f48-5a69-4463-9cd7-e224f5e55374",
+      "name": "Merge",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        1140,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "move",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1rNkINqRbbfS8A6wfLE1jc9JTq5t5miBC",
+          "mode": "list",
+          "cachedResultName": "Invalid",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1rNkINqRbbfS8A6wfLE1jc9JTq5t5miBC"
+        }
+      },
+      "id": "4ac11ab4-71bd-4e5d-8b77-f234a5f4916c",
+      "name": "Move invalid file",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        640,
+        800
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "BVkiHtheS61uART6",
+          "name": "Google christian.gick@clicksports.de"
+        }
+      }
+    },
     {
       "parameters": {
         "operation": "download",
@@ -16,7 +143,7 @@
         "options": {}
       },
       "id": "9566437e-b4d9-4e7b-af26-c11462c9b246",
-      "name": "Download file",
+      "name": "Download receipt",
       "type": "n8n-nodes-base.googleDrive",
       "position": [
         640,
@@ -48,7 +175,7 @@
         "options": {}
       },
       "id": "57c8c8e0-e320-4aa5-b7af-16814476d0ea",
-      "name": "Google Drive",
+      "name": "Find receipts in files",
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
       "position": [
@@ -64,19 +191,83 @@
     },
     {
       "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "id": "8d6ab376-83ec-4c37-b508-fe85e17082d7",
+      "name": "Extract text from PDF",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        880,
+        660
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "move",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Merge').item.json.id }}",
+          "mode": "id"
+        },
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1rIblLgQnZDnmattulJGpHOW7oLwxNa5B",
+          "mode": "list",
+          "cachedResultName": "Done",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1rIblLgQnZDnmattulJGpHOW7oLwxNa5B"
+        }
+      },
+      "id": "db30f994-9cd1-4aa4-a99f-3c4e1ed7f386",
+      "name": "Move receipt to done",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2160,
+        400
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "BVkiHtheS61uART6",
+          "name": "Google christian.gick@clicksports.de"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "message.content.Positionen",
+        "options": {}
+      },
+      "id": "5b3ab604-2277-4d33-b39b-2d864fd374d3",
+      "name": "Split out positions",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        2160,
+        640
+      ]
+    },
+    {
+      "parameters": {
         "operation": "append",
         "documentId": {
           "__rl": true,
           "value": "1pvMisn__G4QvkcRX2oj7znz4S7WcXzxi6GJNihvr0lw",
           "mode": "list",
-          "cachedResultName": "n8n",
+          "cachedResultName": "FIBU-665",
           "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1pvMisn__G4QvkcRX2oj7znz4S7WcXzxi6GJNihvr0lw/edit?usp=drivesdk"
         },
         "sheetName": {
           "__rl": true,
           "value": 1619249675,
           "mode": "list",
-          "cachedResultName": "invoices",
+          "cachedResultName": "n8n",
           "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1pvMisn__G4QvkcRX2oj7znz4S7WcXzxi6GJNihvr0lw/edit#gid=1619249675"
         },
         "columns": {
@@ -193,7 +384,7 @@
         }
       },
       "id": "8ea39b5e-3f37-48a3-a8c8-59c13815e25c",
-      "name": "Google Sheets",
+      "name": "Write position to sheet",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.4,
       "position": [
@@ -209,197 +400,6 @@
     },
     {
       "parameters": {
-        "fieldToSplitOut": "message.content.Positionen",
-        "options": {}
-      },
-      "id": "5b3ab604-2277-4d33-b39b-2d864fd374d3",
-      "name": "Split Out",
-      "type": "n8n-nodes-base.splitOut",
-      "typeVersion": 1,
-      "position": [
-        2160,
-        640
-      ]
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict"
-          },
-          "conditions": [
-            {
-              "id": "1ab98cdb-90ad-41c7-b769-93ed3a3b63ff",
-              "leftValue": "={{ $json.name }}",
-              "rightValue": "_GS-",
-              "operator": {
-                "type": "string",
-                "operation": "contains"
-              }
-            },
-            {
-              "id": "006c1b03-178d-4eea-a25f-72a410eceb50",
-              "leftValue": "={{ $json.name }}",
-              "rightValue": "_RE-",
-              "operator": {
-                "type": "string",
-                "operation": "contains"
-              }
-            }
-          ],
-          "combinator": "or"
-        },
-        "options": {}
-      },
-      "id": "c6664989-51ed-443f-98e1-a1510526695a",
-      "name": "If",
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2,
-      "position": [
-        360,
-        640
-      ]
-    },
-    {
-      "parameters": {},
-      "id": "fc8ce73f-fc4f-4f19-a9d2-e483c2de6fbc",
-      "name": "When clicking ‘Test workflow’",
-      "type": "n8n-nodes-base.manualTrigger",
-      "typeVersion": 1,
-      "position": [
-        -80,
-        640
-      ]
-    },
-    {
-      "parameters": {
-        "operation": "pdf",
-        "options": {}
-      },
-      "id": "8d6ab376-83ec-4c37-b508-fe85e17082d7",
-      "name": "Extract from File",
-      "type": "n8n-nodes-base.extractFromFile",
-      "typeVersion": 1,
-      "position": [
-        880,
-        660
-      ]
-    },
-    {
-      "parameters": {
-        "operation": "move",
-        "fileId": {
-          "__rl": true,
-          "value": "={{ $json.id }}",
-          "mode": "id"
-        },
-        "driveId": {
-          "__rl": true,
-          "mode": "list",
-          "value": "My Drive"
-        },
-        "folderId": {
-          "__rl": true,
-          "value": "1rNkINqRbbfS8A6wfLE1jc9JTq5t5miBC",
-          "mode": "list",
-          "cachedResultName": "Invalid",
-          "cachedResultUrl": "https://drive.google.com/drive/folders/1rNkINqRbbfS8A6wfLE1jc9JTq5t5miBC"
-        }
-      },
-      "id": "4ac11ab4-71bd-4e5d-8b77-f234a5f4916c",
-      "name": "Google Drive1",
-      "type": "n8n-nodes-base.googleDrive",
-      "typeVersion": 3,
-      "position": [
-        640,
-        800
-      ],
-      "credentials": {
-        "googleDriveOAuth2Api": {
-          "id": "BVkiHtheS61uART6",
-          "name": "Google christian.gick@clicksports.de"
-        }
-      }
-    },
-    {
-      "parameters": {},
-      "id": "3254b104-f06f-4faf-80a7-b18c1a24b5ac",
-      "name": "Calculator",
-      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
-      "typeVersion": 1,
-      "position": [
-        1820,
-        780
-      ]
-    },
-    {
-      "parameters": {
-        "options": {}
-      },
-      "id": "25ec5438-ab1a-4dfb-926e-633c9b79682d",
-      "name": "Loop Over Items",
-      "type": "n8n-nodes-base.splitInBatches",
-      "typeVersion": 3,
-      "position": [
-        1440,
-        500
-      ]
-    },
-    {
-      "parameters": {
-        "operation": "move",
-        "fileId": {
-          "__rl": true,
-          "value": "={{ $('Merge').item.json.id }}",
-          "mode": "id"
-        },
-        "driveId": {
-          "__rl": true,
-          "mode": "list",
-          "value": "My Drive"
-        },
-        "folderId": {
-          "__rl": true,
-          "value": "1rIblLgQnZDnmattulJGpHOW7oLwxNa5B",
-          "mode": "list",
-          "cachedResultName": "Done",
-          "cachedResultUrl": "https://drive.google.com/drive/folders/1rIblLgQnZDnmattulJGpHOW7oLwxNa5B"
-        }
-      },
-      "id": "db30f994-9cd1-4aa4-a99f-3c4e1ed7f386",
-      "name": "Move file to done",
-      "type": "n8n-nodes-base.googleDrive",
-      "typeVersion": 3,
-      "position": [
-        2160,
-        400
-      ],
-      "credentials": {
-        "googleDriveOAuth2Api": {
-          "id": "BVkiHtheS61uART6",
-          "name": "Google christian.gick@clicksports.de"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "mode": "combine",
-        "combineBy": "combineByPosition",
-        "options": {}
-      },
-      "id": "69f85f48-5a69-4463-9cd7-e224f5e55374",
-      "name": "Merge",
-      "type": "n8n-nodes-base.merge",
-      "typeVersion": 3,
-      "position": [
-        1140,
-        500
-      ]
-    },
-    {
-      "parameters": {
         "modelId": {
           "__rl": true,
           "value": "gpt-4o-mini",
@@ -409,7 +409,14 @@
         "messages": {
           "values": [
             {
-              "content": "=Du hast alle Dokumente mit einer einzigartigen Belegnummerin der Datenbank. Enthält der Dateiname _GS- ist es eine Gutschrift und alle Beträge müssen negativ sein. Enthält der Dateiname _RE- ist es eine Rechnung. Die Belegnummer besteht aus dem Präfix RE oder GS + exakt 6 Ganzzahlen und steht im Dateinamen. \n\n-----\n\nDer Gesamtbetrag pro Belegposition aller Belege soll nach Leistungszeitraum abgegrenzt werden, sodass der jeweilige Anteil der Bilanz eines Geschäftsjahres zugeordnet werden kann.\n\nAnweisungen zur korrekten Aufteilung:\n\nExtrahiere alle Positionen des Belegs und stelle folgende Berechnungen für jeden Beleg an:\n\n1. Bestimme den Gesamtzeitraum der Position anhand von Start- und Enddatum oder anhand des Rechnungsdatums + Anzahl der Jahre im Beschreibungstext der Position. \n\n2. Bestimme die Anzahl der Tage im Gesamtzeitraum. \n\n3. Teile den Gesamtbetrag der Position durch die Anzahl der Tage im Gesamtzeitraum um den Betrag pro Tag zu errechnen.\n\nWenn das Ende des Gesamtzeitraums im nächsten Jahr liegt, müssen alle Beträge taggenau bis Jahresende berechnet und der Rest auf alle folgenden Jahre aufgeteilt werden. Der anteilige Betrag pro Tag ist für alle Jahre gleich. Für jedes Jahr soll eine eigene Zeile zurückgegeben werden die nur die anteiligen Daten aus dem Zeitraum enthält der auf ebendieses Jahr fällt.\n\nDie Berechnungen dürfen soviele Nachkommastellen enthalten um Rundungsfehler zu vermeiden und folgende Schritte beinhalten:\n\nBestimme den anteiligen Nettobetrag für jedes Jahr, indem du den Betrag pro Tag mit der Anzahl der Tage pro Jahr multiplizierst. Der erste und der letzte Tag müssen mitgezählt werden. Die Summe der anteiligen Beträge muss wieder den Gesamtbetrag ergeben.\nBerechne die anteilige enthaltene Umsatzsteuer, indem du den Nettobetrag mit dem Umsatzsteuersatz multiplizierst.\nBestimme den anteiligen Bruttobetrag, indem du den anteiligen Nettobetrag und die enthaltene anteilige Umsatzsteuer addierst.\n Belege ohne Dateinamen dürfen niemals aufgeführt werden. Eine Position darf pro Jahr nur einmal aufgeführt werden. \n\nVerwende das Datumsformat für einen Zeitraum: DD.MM.YYYY - DD.MM.YYYY\n\nGib mir die Variable \"Positionen\" als Array mit folgenden Spalten zurück:\n\nBelegnummer\nBezeichnung der Position\nGesamtzeitraum\nAnzahl Tage im Gestamtzeitraum\nBetrag pro Tag\nJahr\nAnteiliger Zeitraum\nAnzahl Tage im anteiligen Zeitraum\nAnteiliger Anteil Nettobetrag\nAnteiliger Anteil Bruttobetrag\nAnteiliger Anteil Enthaltene Umsatzsteuer\n\nDie Datei \"{{ $('Merge').item.json.name }}\" enhält: \"{{ $('Merge').item.json.text }}\""
+              "content": "Du hast alle Dokumente mit einer einzigartigen Belegnummerin der Datenbank. \nDer Gesamtbetrag pro Belegposition aller Belege soll nach Leistungszeitraum abgegrenzt werden, sodass der jeweilige Anteil der Bilanz eines Geschäftsjahres zugeordnet werden kann.\n\nAnweisungen zur korrekten Aufteilung:\n\nExtrahiere alle Positionen des Belegs und ignoriere Informationen ab der Zwischensumme.\nStelle folgende Berechnungen für jede Position an:\n\n1. Bestimme den Gesamtzeitraum der Position anhand von Start- und Enddatum oder anhand des Rechnungsdatums + Anzahl der Jahre im Beschreibungstext der Position. \n\n2. Bestimme die Anzahl der Tage im Gesamtzeitraum. \n\n3. Teile den Gesamtbetrag der Position durch die Anzahl der Tage im Gesamtzeitraum um den Betrag pro Tag zu errechnen.\n\n4. Bestimme den anteiligen Nettobetrag für jedes Jahr, indem du den Betrag pro Tag mit der Anzahl der Tage pro Jahr multiplizierst. Der erste und der letzte Tag müssen mitgezählt werden. \n\n5. Berechne die anteilige enthaltene Umsatzsteuer, indem du den Nettobetrag mit dem Umsatzsteuersatz multiplizierst.\n\n6. Bestimme den anteiligen Bruttobetrag, indem du den anteiligen Nettobetrag und die enthaltene anteilige Umsatzsteuer addierst.\n\n---\n\nRegeln:\n\n1. Wenn das Enddatum des Gesamtzeitraums in einem anderen Jahr als das Startdatum liegt, müssen alle Beträge taggenau bis Jahresende berechnet und der Rest auf alle folgenden Jahre aufgeteilt werden. \n\n2. Der anteilige Betrag pro Tag ist für alle Jahre gleich. \n\n3. Für jedes Jahr soll eine eigene Position zurückgegeben werden die nur die anteiligen Daten aus dem Zeitraum enthält der auf ebendieses Jahr fällt.\n\n4. Die Berechnungen dürfen Nachkommastellen enthalten um Rundungsfehler zu vermeiden.\n\n5. Verwende das Datumsformat für einen Zeitraum: DD.MM.YYYY - DD.MM.YYYY\n\n6. Belege ohne Dateinamen dürfen niemals aufgeführt werden. \n\n7. Eine Position darf pro Jahr nur einmal aufgeführt werden. \n\n8. Enthält der Dateiname _GS- ist der Belegtyp eine Gutschrift. Enthält der Dateiname _RE- ist der Belegtyp eine Rechnung. \n\n9. Die Belegnummer besteht aus dem Präfix RE oder GS + exakt 6 Ganzzahlen und steht im Dateinamen. \n\n10. Die Summe der anteiligen Beträge muss den Gesamtbetrag der Position ergeben.\n\n11. Die Summe der Positionen muss den Gesamtbeitrag des Belegs ergeben.",
+              "role": "system"
+            },
+            {
+              "content": "=Die Datei \"{{ $('Merge').item.json.name }}\" enhält: \"{{ $('Merge').item.json.text }}\""
+            },
+            {
+              "content": "Gib mir die Variable \"Positionen\" als Array mit folgenden Spalten zurück. Bei Belegtyp Gutschrift werden negative Beträge benötigt, vor der Rückgabe müssen also alle positiven Beträge mit -1 multipliziert werden: \n\n\nBelegtyp\nBelegnummer\nBezeichnung der Position\nGesamtzeitraum\nAnzahl Tage im Gesamtzeitraum\nBetrag pro Tag\nJahr\nAnteiliger Zeitraum\nAnzahl Tage im anteiligen Zeitraum\nAnteiliger Anteil Nettobetrag\nAnteiliger Anteil Bruttobetrag\nAnteiliger Anteil Enthaltene Umsatzsteuer\nRechenweg"
             }
           ]
         },
@@ -435,56 +442,18 @@
     }
   ],
   "connections": {
-    "Download file": {
-      "main": [
-        [
-          {
-            "node": "Extract from File",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Merge",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Google Drive": {
-      "main": [
-        [
-          {
-            "node": "If",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Split Out": {
-      "main": [
-        [
-          {
-            "node": "Google Sheets",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "If": {
       "main": [
         [
           {
-            "node": "Download file",
+            "node": "Download receipt",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "Google Drive1",
+            "node": "Move invalid file",
             "type": "main",
             "index": 0
           }
@@ -495,29 +464,7 @@
       "main": [
         [
           {
-            "node": "Google Drive",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Extract from File": {
-      "main": [
-        [
-          {
-            "node": "Merge",
-            "type": "main",
-            "index": 1
-          }
-        ]
-      ]
-    },
-    "Google Sheets": {
-      "main": [
-        [
-          {
-            "node": "Loop Over Items",
+            "node": "Find receipts in files",
             "type": "main",
             "index": 0
           }
@@ -558,16 +505,76 @@
         ]
       ]
     },
-    "OpenAI": {
+    "Download receipt": {
       "main": [
         [
           {
-            "node": "Split Out",
+            "node": "Extract text from PDF",
             "type": "main",
             "index": 0
           },
           {
-            "node": "Move file to done",
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find receipts in files": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract text from PDF": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Split out positions": {
+      "main": [
+        [
+          {
+            "node": "Write position to sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write position to sheet": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI": {
+      "main": [
+        [
+          {
+            "node": "Split out positions",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Move receipt to done",
             "type": "main",
             "index": 0
           }
@@ -583,7 +590,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "394b31e3-2336-4f81-b713-4265776e296e",
+  "versionId": "0649c814-8561-4beb-a56f-9e2b4ecdd4ab",
   "triggerCount": 0,
   "tags": [
     {
