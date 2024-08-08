@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-07-18T11:47:48.486Z",
-  "updatedAt": "2024-08-02T16:23:35.000Z",
+  "updatedAt": "2024-08-08T08:27:11.000Z",
   "id": "taQ1njcTXVWU3ghh",
   "name": "Mailhandler",
   "active": true,
@@ -441,16 +441,15 @@
       "type": "n8n-nodes-base.ssh",
       "typeVersion": 1,
       "position": [
-        -1900,
-        1500
+        -2120,
+        1540
       ],
       "credentials": {
         "sshPrivateKey": {
           "id": "7cM8UD60RNSc7v3k",
           "name": "SSH Hcloud"
         }
-      },
-      "disabled": true
+      }
     },
     {
       "parameters": {
@@ -465,7 +464,7 @@
       "type": "n8n-nodes-base.ssh",
       "typeVersion": 1,
       "position": [
-        -1680,
+        -1620,
         1400
       ],
       "credentials": {
@@ -473,8 +472,7 @@
           "id": "7cM8UD60RNSc7v3k",
           "name": "SSH Hcloud"
         }
-      },
-      "disabled": true
+      }
     },
     {
       "parameters": {
@@ -622,6 +620,7 @@
             }
           ]
         },
+        "includeOtherFields": true,
         "options": {}
       },
       "id": "1ab7c34e-f4a8-40c0-857f-33471db5840f",
@@ -629,8 +628,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -2560,
-        1460
+        -2380,
+        1400
       ]
     },
     {
@@ -657,25 +656,10 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        -1940,
-        1300
+        -2120,
+        1260
       ],
       "webhookId": "06541f72-c05b-43bb-aa4a-250bf58a024d"
-    },
-    {
-      "parameters": {
-        "mode": "combine",
-        "combineBy": "combineByPosition",
-        "options": {}
-      },
-      "id": "728c6e3a-f567-4b99-96d4-2423ea30ca88",
-      "name": "Merge8",
-      "type": "n8n-nodes-base.merge",
-      "typeVersion": 3,
-      "position": [
-        -2260,
-        1440
-      ]
     },
     {
       "parameters": {
@@ -688,7 +672,8 @@
         "permissionsUi": {
           "permissionsValues": {
             "role": "reader",
-            "type": "anyone"
+            "type": "domain",
+            "domain": "clicksports.de"
           }
         },
         "options": {}
@@ -1337,6 +1322,22 @@
         2460,
         960
       ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "numberInputs": 3,
+        "options": {}
+      },
+      "id": "9c4ceeba-9cb1-4748-8672-8ba60bbe596c",
+      "name": "Merge5",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        -1860,
+        1400
+      ]
     }
   ],
   "connections": {
@@ -1347,11 +1348,6 @@
             "node": "Merge1",
             "type": "main",
             "index": 1
-          },
-          {
-            "node": "Merge8",
-            "type": "main",
-            "index": 0
           },
           {
             "node": "Hostname1",
@@ -1482,17 +1478,6 @@
         ]
       ]
     },
-    "SSH": {
-      "main": [
-        [
-          {
-            "node": "SSH1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "SSH1": {
       "main": [
         [
@@ -1574,7 +1559,17 @@
       "main": [
         [
           {
-            "node": "Merge8",
+            "node": "SSH",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge5",
             "type": "main",
             "index": 1
           }
@@ -1591,33 +1586,6 @@
           },
           {
             "node": "Get Message ID",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Wait": {
-      "main": [
-        [
-          {
-            "node": "SSH1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Merge8": {
-      "main": [
-        [
-          {
-            "node": "SSH",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Wait",
             "type": "main",
             "index": 0
           }
@@ -1958,6 +1926,39 @@
           }
         ]
       ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Merge5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SSH": {
+      "main": [
+        [
+          {
+            "node": "Merge5",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Merge5": {
+      "main": [
+        [
+          {
+            "node": "SSH1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -1968,14 +1969,14 @@
   },
   "staticData": {
     "node:Mail": {
-      "lastMessageUid": 65540
+      "lastMessageUid": 65543
     }
   },
   "meta": {
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "5fdaa4f8-46f5-4cbe-804c-7d87c850b1a0",
+  "versionId": "170438ed-c650-4cc1-97cb-35fef0f9668d",
   "triggerCount": 1,
   "tags": [
     {

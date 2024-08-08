@@ -1,9 +1,9 @@
 {
   "createdAt": "2024-08-05T15:42:45.331Z",
-  "updatedAt": "2024-08-08T06:17:51.000Z",
+  "updatedAt": "2024-08-08T08:57:28.000Z",
   "id": "12IdNZEx46KHoySV",
   "name": "Annual invoice split direct",
-  "active": false,
+  "active": true,
   "nodes": [
     {
       "parameters": {
@@ -43,17 +43,6 @@
       "typeVersion": 2,
       "position": [
         360,
-        640
-      ]
-    },
-    {
-      "parameters": {},
-      "id": "fc8ce73f-fc4f-4f19-a9d2-e483c2de6fbc",
-      "name": "When clicking ‘Test workflow’",
-      "type": "n8n-nodes-base.manualTrigger",
-      "typeVersion": 1,
-      "position": [
-        -80,
         640
       ]
     },
@@ -439,6 +428,41 @@
           "name": "OpenAI"
         }
       }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1--InOSXqwW1vm0z7D-HLHzAqy57ju2BX",
+          "mode": "list",
+          "cachedResultName": "n8n",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1--InOSXqwW1vm0z7D-HLHzAqy57ju2BX"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "id": "be336a5e-f924-4fc9-9aff-93798b79dfda",
+      "name": "Google Drive Trigger",
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -140,
+        640
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "BVkiHtheS61uART6",
+          "name": "Google christian.gick@clicksports.de"
+        }
+      }
     }
   ],
   "connections": {
@@ -454,17 +478,6 @@
         [
           {
             "node": "Move invalid file",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "When clicking ‘Test workflow’": {
-      "main": [
-        [
-          {
-            "node": "Find receipts in files",
             "type": "main",
             "index": 0
           }
@@ -580,18 +593,33 @@
           }
         ]
       ]
+    },
+    "Google Drive Trigger": {
+      "main": [
+        [
+          {
+            "node": "Find receipts in files",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
     "executionOrder": "v1"
   },
-  "staticData": null,
+  "staticData": {
+    "node:Google Drive Trigger": {
+      "lastTimeChecked": "2024-08-08T08:57:28Z"
+    }
+  },
   "meta": {
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "9ae21f88-5225-4fe6-8b2c-63459cdc6ea5",
-  "triggerCount": 0,
+  "versionId": "04313e46-977d-4a0c-97b0-8c16b4683ffa",
+  "triggerCount": 1,
   "tags": [
     {
       "createdAt": "2024-07-18T13:44:20.706Z",
