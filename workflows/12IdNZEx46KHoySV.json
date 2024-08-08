@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-08-05T15:42:45.331Z",
-  "updatedAt": "2024-08-08T08:57:28.000Z",
+  "updatedAt": "2024-08-08T14:58:42.000Z",
   "id": "12IdNZEx46KHoySV",
   "name": "Annual invoice split direct",
   "active": true,
@@ -67,21 +67,6 @@
       "typeVersion": 3,
       "position": [
         1440,
-        500
-      ]
-    },
-    {
-      "parameters": {
-        "mode": "combine",
-        "combineBy": "combineByPosition",
-        "options": {}
-      },
-      "id": "69f85f48-5a69-4463-9cd7-e224f5e55374",
-      "name": "Merge",
-      "type": "n8n-nodes-base.merge",
-      "typeVersion": 3,
-      "position": [
-        1140,
         500
       ]
     },
@@ -168,7 +153,7 @@
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
       "position": [
-        140,
+        100,
         640
       ],
       "credentials": {
@@ -218,8 +203,8 @@
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
       "position": [
-        2160,
-        400
+        1440,
+        260
       ],
       "credentials": {
         "googleDriveOAuth2Api": {
@@ -389,6 +374,21 @@
     },
     {
       "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "id": "69f85f48-5a69-4463-9cd7-e224f5e55374",
+      "name": "Merge",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        1140,
+        500
+      ]
+    },
+    {
+      "parameters": {
         "modelId": {
           "__rl": true,
           "value": "gpt-4o-mini",
@@ -398,7 +398,7 @@
         "messages": {
           "values": [
             {
-              "content": "Du hast alle Dokumente mit einer einzigartigen Belegnummerin der Datenbank. \nDer Gesamtbetrag pro Belegposition aller Belege soll nach Leistungszeitraum abgegrenzt werden, sodass der jeweilige Anteil der Bilanz eines Geschäftsjahres zugeordnet werden kann.\n\nAnweisungen zur korrekten Aufteilung:\n\nExtrahiere alle Positionen des Belegs und ignoriere Informationen ab der Zwischensumme.\n\nStelle folgende Berechnungen für jede Position an:\n\n1. Bestimme den Gesamtzeitraum der Position anhand von Start- und Enddatum oder anhand des Rechnungsdatums + Anzahl der Jahre im Beschreibungstext der Position. \n\n2. Bestimme die Anzahl der Tage im Gesamtzeitraum. Der erste und der letzte Tag müssen mitgezählt werden. \n\n3. Teile den Netto Gesamtbetrag der Position durch die Anzahl der Tage im Gesamtzeitraum um den Betrag pro Tag zu errechnen.\n\n4. Bestimme den anteiligen Nettobetrag für jedes Jahr, indem du den Betrag pro Tag mit der Anzahl der Tage pro Jahr multiplizierst. \n\n---\n\nRegeln:\n\n1. Wenn das Enddatum des Gesamtzeitraums in einem anderen Jahr als das Startdatum liegt, müssen alle Beträge taggenau bis Jahresende berechnet und der Rest auf alle folgenden Jahre aufgeteilt werden. \n\n2. Der anteilige Betrag pro Tag ist für alle Jahre gleich. \n\n3. Für jedes Jahr soll eine eigene Position zurückgegeben werden die nur die anteiligen Daten aus dem Zeitraum enthält der auf ebendieses Jahr fällt.\n\n4. Die Berechnungen dürfen beliebig viele Nachkommastellen enthalten um Rundungsfehler zu vermeiden.\n\n5. Verwende das Datumsformat für alle Zeiträume: DD.MM.YYYY - DD.MM.YYYY\n\n6. Belege ohne Dateinamen dürfen niemals aufgeführt werden. \n\n7. Eine Position darf pro Jahr nur einmal aufgeführt werden. \n\n8. Enthält der Dateiname _GS- ist der Belegtyp eine Gutschrift. Enthält der Dateiname _RE- ist der Belegtyp eine Rechnung. \n\n9. Die Belegnummer besteht aus dem Präfix RE oder GS + exakt 6 Ganzzahlen und steht im Dateinamen. \n\n10. Die Summe der anteiligen Beträge muss den Gesamtbetrag der Position ergeben.\n\n11. Die Summe der Positionen muss den Gesamtbeitrag des Belegs ergeben.\n\n12. Rechne nur mit Nettobeträgen und ignoriere alle Steuern im Beleg.",
+              "content": "Du hast alle Dokumente mit einer einzigartigen Belegnummerin der Datenbank. \nDer Gesamtbetrag pro Belegposition aller Belege soll nach Leistungszeitraum abgegrenzt werden, sodass der jeweilige Anteil der Bilanz eines Geschäftsjahres zugeordnet werden kann.\n\nAnweisungen zur korrekten Aufteilung:\n\nExtrahiere alle Positionen des Belegs und ignoriere Informationen ab der Zwischensumme.\n\nStelle folgende Berechnungen für jede Position an:\n\n1. Bestimme den Gesamtzeitraum der Position anhand von Start- und Enddatum oder anhand des Rechnungsdatums + Anzahl der Jahre im Beschreibungstext der Position. \n\n2. Bestimme die Anzahl der Tage im Gesamtzeitraum. Der letzte Tag soll nicht mitgezählt werden.\n\n3. Teile den Netto Gesamtbetrag der Position durch die Anzahl der Tage im Gesamtzeitraum um den Betrag pro Tag zu errechnen.\n\n4. Bestimme den anteiligen Nettobetrag für jedes Jahr, indem du den Betrag pro Tag mit der Anzahl der Tage pro Jahr multiplizierst. \n\n---\n\nRegeln:\n\n1. Wenn das Enddatum des Gesamtzeitraums in einem anderen Jahr als das Startdatum liegt, müssen alle Beträge taggenau bis Jahresende berechnet und der Rest auf alle folgenden Jahre aufgeteilt werden. \n\n2. Der anteilige Betrag pro Tag ist für alle Jahre gleich. \n\n3. Für jedes Jahr soll eine eigene Position zurückgegeben werden die nur die anteiligen Daten aus dem Zeitraum enthält der auf ebendieses Jahr fällt.\n\n4. Die Berechnungen dürfen beliebig viele Nachkommastellen enthalten um Rundungsfehler zu vermeiden.\n\n5. Verwende das Datumsformat für alle Zeiträume: DD.MM.YYYY - DD.MM.YYYY\n\n6. Belege ohne Dateinamen dürfen niemals aufgeführt werden. \n\n7. Eine Position darf pro Jahr nur einmal aufgeführt werden. \n\n8. Enthält der Dateiname _GS- ist der Belegtyp eine Gutschrift. Enthält der Dateiname _RE- ist der Belegtyp eine Rechnung. \n\n9. Die Belegnummer besteht aus dem Präfix RE oder GS + exakt 6 Ganzzahlen und steht im Dateinamen. \n\n10. Die Summe der anteiligen Beträge muss den Gesamtbetrag der Position ergeben.\n\n11. Die Summe der Positionen muss den Gesamtbeitrag des Belegs ergeben.\n\n12. Rechne nur mit Nettobeträgen und ignoriere alle Steuern im Beleg.",
               "role": "system"
             },
             {
@@ -431,38 +431,23 @@
     },
     {
       "parameters": {
-        "pollTimes": {
-          "item": [
+        "rule": {
+          "interval": [
             {
-              "mode": "everyMinute"
+              "field": "seconds",
+              "secondsInterval": 10
             }
           ]
-        },
-        "triggerOn": "specificFolder",
-        "folderToWatch": {
-          "__rl": true,
-          "value": "1--InOSXqwW1vm0z7D-HLHzAqy57ju2BX",
-          "mode": "list",
-          "cachedResultName": "n8n",
-          "cachedResultUrl": "https://drive.google.com/drive/folders/1--InOSXqwW1vm0z7D-HLHzAqy57ju2BX"
-        },
-        "event": "fileCreated",
-        "options": {}
-      },
-      "id": "be336a5e-f924-4fc9-9aff-93798b79dfda",
-      "name": "Google Drive Trigger",
-      "type": "n8n-nodes-base.googleDriveTrigger",
-      "typeVersion": 1,
-      "position": [
-        -140,
-        640
-      ],
-      "credentials": {
-        "googleDriveOAuth2Api": {
-          "id": "BVkiHtheS61uART6",
-          "name": "Google christian.gick@clicksports.de"
         }
-      }
+      },
+      "id": "81fa3c7b-4bc8-4834-815d-4f8721ac3276",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -160,
+        640
+      ]
     }
   ],
   "connections": {
@@ -501,17 +486,6 @@
         [
           {
             "node": "OpenAI",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Merge": {
-      "main": [
-        [
-          {
-            "node": "Loop Over Items",
             "type": "main",
             "index": 0
           }
@@ -578,11 +552,11 @@
         ]
       ]
     },
-    "OpenAI": {
+    "Merge": {
       "main": [
         [
           {
-            "node": "Split out positions",
+            "node": "Loop Over Items",
             "type": "main",
             "index": 0
           },
@@ -594,7 +568,18 @@
         ]
       ]
     },
-    "Google Drive Trigger": {
+    "OpenAI": {
+      "main": [
+        [
+          {
+            "node": "Split out positions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
       "main": [
         [
           {
@@ -611,14 +596,17 @@
   },
   "staticData": {
     "node:Google Drive Trigger": {
-      "lastTimeChecked": "2024-08-08T08:57:28Z"
+      "lastTimeChecked": "2024-08-08T14:57:33Z"
+    },
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
     }
   },
   "meta": {
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "04313e46-977d-4a0c-97b0-8c16b4683ffa",
+  "versionId": "dae007e2-2e95-444a-94f6-82be3f6a039c",
   "triggerCount": 1,
   "tags": [
     {
