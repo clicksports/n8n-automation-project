@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-08-05T15:42:45.331Z",
-  "updatedAt": "2024-08-10T10:59:07.000Z",
+  "updatedAt": "2024-08-10T11:20:10.000Z",
   "id": "12IdNZEx46KHoySV",
   "name": "Annual invoice split direct",
   "active": false,
@@ -413,17 +413,17 @@
               "role": "system"
             },
             {
-              "content": "Regeln:\n\n1. Wenn das Enddatum des Gesamtzeitraums in einem anderen Jahr als das Startdatum liegt, müssen alle Beträge taggenau bis Jahresende berechnet und der Rest auf alle folgenden Jahre aufgeteilt werden. Die auf Jahre verteilten Tage müssen in Summe wieder die Anzahl der Tage im Gesamtzeitraum ergeben.\n\n2. Der anteilige Betrag pro Tag ist für alle Jahre gleich. \n\n3. Für jedes Jahr soll eine eigene Position zurückgegeben werden die nur die anteiligen Daten aus dem Zeitraum enthält der auf ebendieses Jahr fällt.\n\n4. Die Berechnungen dürfen beliebig viele Nachkommastellen enthalten um Rundungsfehler zu vermeiden.\n\n5. Formatiere den Gesamtzeitraum als auch die anteiligen Zeiträume immer: DD.MM.YYYY - DD.MM.YYYY\n\n6. Belege ohne Dateinamen dürfen niemals aufgeführt werden. \n\n7. Eine Position darf pro Jahr nur einmal aufgeführt werden. \n\n8. Enthält der Dateiname _GS- setze Belegtyp Gutschrift. Enthält der Dateiname _RE- setze Belegtyp Rechnung. \n\n9. Die Belegnummer steht im Dateinamen und besteht aus dem Präfix mit zwei Buchstaben + exakt 6 Ganzzahlen. \n\n10. Die Summe der anteiligen Beträge muss den Gesamtbetrag der Position ergeben.\n\n11. Die Summe der Positionen muss den Gesamtbeitrag des Belegs ergeben.\n\n12. Rechne nur mit Nettobeträgen und ignoriere alle Steuern im Beleg.",
+              "content": "Regeln:\n\n* Wenn das Enddatum des Gesamtzeitraums in einem anderen Jahr als das Startdatum liegt, müssen alle Beträge taggenau bis Jahresende berechnet und der Rest auf soviele Folgejahre aufgeteilt werden bis das Enddatum erreicht ist. Die auf Jahre verteilten Tage müssen in Summe wieder die Anzahl der Tage im Gesamtzeitraum ergeben.\n\n* Der anteilige Betrag pro Tag ist für alle Jahre gleich. \n\n* Für jedes Jahr einer Position soll eine eigene Zeile zurückgegeben werden die nur die anteiligen Daten aus dem Zeitraum enthält der auf ebendieses Jahr fällt.\n\n* Die Berechnungen dürfen beliebig viele Nachkommastellen enthalten um Rundungsfehler zu vermeiden.\n\n* Belege ohne Dateinamen dürfen niemals aufgeführt werden. \n\n* Eine Position darf pro Jahr nur einmal aufgeführt werden. \n\n* Enthält der Dateiname _GS- setze Belegtyp Gutschrift. Enthält der Dateiname _RE- setze Belegtyp Rechnung. \n\n* Die Belegnummer steht im Dateinamen und besteht aus dem Präfix mit zwei Buchstaben + exakt 6 Ganzzahlen. \n\n* Die Summe der anteiligen Beträge muss den Gesamtbetrag der Position ergeben.\n\n* Die Summe der Positionen muss den Gesamtbeitrag des Belegs ergeben.\n\n* Rechne nur mit Nettobeträgen und ignoriere alle Steuern im Beleg.",
               "role": "system"
             },
             {
-              "content": "Anweisungen zur korrekten Aufteilung:\n\nExtrahiere alle Positionen des Belegs und ignoriere Informationen ab der Zwischensumme.\n\nStelle folgende Berechnungen für jede Position an:\n\n1. Gesamtzeitraum: Bestimme den Gesamtzeitraum der Position anhand von Start- und Enddatum oder anhand des Rechnungsdatums + Anzahl der Jahre im Beschreibungstext der Position. \n\n2. Anzahl Tage im Gesamtzeitraum: Bestimme die Anzahl der Tage im Gesamtzeitraum. Der letzte Tag soll nicht mitgezählt werden außer der Zeitraum ist nur ein Tag.\n\n3. Betrag pro Tag: Teile den Netto Gesamtbetrag der Position durch die Anzahl der Tage im Gesamtzeitraum um den Betrag pro Tag zu errechnen.\n\n4. Bestimme den anteiligen Nettobetrag für jedes Jahr, indem du den Betrag pro Tag mit der Anzahl der Tage pro Jahr multiplizierst. "
+              "content": "Anweisungen zur korrekten Aufteilung:\n\nExtrahiere alle Positionen des Belegs und ignoriere Informationen ab der Zwischensumme.\n\nStelle folgende Berechnungen für jede Position an:\n\n* Gesamtzeitraum: Bestimme den Gesamtzeitraum der Position anhand von Start- und Enddatum oder anhand des Rechnungsdatums + Anzahl der Jahre im Beschreibungstext der Position. \n\n* Anzahl Tage im Gesamtzeitraum: Bestimme die Anzahl der Tage im Gesamtzeitraum. Der letzte Tag soll nicht mitgezählt werden außer der Zeitraum ist nur ein Tag.\n\n* Betrag pro Tag: Teile den Netto Gesamtbetrag der Position durch die Anzahl der Tage im Gesamtzeitraum um den Betrag pro Tag zu errechnen.\n\n* Bestimme den anteiligen Nettobetrag für jedes Jahr, indem du den Betrag pro Tag mit der Anzahl der Tage pro Jahr multiplizierst. "
             },
             {
               "content": "=Die Datei \"{{ $('Merge').item.json.name }}\" enhält: \"{{ $('Merge').item.json.text }}\""
             },
             {
-              "content": "Gib die Variable \"Positionen\" als Array mit folgenden Spalten zurück. Bei Belegtyp Gutschrift werden negative Beträge benötigt, vor der Rückgabe müssen also alle positiven Beträge mit -1 multipliziert werden: \n\nBelegtyp\t\nBelegnummer\t\nBezeichnung der Position\t\nGesamtzeitraum\t\nNettobetrag Gesamtzeitraum\nAnzahl Tage im Gesamtzeitraum\nBetrag pro Tag\t\nAnteiliger Zeitraum\t\nJahr\t\nAnzahl Tage im anteiligen Zeitraum\nNettobetrag im anteiligen Zeitraum\nRechenweg"
+              "content": "Gib die Variable \"Positionen\" als Array mit folgenden Spalten zurück. Bei Belegtyp Gutschrift werden negative Beträge benötigt, vor der Rückgabe müssen also alle positiven Beträge mit -1 multipliziert werden. Ausgabeformat anteiliger Zeitraum und Gesamtzeitraum: TT.MM.JJJJ - TT.MM.JJJJ\n\nBelegtyp\t\nBelegnummer\t\nBezeichnung der Position\t\nGesamtzeitraum\t\nNettobetrag Gesamtzeitraum\nAnzahl Tage im Gesamtzeitraum\nBetrag pro Tag\t\nAnteiliger Zeitraum\t\nJahr\t\nAnzahl Tage im anteiligen Zeitraum\nNettobetrag im anteiligen Zeitraum\nRechenweg"
             }
           ]
         },
@@ -604,7 +604,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "f056370b-4de0-457d-aa11-1d1bd926fabf",
+  "versionId": "fb276d36-d76d-4b04-94a6-e6dded7027e1",
   "triggerCount": 1,
   "tags": [
     {
