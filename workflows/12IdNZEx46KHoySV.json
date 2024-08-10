@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-08-05T15:42:45.331Z",
-  "updatedAt": "2024-08-09T07:30:57.000Z",
+  "updatedAt": "2024-08-10T10:59:07.000Z",
   "id": "12IdNZEx46KHoySV",
   "name": "Annual invoice split direct",
   "active": false,
@@ -413,7 +413,7 @@
               "role": "system"
             },
             {
-              "content": "Regeln:\n\n1. Wenn das Enddatum des Gesamtzeitraums in einem anderen Jahr als das Startdatum liegt, müssen alle Beträge taggenau bis Jahresende berechnet und der Rest auf alle folgenden Jahre aufgeteilt werden. Die auf Jahre verteilten Tage müssen in Summe wieder die Anzahl der Tage im Gesamtzeitraum ergeben.\n\n2. Der anteilige Betrag pro Tag ist für alle Jahre gleich. \n\n3. Für jedes Jahr soll eine eigene Position zurückgegeben werden die nur die anteiligen Daten aus dem Zeitraum enthält der auf ebendieses Jahr fällt.\n\n4. Die Berechnungen dürfen beliebig viele Nachkommastellen enthalten um Rundungsfehler zu vermeiden.\n\n5. Formatiere den Gesamtzeitraum als auch die anteiligen Zeiträume immer: DD.MM.YYYY - DD.MM.YYYY\n\n6. Belege ohne Dateinamen dürfen niemals aufgeführt werden. \n\n7. Eine Position darf pro Jahr nur einmal aufgeführt werden. \n\n8. Enthält der Dateiname _GS- ist der Belegtyp eine Gutschrift. Enthält der Dateiname _RE- ist der Belegtyp eine Rechnung. \n\n9. Die Belegnummer steht im Dateinamen und besteht aus dem Präfix mit zwei Buchstaben + exakt 6 Ganzzahlen. \n\n10. Die Summe der anteiligen Beträge muss den Gesamtbetrag der Position ergeben.\n\n11. Die Summe der Positionen muss den Gesamtbeitrag des Belegs ergeben.\n\n12. Rechne nur mit Nettobeträgen und ignoriere alle Steuern im Beleg.\n\n",
+              "content": "Regeln:\n\n1. Wenn das Enddatum des Gesamtzeitraums in einem anderen Jahr als das Startdatum liegt, müssen alle Beträge taggenau bis Jahresende berechnet und der Rest auf alle folgenden Jahre aufgeteilt werden. Die auf Jahre verteilten Tage müssen in Summe wieder die Anzahl der Tage im Gesamtzeitraum ergeben.\n\n2. Der anteilige Betrag pro Tag ist für alle Jahre gleich. \n\n3. Für jedes Jahr soll eine eigene Position zurückgegeben werden die nur die anteiligen Daten aus dem Zeitraum enthält der auf ebendieses Jahr fällt.\n\n4. Die Berechnungen dürfen beliebig viele Nachkommastellen enthalten um Rundungsfehler zu vermeiden.\n\n5. Formatiere den Gesamtzeitraum als auch die anteiligen Zeiträume immer: DD.MM.YYYY - DD.MM.YYYY\n\n6. Belege ohne Dateinamen dürfen niemals aufgeführt werden. \n\n7. Eine Position darf pro Jahr nur einmal aufgeführt werden. \n\n8. Enthält der Dateiname _GS- setze Belegtyp Gutschrift. Enthält der Dateiname _RE- setze Belegtyp Rechnung. \n\n9. Die Belegnummer steht im Dateinamen und besteht aus dem Präfix mit zwei Buchstaben + exakt 6 Ganzzahlen. \n\n10. Die Summe der anteiligen Beträge muss den Gesamtbetrag der Position ergeben.\n\n11. Die Summe der Positionen muss den Gesamtbeitrag des Belegs ergeben.\n\n12. Rechne nur mit Nettobeträgen und ignoriere alle Steuern im Beleg.",
               "role": "system"
             },
             {
@@ -604,7 +604,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "4f457b36-cd96-444c-b173-cc52d7627a8e",
+  "versionId": "f056370b-4de0-457d-aa11-1d1bd926fabf",
   "triggerCount": 1,
   "tags": [
     {
