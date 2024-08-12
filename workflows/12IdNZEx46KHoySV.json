@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-08-05T15:42:45.331Z",
-  "updatedAt": "2024-08-12T09:58:37.000Z",
+  "updatedAt": "2024-08-12T10:10:09.000Z",
   "id": "12IdNZEx46KHoySV",
   "name": "Annual invoice split direct",
   "active": false,
@@ -416,11 +416,11 @@
               "role": "system"
             },
             {
-              "content": "Regeln:\n\n* Ignoriere Belege ohne Dateinamen.\n* Ignoriere alle Informationen im Beleg ab der Zwischensumme.\n* Enthält der Dateiname _GS- setze Belegtyp Gutschrift. Enthält der Dateiname _RE- setze Belegtyp Rechnung. \n* Die Belegnummer steht im Dateinamen und besteht aus dem Präfix mit zwei Buchstaben + exakt 6 Ganzzahlen. \n* Rechne nur mit Nettobeträgen und ignoriere alle Steuern im Beleg.\n* Berechnungen dürfen beliebig viele Nachkommastellen enthalten um Rundungsfehler zu vermeiden.\n* Der anteilige Betrag einer Position pro Tag ist für alle Jahre gleich. \n* Die Summe der anteiligen Beträge pro Jahr muss den Gesamtbetrag der Position ergeben.",
+              "content": "Regeln für Belege:\n\n* Ignoriere Belege ohne Dateinamen.\n* Ignoriere alle Informationen im Beleg ab der Zwischensumme.\n* Enthält der Dateiname _GS- setze Belegtyp Gutschrift. Enthält der Dateiname _RE- setze Belegtyp Rechnung. \n* Die Belegnummer steht im Dateinamen und besteht aus dem Präfix mit zwei Buchstaben + exakt 6 Ganzzahlen. \n* Rechne nur mit Nettobeträgen und ignoriere alle Steuern im Beleg.\n* Berechnungen dürfen beliebig viele Nachkommastellen enthalten um Rundungsfehler zu vermeiden.\n\nRegeln für Positionen und Zeilen:\n\n* Der anteilige tägliche Betrag einer Position ist für alle Jahre gleich. \n* Die Summe der anteiligen Beträge pro Jahr muss den Gesamtbetrag der Position ergeben.\n* Die Summe der Tage aller anteiligen Positionen muss die Anzahl der Tage im Gesamtzeitraum geben.",
               "role": "system"
             },
             {
-              "content": "Anweisungen zur korrekten Aufteilung:\n\n* Extrahiere alle Positionen des Belegs und stelle folgende Berechnungen an:\n* Gesamtzeitraum: Bestimme den Gesamtzeitraum der Position anhand von Start- und Enddatum oder anhand des Belegdatums + Anzahl Jahr(e) im Beschreibungstext. \n* Anzahl Tage im Gesamtzeitraum: Bestimme die Anzahl der Tage im Gesamtzeitraum. Der letzte Tag soll nicht mitgezählt werden außer der Zeitraum ist nur ein Tag.\n* Betrag pro Tag: Teile den Netto Gesamtbetrag der Position durch die Anzahl der Tage im Gesamtzeitraum um den Betrag pro Tag zu errechnen.\n* Teile den Gesamtzeitraum taggenau nach Jahren auf und gib den anteiligen Zeitraum eines jeden Jahres als eigenen Zeile zurück\n* Bereche für jede Zeile den anteiligen Nettobetrag pro Jahr, indem du den Betrag pro Tag mit der Anzahl der Tage pro Jahr multiplizierst. "
+              "content": "Extrahiere alle Positionen des Belegs und stelle folgende Berechnungen für jede Position an:\n\n* Gesamtzeitraum: Bestimme den Gesamtzeitraum der Position anhand von Start- und Enddatum oder anhand des Belegdatums + Anzahl Jahr(e) im Beschreibungstext. \n* Anzahl Tage im Gesamtzeitraum: Bestimme die Anzahl der Tage im Gesamtzeitraum. Der letzte Tag soll nicht mitgezählt werden außer der Zeitraum ist nur ein Tag.\n* Betrag pro Tag: Teile den Netto Gesamtbetrag der Position durch die Anzahl der Tage im Gesamtzeitraum um den Betrag pro Tag zu errechnen.\n* Teile den Gesamtzeitraum taggenau nach Jahren auf und gib den anteiligen Zeitraum in einzelnen Zeilen zurück\n* Pro Position und Jahr soll es genau eine Zeile geben\n* Berechne für jede Zeile den anteiligen Nettobetrag pro Jahr, indem du den Betrag pro Tag mit der Anzahl der Tage pro Jahr multiplizierst. "
             },
             {
               "content": "=Die Datei \"{{ $('Merge').item.json.name }}\" enhält: \"{{ $('Merge').item.json.text }}\""
@@ -607,7 +607,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "6a1d7c9c-204d-412c-9aa7-153376bc8f02",
+  "versionId": "fb9626a9-46ec-44c8-b92f-ca93014a2168",
   "triggerCount": 1,
   "tags": [
     {
