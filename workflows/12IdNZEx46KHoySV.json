@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-08-05T15:42:45.331Z",
-  "updatedAt": "2024-08-10T11:20:10.000Z",
+  "updatedAt": "2024-08-12T06:09:15.000Z",
   "id": "12IdNZEx46KHoySV",
   "name": "Annual invoice split direct",
   "active": false,
@@ -413,11 +413,11 @@
               "role": "system"
             },
             {
-              "content": "Regeln:\n\n* Wenn das Enddatum des Gesamtzeitraums in einem anderen Jahr als das Startdatum liegt, müssen alle Beträge taggenau bis Jahresende berechnet und der Rest auf soviele Folgejahre aufgeteilt werden bis das Enddatum erreicht ist. Die auf Jahre verteilten Tage müssen in Summe wieder die Anzahl der Tage im Gesamtzeitraum ergeben.\n\n* Der anteilige Betrag pro Tag ist für alle Jahre gleich. \n\n* Für jedes Jahr einer Position soll eine eigene Zeile zurückgegeben werden die nur die anteiligen Daten aus dem Zeitraum enthält der auf ebendieses Jahr fällt.\n\n* Die Berechnungen dürfen beliebig viele Nachkommastellen enthalten um Rundungsfehler zu vermeiden.\n\n* Belege ohne Dateinamen dürfen niemals aufgeführt werden. \n\n* Eine Position darf pro Jahr nur einmal aufgeführt werden. \n\n* Enthält der Dateiname _GS- setze Belegtyp Gutschrift. Enthält der Dateiname _RE- setze Belegtyp Rechnung. \n\n* Die Belegnummer steht im Dateinamen und besteht aus dem Präfix mit zwei Buchstaben + exakt 6 Ganzzahlen. \n\n* Die Summe der anteiligen Beträge muss den Gesamtbetrag der Position ergeben.\n\n* Die Summe der Positionen muss den Gesamtbeitrag des Belegs ergeben.\n\n* Rechne nur mit Nettobeträgen und ignoriere alle Steuern im Beleg.",
+              "content": "Regeln:\n\n* Der anteilige Betrag pro Tag ist für alle Jahre gleich. \n\n* Die Berechnungen dürfen beliebig viele Nachkommastellen enthalten um Rundungsfehler zu vermeiden.\n\n* Belege ohne Dateinamen dürfen niemals aufgeführt werden. \n\n* Enthält der Dateiname _GS- setze Belegtyp Gutschrift. Enthält der Dateiname _RE- setze Belegtyp Rechnung. \n\n* Die Belegnummer steht im Dateinamen und besteht aus dem Präfix mit zwei Buchstaben + exakt 6 Ganzzahlen. \n\n* Die Summe der anteiligen Beträge muss den Gesamtbetrag der Position ergeben.\n\n* Die Summe der Positionen muss den Gesamtbeitrag des Belegs ergeben.\n\n* Rechne nur mit Nettobeträgen und ignoriere alle Steuern im Beleg.",
               "role": "system"
             },
             {
-              "content": "Anweisungen zur korrekten Aufteilung:\n\nExtrahiere alle Positionen des Belegs und ignoriere Informationen ab der Zwischensumme.\n\nStelle folgende Berechnungen für jede Position an:\n\n* Gesamtzeitraum: Bestimme den Gesamtzeitraum der Position anhand von Start- und Enddatum oder anhand des Rechnungsdatums + Anzahl der Jahre im Beschreibungstext der Position. \n\n* Anzahl Tage im Gesamtzeitraum: Bestimme die Anzahl der Tage im Gesamtzeitraum. Der letzte Tag soll nicht mitgezählt werden außer der Zeitraum ist nur ein Tag.\n\n* Betrag pro Tag: Teile den Netto Gesamtbetrag der Position durch die Anzahl der Tage im Gesamtzeitraum um den Betrag pro Tag zu errechnen.\n\n* Bestimme den anteiligen Nettobetrag für jedes Jahr, indem du den Betrag pro Tag mit der Anzahl der Tage pro Jahr multiplizierst. "
+              "content": "Anweisungen zur korrekten Aufteilung:\n\nExtrahiere alle Positionen des Belegs und ignoriere Informationen ab der Zwischensumme.\n\nStelle folgende Berechnungen für jede Position an:\n\n* Gesamtzeitraum: Bestimme den Gesamtzeitraum der Position anhand von Start- und Enddatum oder anhand des Rechnungsdatums + Anzahl der Jahre im Beschreibungstext der Position. \n\n* Anzahl Tage im Gesamtzeitraum: Bestimme die Anzahl der Tage im Gesamtzeitraum. Der letzte Tag soll nicht mitgezählt werden außer der Zeitraum ist nur ein Tag.\n\n* Betrag pro Tag: Teile den Netto Gesamtbetrag der Position durch die Anzahl der Tage im Gesamtzeitraum um den Betrag pro Tag zu errechnen.\n\n* Bestimme den anteiligen Nettobetrag für jedes Jahr, indem du den Betrag pro Tag mit der Anzahl der Tage pro Jahr multiplizierst. \n\n* Wenn das Enddatum des Gesamtzeitraums in einem anderen Jahr als das Startdatum liegt, müssen alle Beträge taggenau bis Jahresende berechnet. Die restlichen Folgejahre des Gesamtzeitraums sollen auf anteilige Zeiträume in eigenen Zeilen aufgeteilt werden bis das Enddatum erreicht ist. Die auf die anteiligen Zeiträume verteilten Tage müssen in Summe wieder die Anzahl der Tage im Gesamtzeitraum ergeben. "
             },
             {
               "content": "=Die Datei \"{{ $('Merge').item.json.name }}\" enhält: \"{{ $('Merge').item.json.text }}\""
@@ -604,7 +604,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "fb276d36-d76d-4b04-94a6-e6dded7027e1",
+  "versionId": "26deba13-0b5a-4340-bfc9-3b2bc79a4638",
   "triggerCount": 1,
   "tags": [
     {
