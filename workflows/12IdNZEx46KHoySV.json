@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-08-05T15:42:45.331Z",
-  "updatedAt": "2024-08-12T10:10:09.000Z",
+  "updatedAt": "2024-08-12T12:58:07.000Z",
   "id": "12IdNZEx46KHoySV",
   "name": "Annual invoice split direct",
   "active": false,
@@ -412,7 +412,7 @@
         "messages": {
           "values": [
             {
-              "content": "Du hast alle Dokumente mit einer einzigartigen Belegnummerin der Datenbank. \nDer Gesamtbetrag pro Belegposition aller Belege soll nach Leistungszeitraum abgegrenzt werden, sodass der jeweilige Anteil der Bilanz eines Geschäftsjahres zugeordnet werden kann. Achte bei der Berechnung der Anzahl von Tagen in Zeiträumen auf Schaltjahre!",
+              "content": "Du hast alle Dokumente mit einer einzigartigen Belegnummerin der Datenbank. \nDie Positionen der Belege sollen nach Leistungszeitraum in einzelne Zeilen aufgeteilt werden, sodass der jeweilige Anteil des Belegs der Bilanz eines Geschäftsjahres zugeordnet werden kann. Achte bei der Berechnung der Anzahl von Tagen in Zeiträumen auf Schaltjahre!",
               "role": "system"
             },
             {
@@ -420,13 +420,13 @@
               "role": "system"
             },
             {
-              "content": "Extrahiere alle Positionen des Belegs und stelle folgende Berechnungen für jede Position an:\n\n* Gesamtzeitraum: Bestimme den Gesamtzeitraum der Position anhand von Start- und Enddatum oder anhand des Belegdatums + Anzahl Jahr(e) im Beschreibungstext. \n* Anzahl Tage im Gesamtzeitraum: Bestimme die Anzahl der Tage im Gesamtzeitraum. Der letzte Tag soll nicht mitgezählt werden außer der Zeitraum ist nur ein Tag.\n* Betrag pro Tag: Teile den Netto Gesamtbetrag der Position durch die Anzahl der Tage im Gesamtzeitraum um den Betrag pro Tag zu errechnen.\n* Teile den Gesamtzeitraum taggenau nach Jahren auf und gib den anteiligen Zeitraum in einzelnen Zeilen zurück\n* Pro Position und Jahr soll es genau eine Zeile geben\n* Berechne für jede Zeile den anteiligen Nettobetrag pro Jahr, indem du den Betrag pro Tag mit der Anzahl der Tage pro Jahr multiplizierst. "
+              "content": "Extrahiere alle Positionen des Belegs und stelle folgende Berechnungen für jede Position an:\n\n* Gesamtzeitraum: Bestimme den Gesamtzeitraum der Position anhand von Start- und Enddatum oder anhand des Belegdatums + Anzahl Jahr(e) im Beschreibungstext. \n* Anzahl Tage im Gesamtzeitraum: Bestimme die Anzahl der Tage im Gesamtzeitraum. Der letzte Tag soll nicht mitgezählt werden außer der Zeitraum ist nur ein Tag.\n* Betrag pro Tag: Teile den Netto Gesamtbetrag der Position durch die Anzahl der Tage im Gesamtzeitraum um den Betrag pro Tag zu errechnen.\n* Teile den Gesamtzeitraum taggenau nach Jahren auf und gib den anteiligen Zeitraum in einzelnen Zeilen zurück. Der letzte Tag soll hier immer mitgezählt werden.\n* Berechne für jede Zeile den anteiligen jährlichen Nettobetrag, indem du den Betrag pro Tag mit der Anzahl der Tage im Jahr der aktuellen Zeile multiplizierst. "
             },
             {
               "content": "=Die Datei \"{{ $('Merge').item.json.name }}\" enhält: \"{{ $('Merge').item.json.text }}\""
             },
             {
-              "content": "Gib die Variable \"Positionen\" als Array mit folgenden Spalten zurück. Bei Belegtyp Gutschrift werden negative Beträge benötigt, vor der Rückgabe müssen also alle positiven Beträge mit -1 multipliziert werden. Ausgabeformat anteiliger Zeitraum und Gesamtzeitraum: TT.MM.JJJJ - TT.MM.JJJJ\n\nBelegtyp\t\nBelegnummer\t\nBezeichnung der Position\t\nGesamtzeitraum\t\nNettobetrag Gesamtzeitraum\nAnzahl Tage im Gesamtzeitraum\nBetrag pro Tag\t\nAnteiliger Zeitraum\t\nJahr\t\nAnzahl Tage im anteiligen Zeitraum\nNettobetrag im anteiligen Zeitraum\nRechenweg"
+              "content": "Gib die Variable \"Positionen\" als Array mit folgenden Spalten zurück. Dabei gilt:\n\n* Bei Belegtyp Gutschrift werden negative Beträge benötigt, vor der Rückgabe müssen also alle positiven Beträge mit -1 multipliziert werden. \n* Ausgabeformat anteiliger Zeitraum und Gesamtzeitraum: TT.MM.JJJJ - TT.MM.JJJJ\n* Der Rechenweg soll alle Kalkutionen der Zeile und auch die Herleitung der Zeitraumberechnungen beinhalten \n\nBelegtyp\t\nBelegnummer\t\nBezeichnung der Position\t\nGesamtzeitraum\t\nNettobetrag Gesamtzeitraum\nAnzahl Tage im Gesamtzeitraum\nBetrag pro Tag\t\nAnteiliger Zeitraum\t\nJahr\t\nAnzahl Tage im anteiligen Zeitraum\nNettobetrag im anteiligen Zeitraum\nRechenweg"
             }
           ]
         },
@@ -607,7 +607,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "fb9626a9-46ec-44c8-b92f-ca93014a2168",
+  "versionId": "23c1b2e6-f4a9-4843-91ef-da17ff2613d0",
   "triggerCount": 1,
   "tags": [
     {
