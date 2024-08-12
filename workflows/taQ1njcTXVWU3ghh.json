@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-07-18T11:47:48.486Z",
-  "updatedAt": "2024-08-12T08:59:14.000Z",
+  "updatedAt": "2024-08-12T09:00:22.000Z",
   "id": "taQ1njcTXVWU3ghh",
   "name": "Mailhandler",
   "active": true,
@@ -1362,6 +1362,12 @@
         },
         "summary": "={{ $json.subject }}",
         "additionalFields": {
+          "assignee": {
+            "__rl": true,
+            "value": "5eba311706a3eb0b7e415e2c",
+            "mode": "list",
+            "cachedResultName": "Christian Gick"
+          },
           "description": "={{ $json.message.content.reason }}\n\n{{ $json.message.content.abstract }}\n\n{{ $json.data }}"
         }
       },
@@ -1410,6 +1416,21 @@
       "position": [
         1760,
         2080
+      ]
+    },
+    {
+      "parameters": {
+        "content": "https://clicksports.atlassian.net/jira/settings/automation#/rule/20715088",
+        "height": 80,
+        "width": 548.4917042211861
+      },
+      "id": "d761c01d-9ef3-4ead-99fc-c03c7dba2ca1",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        2280
       ]
     }
   ],
@@ -2087,14 +2108,14 @@
   },
   "staticData": {
     "node:Mail": {
-      "lastMessageUid": 65639
+      "lastMessageUid": 65643
     }
   },
   "meta": {
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "2d5059f2-1816-420e-809e-2bff9769ae29",
+  "versionId": "10cba6e9-299f-4e90-b4f6-a58d21c154e0",
   "triggerCount": 1,
   "tags": [
     {
