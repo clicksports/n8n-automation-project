@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-07-18T13:45:15.038Z",
-  "updatedAt": "2024-07-25T11:32:27.000Z",
+  "updatedAt": "2024-08-12T08:51:50.000Z",
   "id": "cqcJ992iflBy0Zb9",
   "name": "Find issue for mail",
   "active": false,
@@ -32,8 +32,8 @@
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1,
       "position": [
-        -600,
-        520
+        -460,
+        540
       ]
     },
     {
@@ -57,8 +57,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        640,
-        520
+        540,
+        400
       ]
     },
     {
@@ -335,11 +335,9 @@
           "mode": "list",
           "cachedResultName": "n8n"
         },
-        "prompt": "=Durchsuche den Index nach einem passenden Vorgang zur Nachricht von {{ $json.from.value[0].name }} die per Mail von {{ $json.from.value[0].address }} kam mit folgenden Text enthält: {{ $json.data }}. Die Zusammenfassung der Nachricht ist: {{ $json.message.content.abstract }}\n\nBevorzuge neuere Einträge und Vorgänge mit einem aktiven Status (In Arbeit, Vorbereitung, Planung, Schätzung usw.) in den Metadaten statt Status Fertig.\n\nIm Text enthaltene Mailadressen oder Domainnamen von Projekten sind sehr wichtig für die Zuordnung.",
+        "prompt": "=Durchsuche den Index nach einem passenden Vorgang zur Nachricht von {{ $json.from.value[0].name }} die per Mail von {{ $json.from.value[0].address }} kam mit folgenden Text enthält: {{ $json.data }}. Die Zusammenfassung der Nachricht ist: {{ $json.message.content.abstract }}\n\nIgnoriere Vorgänge mit Status Fertig in den Metadaten.",
         "topK": 1,
-        "options": {
-          "pineconeNamespace": "issues"
-        }
+        "options": {}
       },
       "id": "7cd735ed-2516-4728-9171-ce99af4f3b3f",
       "name": "Pinecone Vector Store",
@@ -499,7 +497,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "7aa33525-edbc-4db5-9419-80d1ab2eb58d",
+  "versionId": "21c81c1d-c28d-4140-897b-9566246535f9",
   "triggerCount": 0,
   "tags": [
     {

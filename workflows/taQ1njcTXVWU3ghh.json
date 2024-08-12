@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-07-18T11:47:48.486Z",
-  "updatedAt": "2024-08-10T11:55:09.000Z",
+  "updatedAt": "2024-08-12T08:59:14.000Z",
   "id": "taQ1njcTXVWU3ghh",
   "name": "Mailhandler",
   "active": true,
@@ -97,7 +97,7 @@
       "type": "n8n-nodes-base.ssh",
       "typeVersion": 1,
       "position": [
-        2900,
+        3120,
         960
       ],
       "credentials": {
@@ -299,21 +299,6 @@
     },
     {
       "parameters": {
-        "workflowId": "cqcJ992iflBy0Zb9",
-        "mode": "each",
-        "options": {}
-      },
-      "id": "a908011c-d784-4e7e-9808-3e7a2e223d1b",
-      "name": "Find related issue",
-      "type": "n8n-nodes-base.executeWorkflow",
-      "typeVersion": 1,
-      "position": [
-        1500,
-        1960
-      ]
-    },
-    {
-      "parameters": {
         "errorMessage": "Message ID missing"
       },
       "id": "3c006a01-b2a2-4b17-bc94-a6ce381ab8b3",
@@ -427,8 +412,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        2080,
-        1960
+        2240,
+        2080
       ]
     },
     {
@@ -915,7 +900,7 @@
           "parameters": [
             {
               "name": "issue",
-              "value": "SE-19884"
+              "value": "={{ $json.key }}"
             }
           ]
         },
@@ -932,7 +917,7 @@
             },
             {
               "name": "issue",
-              "value": "={{ $('Find related issue').item.json.issuekey }}"
+              "value": "={{ $('Find related issues').item.json.issuekey }}"
             },
             {
               "name": "ticketlink",
@@ -970,8 +955,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1800,
-        1960
+        2000,
+        2080
       ],
       "alwaysOutputData": true,
       "executeOnce": true
@@ -1129,7 +1114,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        2680,
+        2900,
         960
       ]
     },
@@ -1359,6 +1344,72 @@
       "position": [
         620,
         880
+      ]
+    },
+    {
+      "parameters": {
+        "project": {
+          "__rl": true,
+          "value": "22001",
+          "mode": "list",
+          "cachedResultName": "Testprojekt"
+        },
+        "issueType": {
+          "__rl": true,
+          "value": "12401",
+          "mode": "list",
+          "cachedResultName": "Ticket"
+        },
+        "summary": "={{ $json.subject }}",
+        "additionalFields": {
+          "description": "={{ $json.message.content.reason }}\n\n{{ $json.message.content.abstract }}\n\n{{ $json.data }}"
+        }
+      },
+      "id": "927ca376-911b-40e4-84eb-ad07ee81eda0",
+      "name": "Create issue",
+      "type": "n8n-nodes-base.jira",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        2200
+      ],
+      "credentials": {
+        "jiraSoftwareCloudApi": {
+          "id": "HlsaLdc6YFfeasWO",
+          "name": "Jira christian.gick@clicksports.de"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": "cqcJ992iflBy0Zb9",
+        "mode": "each",
+        "options": {}
+      },
+      "id": "a908011c-d784-4e7e-9808-3e7a2e223d1b",
+      "name": "Find related issues",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        1960
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {
+          "includeUnpaired": true
+        }
+      },
+      "id": "0f243b05-ac9a-43b2-b5a2-d93397d595e1",
+      "name": "Merge8",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        1760,
+        2080
       ]
     }
   ],
@@ -1759,17 +1810,6 @@
         ]
       ]
     },
-    "Find related issue": {
-      "main": [
-        [
-          {
-            "node": "Comment issue",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Google Drive1": {
       "main": [
         [
@@ -1785,7 +1825,12 @@
       "main": [
         [
           {
-            "node": "Find related issue",
+            "node": "Find related issues",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Create issue",
             "type": "main",
             "index": 0
           }
@@ -1999,6 +2044,39 @@
           }
         ]
       ]
+    },
+    "Find related issues": {
+      "main": [
+        [
+          {
+            "node": "Merge8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create issue": {
+      "main": [
+        [
+          {
+            "node": "Merge8",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge8": {
+      "main": [
+        [
+          {
+            "node": "Comment issue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -2009,14 +2087,14 @@
   },
   "staticData": {
     "node:Mail": {
-      "lastMessageUid": 65634
+      "lastMessageUid": 65639
     }
   },
   "meta": {
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "b5ffb040-5e0e-46c5-ae3b-74db6fffdc6b",
+  "versionId": "2d5059f2-1816-420e-809e-2bff9769ae29",
   "triggerCount": 1,
   "tags": [
     {
