@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-08-05T15:42:45.331Z",
-  "updatedAt": "2024-08-12T12:58:07.000Z",
+  "updatedAt": "2024-08-12T13:52:51.000Z",
   "id": "12IdNZEx46KHoySV",
   "name": "Annual invoice split direct",
   "active": false,
@@ -37,37 +37,63 @@
         },
         "options": {}
       },
-      "id": "c6664989-51ed-443f-98e1-a1510526695a",
+      "id": "d5cdd00a-b33b-4787-87f9-43cdfd94abe4",
       "name": "If",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        360,
-        640
+        -12060,
+        660
       ]
     },
     {
       "parameters": {},
-      "id": "3254b104-f06f-4faf-80a7-b18c1a24b5ac",
+      "id": "62da6368-e1d7-4c1c-b59d-2ea0cfd72216",
+      "name": "When clicking ‘Test workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -12500,
+        660
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "9dade018-8d10-4ab5-a5e7-6023df6618eb",
       "name": "Calculator",
       "type": "@n8n/n8n-nodes-langchain.toolCalculator",
       "typeVersion": 1,
       "position": [
-        1820,
-        780
+        -10600,
+        800
       ]
     },
     {
       "parameters": {
         "options": {}
       },
-      "id": "25ec5438-ab1a-4dfb-926e-633c9b79682d",
+      "id": "78f409f7-2115-45a3-bdb5-9dc2f587b599",
       "name": "Loop Over Items",
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        1440,
-        500
+        -10980,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "id": "238e1194-ce43-4c9e-b57e-e72d26a4d209",
+      "name": "Merge",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        -11280,
+        520
       ]
     },
     {
@@ -91,13 +117,13 @@
           "cachedResultUrl": "https://drive.google.com/drive/folders/1rNkINqRbbfS8A6wfLE1jc9JTq5t5miBC"
         }
       },
-      "id": "4ac11ab4-71bd-4e5d-8b77-f234a5f4916c",
+      "id": "71b892bd-2403-4185-b694-123f32618557",
       "name": "Move invalid file",
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
       "position": [
-        640,
-        800
+        -11780,
+        820
       ],
       "credentials": {
         "googleDriveOAuth2Api": {
@@ -116,12 +142,12 @@
         },
         "options": {}
       },
-      "id": "9566437e-b4d9-4e7b-af26-c11462c9b246",
+      "id": "ab989a6c-3c29-4ec6-8e92-46869001f926",
       "name": "Download receipt",
       "type": "n8n-nodes-base.googleDrive",
       "position": [
-        640,
-        480
+        -11780,
+        500
       ],
       "typeVersion": 3,
       "credentials": {
@@ -148,13 +174,13 @@
         },
         "options": {}
       },
-      "id": "57c8c8e0-e320-4aa5-b7af-16814476d0ea",
+      "id": "93371f45-9265-4a50-8de8-0d94d2de93a0",
       "name": "Find receipts in files",
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
       "position": [
-        100,
-        640
+        -12280,
+        660
       ],
       "credentials": {
         "googleDriveOAuth2Api": {
@@ -168,13 +194,13 @@
         "operation": "pdf",
         "options": {}
       },
-      "id": "8d6ab376-83ec-4c37-b508-fe85e17082d7",
+      "id": "aa57bf70-042c-47f2-a6e1-7b20575c9b9d",
       "name": "Extract text from PDF",
       "type": "n8n-nodes-base.extractFromFile",
       "typeVersion": 1,
       "position": [
-        880,
-        660
+        -11540,
+        680
       ]
     },
     {
@@ -198,13 +224,13 @@
           "cachedResultUrl": "https://drive.google.com/drive/folders/1rIblLgQnZDnmattulJGpHOW7oLwxNa5B"
         }
       },
-      "id": "db30f994-9cd1-4aa4-a99f-3c4e1ed7f386",
+      "id": "59e65e4d-0ab0-4a12-80a4-1bbc6eaa1aad",
       "name": "Move receipt to done",
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
       "position": [
-        2160,
-        400
+        -10260,
+        420
       ],
       "credentials": {
         "googleDriveOAuth2Api": {
@@ -218,13 +244,13 @@
         "fieldToSplitOut": "message.content.Positionen",
         "options": {}
       },
-      "id": "5b3ab604-2277-4d33-b39b-2d864fd374d3",
+      "id": "ed2c1603-732a-4d6c-9f7f-7542b785cb37",
       "name": "Split out positions",
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1,
       "position": [
-        2160,
-        640
+        -10260,
+        660
       ]
     },
     {
@@ -357,49 +383,20 @@
           "useAppend": true
         }
       },
-      "id": "8ea39b5e-3f37-48a3-a8c8-59c13815e25c",
+      "id": "fdd0389d-e0e6-4eb4-a65b-1d7204e040cd",
       "name": "Write position to sheet",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.4,
       "position": [
-        2400,
-        800
+        -10020,
+        820
       ],
-      "retryOnFail": true,
-      "waitBetweenTries": 5000,
-      "maxTries": 5,
       "credentials": {
         "googleSheetsOAuth2Api": {
           "id": "FsAH6WckeSIuyyxJ",
           "name": "Google Sheets account"
         }
       }
-    },
-    {
-      "parameters": {
-        "mode": "combine",
-        "combineBy": "combineByPosition",
-        "options": {}
-      },
-      "id": "69f85f48-5a69-4463-9cd7-e224f5e55374",
-      "name": "Merge",
-      "type": "n8n-nodes-base.merge",
-      "typeVersion": 3,
-      "position": [
-        1140,
-        500
-      ]
-    },
-    {
-      "parameters": {},
-      "id": "d2554aa7-8f99-4b00-86d3-e99065158b5c",
-      "name": "When clicking ‘Test workflow’",
-      "type": "n8n-nodes-base.manualTrigger",
-      "typeVersion": 1,
-      "position": [
-        -200,
-        640
-      ]
     },
     {
       "parameters": {
@@ -412,21 +409,14 @@
         "messages": {
           "values": [
             {
-              "content": "Du hast alle Dokumente mit einer einzigartigen Belegnummerin der Datenbank. \nDie Positionen der Belege sollen nach Leistungszeitraum in einzelne Zeilen aufgeteilt werden, sodass der jeweilige Anteil des Belegs der Bilanz eines Geschäftsjahres zugeordnet werden kann. Achte bei der Berechnung der Anzahl von Tagen in Zeiträumen auf Schaltjahre!",
+              "content": "Du hast alle Dokumente mit einer einzigartigen Belegnummer in der Datenbank. \nDer Gesamtbetrag pro Belegposition aller Belege soll nach Leistungszeitraum abgegrenzt werden, sodass der jeweilige Anteil der Bilanz eines Geschäftsjahres zugeordnet werden kann.\n\nAnweisungen zur korrekten Aufteilung:\n\nExtrahiere alle Positionen des Belegs und ignoriere alle Informationen ab der Zwischensumme.\nStelle folgende Berechnungen für jede Position an:\n\n1. Bestimme den Gesamtzeitraum der Position anhand von Start- und Enddatum oder anhand des Rechnungsdatums + Anzahl der Jahre im Beschreibungstext der Position. \n\n2. Bestimme die Anzahl der Tage im Gesamtzeitraum. \n\n3. Teile den Gesamtbetrag der Position durch die Anzahl der Tage im Gesamtzeitraum um den Betrag pro Tag zu errechnen.\n\n4. Bestimme den anteiligen Nettobetrag für jedes Jahr, indem du den Betrag pro Tag mit der Anzahl der Tage pro Jahr multiplizierst. Der erste und der letzte Tag müssen mitgezählt werden. \n\n---\n\nRegeln:\n\n1. Wenn das Enddatum des Gesamtzeitraums in einem anderen Jahr als das Startdatum liegt, müssen alle Beträge taggenau bis Jahresende berechnet und der Rest auf alle folgenden Jahre aufgeteilt werden. \n\n2. Der anteilige Betrag pro Tag ist für alle Jahre gleich. \n\n3. Für jedes Jahr soll eine eigene Position zurückgegeben werden die nur die anteiligen Daten aus dem Zeitraum enthält der auf ebendieses Jahr fällt.\n\n4. Die Berechnungen dürfen Nachkommastellen enthalten um Rundungsfehler zu vermeiden.\n\n5. Verwende das Datumsformat für einen Zeitraum: DD.MM.YYYY - DD.MM.YYYY\n\n6. Belege ohne Dateinamen dürfen niemals aufgeführt werden. \n\n8. Enthält der Dateiname _GS- ist der Belegtyp eine Gutschrift. Enthält der Dateiname _RE- ist der Belegtyp eine Rechnung. \n\n9. Die Belegnummer besteht aus dem Präfix RE oder GS + exakt 6 Ganzzahlen und steht im Dateinamen. \n\n10. Die Summe der anteiligen Beträge muss den Gesamtbetrag der Position ergeben.\n\n11. Die Summe der Positionen muss den Gesamtbeitrag des Belegs ergeben.",
               "role": "system"
-            },
-            {
-              "content": "Regeln für Belege:\n\n* Ignoriere Belege ohne Dateinamen.\n* Ignoriere alle Informationen im Beleg ab der Zwischensumme.\n* Enthält der Dateiname _GS- setze Belegtyp Gutschrift. Enthält der Dateiname _RE- setze Belegtyp Rechnung. \n* Die Belegnummer steht im Dateinamen und besteht aus dem Präfix mit zwei Buchstaben + exakt 6 Ganzzahlen. \n* Rechne nur mit Nettobeträgen und ignoriere alle Steuern im Beleg.\n* Berechnungen dürfen beliebig viele Nachkommastellen enthalten um Rundungsfehler zu vermeiden.\n\nRegeln für Positionen und Zeilen:\n\n* Der anteilige tägliche Betrag einer Position ist für alle Jahre gleich. \n* Die Summe der anteiligen Beträge pro Jahr muss den Gesamtbetrag der Position ergeben.\n* Die Summe der Tage aller anteiligen Positionen muss die Anzahl der Tage im Gesamtzeitraum geben.",
-              "role": "system"
-            },
-            {
-              "content": "Extrahiere alle Positionen des Belegs und stelle folgende Berechnungen für jede Position an:\n\n* Gesamtzeitraum: Bestimme den Gesamtzeitraum der Position anhand von Start- und Enddatum oder anhand des Belegdatums + Anzahl Jahr(e) im Beschreibungstext. \n* Anzahl Tage im Gesamtzeitraum: Bestimme die Anzahl der Tage im Gesamtzeitraum. Der letzte Tag soll nicht mitgezählt werden außer der Zeitraum ist nur ein Tag.\n* Betrag pro Tag: Teile den Netto Gesamtbetrag der Position durch die Anzahl der Tage im Gesamtzeitraum um den Betrag pro Tag zu errechnen.\n* Teile den Gesamtzeitraum taggenau nach Jahren auf und gib den anteiligen Zeitraum in einzelnen Zeilen zurück. Der letzte Tag soll hier immer mitgezählt werden.\n* Berechne für jede Zeile den anteiligen jährlichen Nettobetrag, indem du den Betrag pro Tag mit der Anzahl der Tage im Jahr der aktuellen Zeile multiplizierst. "
             },
             {
               "content": "=Die Datei \"{{ $('Merge').item.json.name }}\" enhält: \"{{ $('Merge').item.json.text }}\""
             },
             {
-              "content": "Gib die Variable \"Positionen\" als Array mit folgenden Spalten zurück. Dabei gilt:\n\n* Bei Belegtyp Gutschrift werden negative Beträge benötigt, vor der Rückgabe müssen also alle positiven Beträge mit -1 multipliziert werden. \n* Ausgabeformat anteiliger Zeitraum und Gesamtzeitraum: TT.MM.JJJJ - TT.MM.JJJJ\n* Der Rechenweg soll alle Kalkutionen der Zeile und auch die Herleitung der Zeitraumberechnungen beinhalten \n\nBelegtyp\t\nBelegnummer\t\nBezeichnung der Position\t\nGesamtzeitraum\t\nNettobetrag Gesamtzeitraum\nAnzahl Tage im Gesamtzeitraum\nBetrag pro Tag\t\nAnteiliger Zeitraum\t\nJahr\t\nAnzahl Tage im anteiligen Zeitraum\nNettobetrag im anteiligen Zeitraum\nRechenweg"
+              "content": "Gib mir die Variable \"Positionen\" als Array mit folgenden Spalten zurück. Bei Belegtyp Gutschrift werden negative Beträge benötigt, vor der Rückgabe müssen also alle positiven Beträge mit -1 multipliziert werden: \n\n\nBelegtyp\nBelegnummer\nBezeichnung der Position\nNettobetrag Gesamtzeitraum\nGesamtzeitraum\nAnzahl Tage im Gesamtzeitraum\nBetrag pro Tag\nJahr\nAnteiliger Zeitraum\nAnzahl Tage im anteiligen Zeitraum\nNettobetrag im anteiligen Zeitraum\nRechenweg"
             }
           ]
         },
@@ -435,13 +425,13 @@
           "temperature": 0
         }
       },
-      "id": "78415303-5eb4-4692-a6f4-e3154fe62122",
+      "id": "14f36312-316a-488c-a66c-30ea8e7e604b",
       "name": "OpenAI",
       "type": "@n8n/n8n-nodes-langchain.openAi",
       "typeVersion": 1.4,
       "position": [
-        1740,
-        640
+        -10680,
+        660
       ],
       "credentials": {
         "openAiApi": {
@@ -470,6 +460,17 @@
         ]
       ]
     },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Find receipts in files",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "Calculator": {
       "ai_tool": [
         [
@@ -487,6 +488,17 @@
         [
           {
             "node": "OpenAI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
             "type": "main",
             "index": 0
           }
@@ -553,28 +565,6 @@
         ]
       ]
     },
-    "Merge": {
-      "main": [
-        [
-          {
-            "node": "Loop Over Items",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "When clicking ‘Test workflow’": {
-      "main": [
-        [
-          {
-            "node": "Find receipts in files",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "OpenAI": {
       "main": [
         [
@@ -607,7 +597,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "23c1b2e6-f4a9-4843-91ef-da17ff2613d0",
+  "versionId": "da1c284a-d98c-4651-8795-43a0f3435537",
   "triggerCount": 1,
   "tags": [
     {
