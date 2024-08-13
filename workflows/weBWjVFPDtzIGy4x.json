@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-07-18T13:55:22.365Z",
-  "updatedAt": "2024-07-18T13:57:26.000Z",
+  "updatedAt": "2024-08-13T11:31:30.000Z",
   "id": "weBWjVFPDtzIGy4x",
   "name": "Send WhatsApp message to Jira",
   "active": true,
@@ -131,7 +131,8 @@
       "position": [
         1100,
         380
-      ]
+      ],
+      "alwaysOutputData": true
     },
     {
       "parameters": {
@@ -348,7 +349,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "0ada4b19-5d37-4a23-b1b9-7b0327398323",
+  "versionId": "5bc4db7d-c5fe-4730-a6ed-f4dafc7825e0",
   "triggerCount": 1,
   "tags": []
 }
