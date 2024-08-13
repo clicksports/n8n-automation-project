@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-07-18T14:14:17.477Z",
-  "updatedAt": "2024-08-05T12:54:58.000Z",
+  "updatedAt": "2024-08-13T08:26:31.000Z",
   "id": "NQbJnzdlphGNAW1O",
   "name": "WHMCS client to Jira and Tempo",
   "active": true,
@@ -16,7 +16,7 @@
           "parameters": [
             {
               "name": "accountKey",
-              "value": "={{ $json.key }}"
+              "value": "={{ $('Clean Company Name').item.json.body['vars[userid]'] }}-SUPPORT"
             },
             {
               "name": "scopeType",
@@ -126,7 +126,7 @@
       "typeVersion": 4.2,
       "position": [
         820,
-        240
+        160
       ],
       "credentials": {
         "httpHeaderAuth": {
@@ -156,7 +156,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.3,
       "position": [
-        280,
+        40,
         440
       ]
     },
@@ -171,7 +171,7 @@
       "typeVersion": 2.1,
       "position": [
         1080,
-        420
+        320
       ]
     },
     {
@@ -275,7 +275,7 @@
     {
       "parameters": {
         "method": "PUT",
-        "url": "=https://clicksports.atlassian.net/api/v1/organization/{{ $json.id }}/details",
+        "url": "=https://api.atlassian.com/jsm/csm/cloudid/4e4683d3-76b9-4530-b8e2-8c166090b239/api/v1/organization/{{ $json.id }}/details",
         "authentication": "predefinedCredentialType",
         "nodeCredentialType": "jiraSoftwareCloudApi",
         "sendQuery": true,
@@ -306,7 +306,12 @@
         960,
         1440
       ],
-      "disabled": true
+      "credentials": {
+        "jiraSoftwareCloudApi": {
+          "id": "HlsaLdc6YFfeasWO",
+          "name": "Jira christian.gick@clicksports.de"
+        }
+      }
     },
     {
       "parameters": {
@@ -334,7 +339,7 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        -20,
+        -260,
         440
       ],
       "webhookId": "d308e527-8049-45cf-830c-bd62a7ad19ce"
@@ -454,8 +459,129 @@
   "meta": {
     "templateCredsSetupCompleted": true
   },
-  "pinData": {},
-  "versionId": "503eee12-adbe-452d-998a-7d594190bde4",
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "automate.clicksports.de",
+            "x-real-ip": "2a01:4f8:1c1c:bf6a::1",
+            "x-forwarded-for": "2a01:4f8:1c1c:bf6a::1",
+            "x-forwarded-proto": "https",
+            "connection": "Upgrade",
+            "content-length": "4095",
+            "accept": "*/*",
+            "content-type": "application/x-www-form-urlencoded"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "vars[userid]": "144",
+            "vars[isOptedInToMarketingEmails]": "1",
+            "vars[olddata][userid]": "144",
+            "vars[olddata][client_id]": "144",
+            "vars[olddata][id]": "144",
+            "vars[olddata][owner_user_id]": "145",
+            "vars[olddata][uuid]": "8b03aa39-669a-44f9-80ca-9e688b07f3fd",
+            "vars[olddata][firstname]": "Dagmar",
+            "vars[olddata][lastname]": "Treuner",
+            "vars[olddata][fullname]": "Dagmar Treuner",
+            "vars[olddata][companyname]": "Willi Schillig Polstermöbelwerke GmbH &amp; Co. KG",
+            "vars[olddata][email]": "dtreuner@schillig.de",
+            "vars[olddata][address1]": "Am Weinberg 20-22",
+            "vars[olddata][address2]": "",
+            "vars[olddata][city]": "Ebersdorf b.Coburg",
+            "vars[olddata][fullstate]": "Bayern",
+            "vars[olddata][state]": "Bayern",
+            "vars[olddata][postcode]": "96237",
+            "vars[olddata][countrycode]": "DE",
+            "vars[olddata][country]": "DE",
+            "vars[olddata][phonenumber]": "9562370",
+            "vars[olddata][tax_id]": "DE186320287",
+            "vars[olddata][email_preferences][general]": "1",
+            "vars[olddata][email_preferences][invoice]": "1",
+            "vars[olddata][email_preferences][support]": "1",
+            "vars[olddata][email_preferences][product]": "1",
+            "vars[olddata][email_preferences][domain]": "1",
+            "vars[olddata][email_preferences][affiliate]": "1",
+            "vars[olddata][model][incrementing]": "1",
+            "vars[olddata][model][exists]": "1",
+            "vars[olddata][model][wasRecentlyCreated]": "0",
+            "vars[olddata][model][timestamps]": "1",
+            "vars[olddata][model][unique][0]": "email",
+            "vars[olddata][statecode]": "Bayern",
+            "vars[olddata][countryname]": "Germany",
+            "vars[olddata][phonecc]": "49",
+            "vars[olddata][phonenumberformatted]": "+49.9562370",
+            "vars[olddata][telephoneNumber]": "+49.9562370",
+            "vars[olddata][billingcid]": "0",
+            "vars[olddata][notes]": "",
+            "vars[olddata][currency]": "1",
+            "vars[olddata][defaultgateway]": "",
+            "vars[olddata][groupid]": "0",
+            "vars[olddata][status]": "Active",
+            "vars[olddata][credit]": "0.00",
+            "vars[olddata][taxexempt]": "0",
+            "vars[olddata][latefeeoveride]": "0",
+            "vars[olddata][overideduenotices]": "0",
+            "vars[olddata][separateinvoices]": "0",
+            "vars[olddata][disableautocc]": "0",
+            "vars[olddata][emailoptout]": "0",
+            "vars[olddata][marketing_emails_opt_in]": "1",
+            "vars[olddata][overrideautoclose]": "0",
+            "vars[olddata][allowSingleSignOn]": "1",
+            "vars[olddata][email_verified]": "0",
+            "vars[olddata][language]": "",
+            "vars[olddata][isOptedInToMarketingEmails]": "1",
+            "vars[olddata][tax_state]": "Bayern",
+            "vars[olddata][tax_countrycode]": "DE",
+            "vars[olddata][lastlogin]": "Date: 20.03.2024 16:39<br>IP Address: 92.79.100.68<br>Host: 92.79.100.68",
+            "vars[olddata][customfields1]": "fd3e2bd3-f288-4f16-ad86-9bd8ecda9a0c",
+            "vars[olddata][customfields][0][id]": "1",
+            "vars[olddata][customfields][0][value]": "fd3e2bd3-f288-4f16-ad86-9bd8ecda9a0c",
+            "vars[olddata][customfields][1][id]": "2",
+            "vars[olddata][customfields][1][value]": "52038",
+            "vars[olddata][customfields2]": "52038",
+            "vars[uuid]": "8b03aa39-669a-44f9-80ca-9e688b07f3fd",
+            "vars[firstname]": "Dagmar",
+            "vars[lastname]": "Treuner",
+            "vars[companyname]": "Willi Schillig Polstermöbelwerke GmbH &amp; Co. KG",
+            "vars[email]": "dtreuner@schillig.de",
+            "vars[address1]": "Am Weinberg 20-22",
+            "vars[address2]": "",
+            "vars[city]": "Ebersdorf b.Coburg",
+            "vars[state]": "Bayern",
+            "vars[postcode]": "96237",
+            "vars[country]": "DE",
+            "vars[phonenumber]": "+49.9562 370",
+            "vars[tax_id]": "DE186320287",
+            "vars[currency]": "1",
+            "vars[notes]": "",
+            "vars[status]": "Active",
+            "vars[taxexempt]": "0",
+            "vars[latefeeoveride]": "0",
+            "vars[overideduenotices]": "0",
+            "vars[separateinvoices]": "0",
+            "vars[disableautocc]": "0",
+            "vars[overrideautoclose]": "0",
+            "vars[language]": "",
+            "vars[billingcid]": "0",
+            "vars[groupid]": "0",
+            "vars[allow_sso]": "1",
+            "vars[email_preferences][general]": "1",
+            "vars[email_preferences][invoice]": "1",
+            "vars[email_preferences][support]": "1",
+            "vars[email_preferences][product]": "1",
+            "vars[email_preferences][domain]": "1",
+            "vars[email_preferences][affiliate]": "1"
+          },
+          "webhookUrl": "https://automate.clicksports.de/webhook/d308e527-8049-45cf-830c-bd62a7ad19ce",
+          "executionMode": "production"
+        }
+      }
+    ]
+  },
+  "versionId": "6593e0f4-24d8-432d-89fc-080c55f65687",
   "triggerCount": 1,
   "tags": [
     {
