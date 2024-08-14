@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-07-18T11:47:48.486Z",
-  "updatedAt": "2024-08-14T08:28:48.000Z",
+  "updatedAt": "2024-08-14T09:10:57.000Z",
   "id": "taQ1njcTXVWU3ghh",
   "name": "Mailhandler",
   "active": true,
@@ -270,7 +270,7 @@
       "typeVersion": 1,
       "position": [
         1460,
-        1100
+        1040
       ],
       "credentials": {
         "jiraSoftwareCloudApi": {
@@ -323,7 +323,7 @@
       "typeVersion": 1.4,
       "position": [
         1200,
-        1100
+        1040
       ],
       "credentials": {
         "openAiApi": {
@@ -1136,28 +1136,6 @@
     },
     {
       "parameters": {
-        "from": "+13239248539",
-        "to": "+491714310760",
-        "message": "={{ $json.message.content.abstract }}",
-        "options": {}
-      },
-      "id": "d275c0ad-f0ce-4218-b514-040bf23f5dbd",
-      "name": "Twilio",
-      "type": "n8n-nodes-base.twilio",
-      "typeVersion": 1,
-      "position": [
-        1200,
-        1360
-      ],
-      "credentials": {
-        "twilioApi": {
-          "id": "L0MVSAy5tKyte1Sy",
-          "name": "Twilio"
-        }
-      }
-    },
-    {
-      "parameters": {
         "mode": "combine",
         "combineBy": "combineByPosition",
         "numberInputs": 3,
@@ -1171,42 +1149,6 @@
         -280,
         1040
       ]
-    },
-    {
-      "parameters": {
-        "modelId": {
-          "__rl": true,
-          "value": "gpt-4o-mini",
-          "mode": "list",
-          "cachedResultName": "GPT-4O-MINI"
-        },
-        "messages": {
-          "values": [
-            {
-              "content": "=Am Ende findest du eine E-Mail. \n\nAntworte mir bitte im JSON-Format mit einer deutschen Begründung unter Angabe der Aktion die der Sender deiner Einschätzung nach erwartet (Variable reason) und einer Ganzzahl (Variable relevance) die die Relevanz von 0 bis 100 einstuft. \n\nAußerdem brauche ich eine kurze Zusammenfassung von Betreff und Inhalt in einem Text mit allen eindeutigen E-Mail Adressen (Variable abstract). \n\notp ist ein Passwort, Code oder TAN für eine einmalige Authentifizierung.\n\nErkenne die Absicht des Senders - welches Ziel wird verfolgt? Optionen sind: call, verify, otp, login, download, reply, buy, pay, meet, support (Variable intent). \n\nDen Absender kannst du unverändert übernehmen (Variable sender).\n\nIrrelevante Mails sind solche, die den Empfang eine automatische Verlängerung oder eine Zustellung bestätigen, darauf hinweisen dass der Vorgang in Bearbeitung ist oder geschlossen wurde oder eine Bewertung wollen oder nur darauf abzielen eine Antwort von mir zu bekommen indem sie mich erinnern oder erneut Hilfe anbieten und weder konkrete Informationen enhält die mit dem Vorgang zu tun haben noch eine einfache Aktion erfordern wie ein Limit anpassen, eine Anmeldung abschließen oder ein Dokument herunterzuladen. Falls die Nachricht konkrete Informationen enthält die aber von einem Monitoring kommen bewerte die Relevanz hoch wenn das Monitoring Fehler oder Sicherheitslücken entdeckt hat oder niedrig falls alles in Ordnung ist. Wenn alles in Ordnung ist ist es unwichtig einen Bericht herunterzuladen. Die Relevanz ist niedrig falls es zwar etwas zu tun gibt aber nicht für jemanden von CLICKSPORTS sondern z.B. für einen Kunden oder Partner - erkennbar wenn der Sender von CLICKSPORTS ist.\n\nSuche nach einem dynamischen Link zum Portal oder Servicedesk des Absenders (Variable ticketlink) in dem relevante Inhalte zum Dialog stehen könnten. Falls die URL Tracking-Parameter wie sda_source enthält entferne diese bitte. Kein Kommentar von dir davor oder danach. Gib mir nur Links zurück die einen variablen Parameter enthalten wie eine ID oder Ticketnummer enthalten, sonst gar keinen.\n\nWenn es bei der Mail um eine Eingangsrechnung geht extrahiere die Rechnungsnummer aus Betreff, Anhang oder Inhalt (Variable invoicenumber). Hängt eine Rechnung an oder muss ein Dokument heruntergeladen oder online angesehen werden um ist das sehr relevant und muss bearbeitet werden.\n\nExtrahiere einen Portallink des Absenders (Variable portallink).\n\nExtrahiere einen Adminlink des Absenders (Variable adminlink).\n\nExtrahiere einen Loginlink des Absenders (Variable loginlink).\n\nDie Mail mit dem Betreff {{ $json.subject }} hat folgenden Inhalt: \"{{ $json.data }}\" und kam von \"{{ $json.from.value[0].name }} {{ $json.from.value[0].address }}\" und hat folgenden Anhang: \"{{ $('Extract from File').item.json.text }}\"",
-              "role": "system"
-            }
-          ]
-        },
-        "jsonOutput": true,
-        "options": {
-          "temperature": 0
-        }
-      },
-      "id": "46744148-9aa7-42c6-a75f-8ab0b3fedc7e",
-      "name": "Relevance and Reference",
-      "type": "@n8n/n8n-nodes-langchain.openAi",
-      "typeVersion": 1.4,
-      "position": [
-        -960,
-        960
-      ],
-      "credentials": {
-        "openAiApi": {
-          "id": "y8NvNd30QFsYf7Hw",
-          "name": "OpenAI"
-        }
-      }
     },
     {
       "parameters": {
@@ -1435,6 +1377,86 @@
       "retryOnFail": true,
       "waitBetweenTries": 5000,
       "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "from": "+13239248539",
+        "to": "+491714310760",
+        "message": "={{ $json.message.content.abstract }}",
+        "options": {}
+      },
+      "id": "d275c0ad-f0ce-4218-b514-040bf23f5dbd",
+      "name": "SMS Christian",
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        1440
+      ],
+      "credentials": {
+        "twilioApi": {
+          "id": "L0MVSAy5tKyte1Sy",
+          "name": "Twilio"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "from": "+13239248539",
+        "to": "+491716051665",
+        "message": "={{ $json.message.content.abstract }}",
+        "options": {}
+      },
+      "id": "c29af0cc-c03b-45a7-86a2-1a343c1171d4",
+      "name": "SMS Wibke",
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        1260
+      ],
+      "credentials": {
+        "twilioApi": {
+          "id": "L0MVSAy5tKyte1Sy",
+          "name": "Twilio"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Am Ende findest du eine E-Mail. \n\nAntworte mir bitte im JSON-Format mit einer deutschen Begründung unter Angabe der Aktion die der Sender deiner Einschätzung nach erwartet (Variable reason) und einer Ganzzahl (Variable relevance) die die Relevanz von 0 bis 100 einstuft. \n\nAußerdem brauche ich eine kurze Zusammenfassung von Betreff und Inhalt in einem Text mit allen eindeutigen E-Mail Adressen und Code oder PIN (Variable abstract). \n\notp ist ein Passwort, Code oder TAN für eine einmalige Authentifizierung.\n\nErkenne die Absicht des Senders - welches Ziel wird verfolgt? Optionen sind: call, verify, otp, login, download, reply, buy, pay, meet, support (Variable intent). \n\nDen Absender kannst du unverändert übernehmen (Variable sender).\n\nIrrelevante Mails sind solche, die den Empfang eine automatische Verlängerung oder eine Zustellung bestätigen, darauf hinweisen dass der Vorgang in Bearbeitung ist oder geschlossen wurde oder eine Bewertung wollen oder nur darauf abzielen eine Antwort von mir zu bekommen indem sie mich erinnern oder erneut Hilfe anbieten und weder konkrete Informationen enhält die mit dem Vorgang zu tun haben noch eine einfache Aktion erfordern wie ein Limit anpassen, eine Anmeldung abschließen oder ein Dokument herunterzuladen. Falls die Nachricht konkrete Informationen enthält die aber von einem Monitoring kommen bewerte die Relevanz hoch wenn das Monitoring Fehler oder Sicherheitslücken entdeckt hat oder niedrig falls alles in Ordnung ist. Wenn alles in Ordnung ist ist es unwichtig einen Bericht herunterzuladen. Die Relevanz ist niedrig falls es zwar etwas zu tun gibt aber nicht für jemanden von CLICKSPORTS sondern z.B. für einen Kunden oder Partner - erkennbar wenn der Sender von CLICKSPORTS ist.\n\nSuche nach einem dynamischen Link zum Portal oder Servicedesk des Absenders (Variable ticketlink) in dem relevante Inhalte zum Dialog stehen könnten. Falls die URL Tracking-Parameter wie sda_source enthält entferne diese bitte. Kein Kommentar von dir davor oder danach. Gib mir nur Links zurück die einen variablen Parameter enthalten wie eine ID oder Ticketnummer enthalten, sonst gar keinen.\n\nWenn es bei der Mail um eine Eingangsrechnung geht extrahiere die Rechnungsnummer aus Betreff, Anhang oder Inhalt (Variable invoicenumber). Hängt eine Rechnung an oder muss ein Dokument heruntergeladen oder online angesehen werden um ist das sehr relevant und muss bearbeitet werden.\n\nExtrahiere einen Portallink des Absenders (Variable portallink).\n\nExtrahiere einen Adminlink des Absenders (Variable adminlink).\n\nExtrahiere einen Loginlink des Absenders (Variable loginlink).\n\nDie Mail mit dem Betreff {{ $json.subject }} hat folgenden Inhalt: \"{{ $json.data }}\" und kam von \"{{ $json.from.value[0].name }} {{ $json.from.value[0].address }}\" und hat folgenden Anhang: \"{{ $('Extract from File').item.json.text }}\"",
+              "role": "system"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {
+          "temperature": 0
+        }
+      },
+      "id": "46744148-9aa7-42c6-a75f-8ab0b3fedc7e",
+      "name": "Relevance and Reference",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.4,
+      "position": [
+        -960,
+        960
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "y8NvNd30QFsYf7Hw",
+          "name": "OpenAI"
+        }
+      }
     }
   ],
   "connections": {
@@ -1996,17 +2018,6 @@
         ]
       ]
     },
-    "Relevance and Reference": {
-      "main": [
-        [
-          {
-            "node": "Merge7",
-            "type": "main",
-            "index": 1
-          }
-        ]
-      ]
-    },
     "Intent": {
       "main": [
         [
@@ -2044,7 +2055,12 @@
         ],
         [
           {
-            "node": "Twilio",
+            "node": "SMS Christian",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "SMS Wibke",
             "type": "main",
             "index": 0
           }
@@ -2052,17 +2068,6 @@
         [
           {
             "node": "Merge3",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Twilio": {
-      "main": [
-        [
-          {
-            "node": "Edit Fields1",
             "type": "main",
             "index": 0
           }
@@ -2101,6 +2106,39 @@
           }
         ]
       ]
+    },
+    "SMS Christian": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SMS Wibke": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Relevance and Reference": {
+      "main": [
+        [
+          {
+            "node": "Merge7",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -2111,14 +2149,14 @@
   },
   "staticData": {
     "node:Mail": {
-      "lastMessageUid": 65763
+      "lastMessageUid": 65767
     }
   },
   "meta": {
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "2eb315ce-465f-452c-b980-c2929f2000f7",
+  "versionId": "3da0c144-56be-4dc7-b41f-62136cf11213",
   "triggerCount": 1,
   "tags": [
     {
