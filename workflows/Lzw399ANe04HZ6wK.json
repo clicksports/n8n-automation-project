@@ -1,9 +1,9 @@
 {
   "createdAt": "2024-07-18T14:16:00.169Z",
-  "updatedAt": "2024-08-03T23:59:05.000Z",
+  "updatedAt": "2024-08-15T06:27:35.000Z",
   "id": "Lzw399ANe04HZ6wK",
   "name": "Validate processing SSL orders",
-  "active": false,
+  "active": true,
   "nodes": [
     {
       "parameters": {
@@ -52,30 +52,7 @@
       "position": [
         -3620,
         580
-      ],
-      "disabled": true
-    },
-    {
-      "parameters": {
-        "url": "=https://my.gogetssl.com/api/orders/status/{{ $json.orders.order_id }}",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpQueryAuth",
-        "options": {}
-      },
-      "id": "660abb61-8a56-40a8-95b4-52fd4a217fad",
-      "name": "validation data",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 3,
-      "position": [
-        -1620,
-        580
-      ],
-      "credentials": {
-        "httpQueryAuth": {
-          "id": "pskjhKSslGfoyCfJ",
-          "name": "GoGetSSL"
-        }
-      }
+      ]
     },
     {
       "parameters": {
@@ -87,7 +64,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -1340,
+        -1120,
         580
       ]
     },
@@ -118,7 +95,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 3,
       "position": [
-        3820,
+        4040,
         940
       ],
       "credentials": {
@@ -138,45 +115,6 @@
         -3580,
         340
       ]
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "=https://my.gogetssl.com/api/orders/ssl/change_validation_method/{{ $json.orders.order_id }}/",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpQueryAuth",
-        "sendBody": true,
-        "contentType": "multipart-form-data",
-        "bodyParameters": {
-          "parameters": [
-            {
-              "name": "domain",
-              "value": "={{ $json.orders.common_name }}"
-            },
-            {
-              "name": "new_method",
-              "value": "https"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "id": "adc9f078-cd8d-4191-8e56-890ec145f932",
-      "name": "Change validation method to https",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 3,
-      "position": [
-        -2560,
-        220
-      ],
-      "alwaysOutputData": true,
-      "credentials": {
-        "httpQueryAuth": {
-          "id": "pskjhKSslGfoyCfJ",
-          "name": "GoGetSSL"
-        }
-      },
-      "disabled": true
     },
     {
       "parameters": {
@@ -208,9 +146,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        -2560,
-        20
-      ]
+        -2360,
+        -160
+      ],
+      "disabled": true
     },
     {
       "parameters": {
@@ -223,8 +162,8 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -2880,
-        -140
+        -2900,
+        -320
       ]
     },
     {
@@ -240,7 +179,7 @@
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1,
       "position": [
-        -840,
+        -620,
         900
       ]
     },
@@ -272,7 +211,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        380,
+        600,
         800
       ]
     },
@@ -285,7 +224,7 @@
       "type": "n8n-nodes-base.stopAndError",
       "typeVersion": 1,
       "position": [
-        740,
+        960,
         980
       ]
     },
@@ -296,7 +235,7 @@
             {
               "id": "f53176f2-5673-4715-bcfb-c76508895782",
               "name": "plesk_domainpool",
-              "value": "=[\"{{ $json.domain }}\", \"{{ $json.baseDomain }}\", \"plesk.{{ $json.domain }}\", \"plesk.{{ $json.baseDomain }}\", \"org-www.clicksports.de\"]",
+              "value": "=[\"www.{{ $json.domain }}\", \"{{ $json.domain }}\", \"{{ $json.baseDomain }}\", \"plesk.{{ $json.domain }}\", \"plesk.{{ $json.baseDomain }}\", \"org-www.clicksports.de\"]",
               "type": "array"
             },
             {
@@ -328,7 +267,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.3,
       "position": [
-        -1140,
+        -920,
         900
       ]
     },
@@ -375,7 +314,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        740,
+        960,
         780
       ]
     },
@@ -388,7 +327,7 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        1860,
+        2080,
         680
       ],
       "webhookId": "a3a34f6c-9895-45fb-8472-73a6f36ada52"
@@ -406,7 +345,7 @@
       "type": "n8n-nodes-base.convertToFile",
       "typeVersion": 1.1,
       "position": [
-        -840,
+        -620,
         660
       ],
       "onError": "continueRegularOutput"
@@ -430,7 +369,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -560,
+        -340,
         900
       ]
     },
@@ -465,7 +404,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        40,
+        260,
         900
       ]
     },
@@ -480,7 +419,7 @@
       "type": "n8n-nodes-base.ssh",
       "typeVersion": 1,
       "position": [
-        -260,
+        -40,
         900
       ],
       "alwaysOutputData": true,
@@ -504,7 +443,7 @@
       "type": "n8n-nodes-base.ssh",
       "typeVersion": 1,
       "position": [
-        1600,
+        1820,
         680
       ],
       "credentials": {
@@ -526,7 +465,7 @@
       "type": "n8n-nodes-base.removeDuplicates",
       "typeVersion": 1.1,
       "position": [
-        1040,
+        1260,
         780
       ]
     },
@@ -539,7 +478,7 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        2600,
+        2820,
         480
       ],
       "webhookId": "b0271979-7ac3-4b4e-9c6c-98d8b875fe11"
@@ -567,7 +506,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 3,
       "position": [
-        2100,
+        2320,
         680
       ],
       "credentials": {
@@ -575,8 +514,7 @@
           "id": "pskjhKSslGfoyCfJ",
           "name": "GoGetSSL"
         }
-      },
-      "disabled": true
+      }
     },
     {
       "parameters": {
@@ -601,7 +539,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 3,
       "position": [
-        2840,
+        3060,
         700
       ],
       "credentials": {
@@ -609,8 +547,7 @@
           "id": "pskjhKSslGfoyCfJ",
           "name": "GoGetSSL"
         }
-      },
-      "disabled": true
+      }
     },
     {
       "parameters": {
@@ -643,23 +580,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        3540,
+        3760,
         700
-      ]
-    },
-    {
-      "parameters": {
-        "fieldToSplitOut": "orders",
-        "include": "allOtherFields",
-        "options": {}
-      },
-      "id": "98953c2f-8b45-466b-93e2-ff71bba84add",
-      "name": "Orders",
-      "type": "n8n-nodes-base.itemLists",
-      "typeVersion": 3,
-      "position": [
-        -2880,
-        580
       ]
     },
     {
@@ -705,7 +627,7 @@
       "type": "n8n-nodes-base.ssh",
       "typeVersion": 1,
       "position": [
-        4900,
+        5120,
         1060
       ],
       "alwaysOutputData": true,
@@ -724,7 +646,7 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        3080,
+        3300,
         700
       ],
       "webhookId": "d5f33be3-f06c-430f-a548-deb0fac283ad"
@@ -766,7 +688,7 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3,
       "position": [
-        2360,
+        2580,
         680
       ]
     },
@@ -781,7 +703,7 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3,
       "position": [
-        1320,
+        1540,
         680
       ]
     },
@@ -804,7 +726,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        4380,
+        4600,
         940
       ]
     },
@@ -820,7 +742,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 3,
       "position": [
-        3320,
+        3540,
         700
       ],
       "credentials": {
@@ -842,7 +764,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 3,
       "position": [
-        4100,
+        4320,
         940
       ],
       "credentials": {
@@ -863,9 +785,10 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3,
       "position": [
-        -2280,
-        300
-      ]
+        -2380,
+        40
+      ],
+      "disabled": true
     },
     {
       "parameters": {
@@ -876,7 +799,7 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        5160,
+        5380,
         1060
       ],
       "webhookId": "ac0669d7-afcc-4773-9654-2f86c503564f"
@@ -892,7 +815,7 @@
       "type": "n8n-nodes-base.ssh",
       "typeVersion": 1,
       "position": [
-        4900,
+        5120,
         820
       ],
       "alwaysOutputData": true,
@@ -915,7 +838,7 @@
       "type": "n8n-nodes-base.ssh",
       "typeVersion": 1,
       "position": [
-        5720,
+        5940,
         600
       ],
       "credentials": {
@@ -937,7 +860,7 @@
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1,
       "position": [
-        5120,
+        5340,
         820
       ],
       "disabled": true
@@ -953,7 +876,7 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3,
       "position": [
-        5300,
+        5520,
         480
       ],
       "disabled": true
@@ -981,7 +904,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 3,
       "position": [
-        5400,
+        5620,
         1060
       ],
       "credentials": {
@@ -990,6 +913,114 @@
           "name": "GoGetSSL"
         }
       }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "orders",
+        "include": "allOtherFields",
+        "options": {}
+      },
+      "id": "98953c2f-8b45-466b-93e2-ff71bba84add",
+      "name": "Orders",
+      "type": "n8n-nodes-base.itemLists",
+      "typeVersion": 3,
+      "position": [
+        -2880,
+        580
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://my.gogetssl.com/api/orders/status/{{ $('Orders').item.json.orders.order_id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "options": {}
+      },
+      "id": "660abb61-8a56-40a8-95b4-52fd4a217fad",
+      "name": "validation data",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        -1680,
+        420
+      ],
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "pskjhKSslGfoyCfJ",
+          "name": "GoGetSSL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://my.gogetssl.com/api/orders/ssl/change_validation_method/{{ $json.orders.order_id }}/",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "domain",
+              "value": "={{ $json.orders.common_name }}"
+            },
+            {
+              "name": "new_method",
+              "value": "https"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "adc9f078-cd8d-4191-8e56-890ec145f932",
+      "name": "Change validation method to https",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        -2120,
+        420
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "pskjhKSslGfoyCfJ",
+          "name": "GoGetSSL"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "b3f1760d-b2bb-49cd-b180-b97e34281ad5",
+              "leftValue": "={{ $json.orders.common_name }}",
+              "rightValue": "=www.gutmann-factory.de",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "9f9b4d38-0d46-439b-83d4-89f3697e370e",
+      "name": "If",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -2480,
+        580
+      ]
     }
   ],
   "connections": {
@@ -1009,17 +1040,6 @@
         [
           {
             "node": "Authentication",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "validation data": {
-      "main": [
-        [
-          {
-            "node": "Code",
             "type": "main",
             "index": 0
           }
@@ -1048,26 +1068,9 @@
         ]
       ]
     },
-    "Change validation method to https": {
-      "main": [
-        [
-          {
-            "node": "Merge",
-            "type": "main",
-            "index": 1
-          }
-        ]
-      ]
-    },
     "If1": {
       "main": [
-        [
-          {
-            "node": "validation data",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        []
       ]
     },
     "Split Out": {
@@ -1259,22 +1262,6 @@
         ]
       ]
     },
-    "Orders": {
-      "main": [
-        [
-          {
-            "node": "If1",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Change validation method to https",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Get processing orders": {
       "main": [
         [
@@ -1423,6 +1410,55 @@
           }
         ]
       ]
+    },
+    "Orders": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "validation data": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Change validation method to https": {
+      "main": [
+        [
+          {
+            "node": "validation data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Change validation method to https",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -1434,14 +1470,15 @@
   },
   "staticData": {
     "node:Schedule Trigger": {
-      "recurrencyRules": []
+      "recurrencyRules": [],
+      "recurrenceRules": []
     }
   },
   "meta": {
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "6fd1a4f1-7be4-49b0-9793-385542a45cd3",
+  "versionId": "7531444a-e90f-469e-8255-2bd33116e5de",
   "triggerCount": 1,
   "tags": [
     {

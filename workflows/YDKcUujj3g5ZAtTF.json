@@ -1,8 +1,8 @@
 {
   "createdAt": "2024-07-18T13:59:19.426Z",
-  "updatedAt": "2024-08-04T03:01:42.000Z",
+  "updatedAt": "2024-08-15T06:30:42.000Z",
   "id": "YDKcUujj3g5ZAtTF",
-  "name": "Get all active SSL certs from WHMCS that expire within 30 days",
+  "name": "Get all active SSL certs from WHMCS that expire within 29 days",
   "active": true,
   "nodes": [
     {
@@ -213,8 +213,7 @@
       "position": [
         1540,
         700
-      ],
-      "disabled": true
+      ]
     },
     {
       "parameters": {
@@ -257,8 +256,7 @@
           "id": "aD4Z71wqUYZUL79C",
           "name": "WHMCS"
         }
-      },
-      "disabled": true
+      }
     }
   ],
   "connections": {
@@ -350,7 +348,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "4ee47fbd-d4a8-4876-b260-3d904495f444",
+  "versionId": "7a13d2d4-b15f-44f7-978a-bcfd11a8f136",
   "triggerCount": 1,
   "tags": [
     {
