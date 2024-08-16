@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-07-18T14:16:00.169Z",
-  "updatedAt": "2024-08-15T06:27:35.000Z",
+  "updatedAt": "2024-08-16T07:30:28.000Z",
   "id": "Lzw399ANe04HZ6wK",
   "name": "Validate processing SSL orders",
   "active": true,
@@ -95,7 +95,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 3,
       "position": [
-        4040,
+        4260,
         940
       ],
       "credentials": {
@@ -211,7 +211,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        600,
+        820,
         800
       ]
     },
@@ -224,7 +224,7 @@
       "type": "n8n-nodes-base.stopAndError",
       "typeVersion": 1,
       "position": [
-        960,
+        1180,
         980
       ]
     },
@@ -314,7 +314,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        960,
+        1180,
         780
       ]
     },
@@ -327,7 +327,7 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        2080,
+        2300,
         680
       ],
       "webhookId": "a3a34f6c-9895-45fb-8472-73a6f36ada52"
@@ -352,87 +352,6 @@
     },
     {
       "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "ea4f71b7-2f4a-4464-8b8b-99a0cc3d1451",
-              "name": "hostname",
-              "value": "={{ $json.hostname }}",
-              "type": "string"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "id": "67c0f670-6896-4796-8d34-362819300bfa",
-      "name": "Host",
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        -340,
-        900
-      ]
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "loose"
-          },
-          "conditions": [
-            {
-              "id": "a944e985-f927-4e44-b4fa-8631e5064580",
-              "leftValue": "={{ $json.code }}",
-              "rightValue": "",
-              "operator": {
-                "type": "string",
-                "operation": "notEmpty",
-                "singleValue": true
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {
-          "looseTypeValidation": true
-        }
-      },
-      "id": "2ee8c59e-7ec6-490a-be39-a08c8d76c64a",
-      "name": "If2",
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2,
-      "position": [
-        260,
-        900
-      ]
-    },
-    {
-      "parameters": {
-        "authentication": "privateKey",
-        "command": "=plesk bin domain -i {{ $('Domain').item.json.domain_name.replace(/^www\\./, '') }} | sed -n 's/.*--WWW-Root--: //p'",
-        "cwd": "=/"
-      },
-      "id": "3a260382-427d-426b-99d3-5881923bf11c",
-      "name": "Get domain root",
-      "type": "n8n-nodes-base.ssh",
-      "typeVersion": 1,
-      "position": [
-        -40,
-        900
-      ],
-      "alwaysOutputData": true,
-      "credentials": {
-        "sshPrivateKey": {
-          "id": "7cM8UD60RNSc7v3k",
-          "name": "SSH Hcloud"
-        }
-      },
-      "onError": "continueRegularOutput"
-    },
-    {
-      "parameters": {
         "authentication": "privateKey",
         "resource": "file",
         "path": "={{ $('Validation').item.json.validationfolder }}",
@@ -443,7 +362,7 @@
       "type": "n8n-nodes-base.ssh",
       "typeVersion": 1,
       "position": [
-        1820,
+        2040,
         680
       ],
       "credentials": {
@@ -465,7 +384,7 @@
       "type": "n8n-nodes-base.removeDuplicates",
       "typeVersion": 1.1,
       "position": [
-        1260,
+        1480,
         780
       ]
     },
@@ -478,7 +397,7 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        2820,
+        3040,
         480
       ],
       "webhookId": "b0271979-7ac3-4b4e-9c6c-98d8b875fe11"
@@ -506,7 +425,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 3,
       "position": [
-        2320,
+        2540,
         680
       ],
       "credentials": {
@@ -539,7 +458,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 3,
       "position": [
-        3060,
+        3280,
         700
       ],
       "credentials": {
@@ -548,41 +467,6 @@
           "name": "GoGetSSL"
         }
       }
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": false,
-            "leftValue": "",
-            "typeValidation": "loose"
-          },
-          "conditions": [
-            {
-              "id": "c333694a-917b-45c7-bd3a-c9e5d0d1962a",
-              "leftValue": "={{ $json.status_description }}",
-              "rightValue": "validation",
-              "operator": {
-                "type": "string",
-                "operation": "notContains"
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {
-          "ignoreCase": true,
-          "looseTypeValidation": true
-        }
-      },
-      "id": "45da48b1-89d0-460f-8e47-b5ba23e0afea",
-      "name": "If4",
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2,
-      "position": [
-        3760,
-        700
-      ]
     },
     {
       "parameters": {
@@ -627,7 +511,7 @@
       "type": "n8n-nodes-base.ssh",
       "typeVersion": 1,
       "position": [
-        5120,
+        5340,
         1060
       ],
       "alwaysOutputData": true,
@@ -646,7 +530,7 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        3300,
+        3520,
         700
       ],
       "webhookId": "d5f33be3-f06c-430f-a548-deb0fac283ad"
@@ -688,7 +572,7 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3,
       "position": [
-        2580,
+        2800,
         680
       ]
     },
@@ -703,7 +587,7 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3,
       "position": [
-        1540,
+        1760,
         680
       ]
     },
@@ -726,7 +610,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        4600,
+        4820,
         940
       ]
     },
@@ -742,7 +626,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 3,
       "position": [
-        3540,
+        3760,
         700
       ],
       "credentials": {
@@ -764,7 +648,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 3,
       "position": [
-        4320,
+        4540,
         940
       ],
       "credentials": {
@@ -799,7 +683,7 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        5380,
+        5600,
         1060
       ],
       "webhookId": "ac0669d7-afcc-4773-9654-2f86c503564f"
@@ -815,7 +699,7 @@
       "type": "n8n-nodes-base.ssh",
       "typeVersion": 1,
       "position": [
-        5120,
+        5340,
         820
       ],
       "alwaysOutputData": true,
@@ -838,7 +722,7 @@
       "type": "n8n-nodes-base.ssh",
       "typeVersion": 1,
       "position": [
-        5940,
+        6160,
         600
       ],
       "credentials": {
@@ -860,7 +744,7 @@
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1,
       "position": [
-        5340,
+        5560,
         820
       ],
       "disabled": true
@@ -876,7 +760,7 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3,
       "position": [
-        5520,
+        5740,
         480
       ],
       "disabled": true
@@ -904,7 +788,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 3,
       "position": [
-        5620,
+        5840,
         1060
       ],
       "credentials": {
@@ -1021,6 +905,159 @@
         -2480,
         580
       ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ea4f71b7-2f4a-4464-8b8b-99a0cc3d1451",
+              "name": "hostname",
+              "value": "={{ $json.hostname }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "67c0f670-6896-4796-8d34-362819300bfa",
+      "name": "Host",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -340,
+        900
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "95e1b9ad-f056-43db-a3e2-c85ce030f98f",
+      "name": "Loop Over Items",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -120,
+        900
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "a944e985-f927-4e44-b4fa-8631e5064580",
+              "leftValue": "={{ $json.code }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "looseTypeValidation": true
+        }
+      },
+      "id": "2ee8c59e-7ec6-490a-be39-a08c8d76c64a",
+      "name": "If2",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        480,
+        920
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "privateKey",
+        "command": "=plesk bin domain -i {{ $('Domain').item.json.domain_name.replace(/^www\\./, '') }} | sed -n 's/.*--WWW-Root--: //p'",
+        "cwd": "=/"
+      },
+      "id": "3a260382-427d-426b-99d3-5881923bf11c",
+      "name": "Get domain root",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        200,
+        920
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "sshPrivateKey": {
+          "id": "7cM8UD60RNSc7v3k",
+          "name": "SSH Hcloud"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "c333694a-917b-45c7-bd3a-c9e5d0d1962a",
+              "leftValue": "={{ $json.status_description }}",
+              "rightValue": "validation",
+              "operator": {
+                "type": "string",
+                "operation": "notContains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "ignoreCase": true,
+          "looseTypeValidation": true
+        }
+      },
+      "id": "45da48b1-89d0-460f-8e47-b5ba23e0afea",
+      "name": "If4",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        3980,
+        700
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "privateKey",
+        "resource": "file",
+        "path": "={{ $('Validation').item.json.validationfolder }}",
+        "options": {}
+      },
+      "id": "8eaac8fd-fac4-4086-b917-ed86660e6069",
+      "name": "Update certificate in Plesk",
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        4260,
+        560
+      ],
+      "credentials": {
+        "sshPrivateKey": {
+          "id": "7cM8UD60RNSc7v3k",
+          "name": "SSH Hcloud"
+        }
+      },
+      "disabled": true,
+      "onError": "continueRegularOutput"
     }
   ],
   "connections": {
@@ -1066,11 +1103,6 @@
             "index": 0
           }
         ]
-      ]
-    },
-    "If1": {
-      "main": [
-        []
       ]
     },
     "Split Out": {
@@ -1151,39 +1183,6 @@
         ]
       ]
     },
-    "Host": {
-      "main": [
-        [
-          {
-            "node": "Get domain root",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "If2": {
-      "main": [
-        [
-          {
-            "node": "If3",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Get domain root": {
-      "main": [
-        [
-          {
-            "node": "If2",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "SSH": {
       "main": [
         [
@@ -1233,18 +1232,6 @@
         [
           {
             "node": "Wait2",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "If4": {
-      "main": [
-        [],
-        [
-          {
-            "node": "Change validation method to dns",
             "type": "main",
             "index": 0
           }
@@ -1459,6 +1446,76 @@
           }
         ]
       ]
+    },
+    "Host": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Get domain root",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get domain root": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If4": {
+      "main": [
+        [
+          {
+            "node": "Update certificate in Plesk",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Change validation method to dns",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -1478,7 +1535,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "7531444a-e90f-469e-8255-2bd33116e5de",
+  "versionId": "c9395019-dc5f-46b2-adbd-487d759407c8",
   "triggerCount": 1,
   "tags": [
     {
