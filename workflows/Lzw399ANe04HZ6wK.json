@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-07-18T14:16:00.169Z",
-  "updatedAt": "2024-08-16T07:30:28.000Z",
+  "updatedAt": "2024-08-17T05:53:11.000Z",
   "id": "Lzw399ANe04HZ6wK",
   "name": "Validate processing SSL orders",
   "active": true,
@@ -320,7 +320,7 @@
     },
     {
       "parameters": {
-        "amount": "=5"
+        "amount": "=300"
       },
       "id": "6c2905e7-3691-4924-bfb4-85936b90377f",
       "name": "Wait",
@@ -1535,7 +1535,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "c9395019-dc5f-46b2-adbd-487d759407c8",
+  "versionId": "609ad045-1987-4877-94b9-feacb73e1f7f",
   "triggerCount": 1,
   "tags": [
     {
