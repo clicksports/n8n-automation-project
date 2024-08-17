@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-07-18T13:59:19.426Z",
-  "updatedAt": "2024-08-15T06:30:42.000Z",
+  "updatedAt": "2024-08-17T09:38:42.000Z",
   "id": "YDKcUujj3g5ZAtTF",
   "name": "Get all active SSL certs from WHMCS that expire within 29 days",
   "active": true,
@@ -180,6 +180,19 @@
             "cachedResultName": "Christian Gick"
           },
           "description": "=https://www.clicksports.de/portal/admin/clientsservices.php?productselect={{ $json.id }}",
+          "customFieldsUi": {
+            "customFieldsValues": [
+              {
+                "fieldId": {
+                  "__rl": true,
+                  "value": "customfield_14500",
+                  "mode": "list",
+                  "cachedResultName": "Ticket Status"
+                },
+                "fieldValue": "Wartet auf Service"
+              }
+            ]
+          },
           "parentIssueKey": "86887"
         }
       },
@@ -348,7 +361,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "7a13d2d4-b15f-44f7-978a-bcfd11a8f136",
+  "versionId": "6251107a-f206-474b-a000-a02252a1a07e",
   "triggerCount": 1,
   "tags": [
     {
