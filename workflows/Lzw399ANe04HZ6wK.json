@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-07-18T14:16:00.169Z",
-  "updatedAt": "2024-08-17T05:53:11.000Z",
+  "updatedAt": "2024-08-17T06:14:27.000Z",
   "id": "Lzw399ANe04HZ6wK",
   "name": "Validate processing SSL orders",
   "active": true,
@@ -30,8 +30,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 3,
       "position": [
-        -3400,
-        580
+        -2420,
+        900
       ],
       "executeOnce": true
     },
@@ -40,7 +40,8 @@
         "rule": {
           "interval": [
             {
-              "field": "minutes"
+              "field": "minutes",
+              "minutesInterval": 15
             }
           ]
         }
@@ -50,8 +51,8 @@
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.1,
       "position": [
-        -3620,
-        580
+        -2640,
+        900
       ]
     },
     {
@@ -112,58 +113,8 @@
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
       "position": [
-        -3580,
-        340
-      ]
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "loose"
-          },
-          "conditions": [
-            {
-              "id": "29ef8d5b-0ed3-45d9-8e18-4337bdca6bab",
-              "leftValue": "={{ $json.orders.order_id }}",
-              "rightValue": "3071232",
-              "operator": {
-                "type": "string",
-                "operation": "notEquals"
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {
-          "looseTypeValidation": true
-        }
-      },
-      "id": "77ec4bbb-7a84-46df-a7a3-64c2f9968ec0",
-      "name": "If1",
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2,
-      "position": [
-        -2360,
-        -160
-      ],
-      "disabled": true
-    },
-    {
-      "parameters": {
-        "content": "",
-        "height": 597.5429975429976,
-        "width": 1077.110565110565
-      },
-      "id": "95022edc-5e89-4870-9fc5-252b96f2eac8",
-      "name": "Sticky Note",
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [
-        -2900,
-        -320
+        -2600,
+        660
       ]
     },
     {
@@ -490,8 +441,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 3,
       "position": [
-        -3160,
-        580
+        -2180,
+        900
       ],
       "credentials": {
         "httpQueryAuth": {
@@ -660,22 +611,6 @@
     },
     {
       "parameters": {
-        "mode": "combine",
-        "combineBy": "combineByPosition",
-        "options": {}
-      },
-      "id": "ab82e89d-49d6-433e-8c73-57c3a811c578",
-      "name": "Merge",
-      "type": "n8n-nodes-base.merge",
-      "typeVersion": 3,
-      "position": [
-        -2380,
-        40
-      ],
-      "disabled": true
-    },
-    {
-      "parameters": {
         "unit": "minutes"
       },
       "id": "b341d4b4-f345-4943-881f-e6e8729a8715",
@@ -809,8 +744,8 @@
       "type": "n8n-nodes-base.itemLists",
       "typeVersion": 3,
       "position": [
-        -2880,
-        580
+        -1900,
+        900
       ]
     },
     {
@@ -825,8 +760,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 3,
       "position": [
-        -1680,
-        420
+        -1380,
+        580
       ],
       "credentials": {
         "httpQueryAuth": {
@@ -862,8 +797,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 3,
       "position": [
-        -2120,
-        420
+        -1600,
+        320
       ],
       "alwaysOutputData": true,
       "credentials": {
@@ -872,6 +807,7 @@
           "name": "GoGetSSL"
         }
       },
+      "disabled": true,
       "onError": "continueRegularOutput"
     },
     {
@@ -902,8 +838,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        -2480,
-        580
+        -1640,
+        900
       ]
     },
     {
@@ -1402,11 +1338,6 @@
       "main": [
         [
           {
-            "node": "If1",
-            "type": "main",
-            "index": 0
-          },
-          {
             "node": "If",
             "type": "main",
             "index": 0
@@ -1427,20 +1358,14 @@
     },
     "Change validation method to https": {
       "main": [
-        [
-          {
-            "node": "validation data",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        []
       ]
     },
     "If": {
       "main": [
         [
           {
-            "node": "Change validation method to https",
+            "node": "validation data",
             "type": "main",
             "index": 0
           }
@@ -1535,7 +1460,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "609ad045-1987-4877-94b9-feacb73e1f7f",
+  "versionId": "be4b838f-f241-4595-b100-4aec183fbd59",
   "triggerCount": 1,
   "tags": [
     {
