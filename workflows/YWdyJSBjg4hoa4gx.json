@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-07-24T12:41:03.383Z",
-  "updatedAt": "2024-08-05T08:04:28.000Z",
+  "updatedAt": "2024-08-20T22:12:37.000Z",
   "id": "YWdyJSBjg4hoa4gx",
   "name": "Private chat",
   "active": false,
@@ -34,7 +34,7 @@
     },
     {
       "parameters": {
-        "model": "text-embedding-3-large",
+        "model": "text-embedding-3-small",
         "options": {}
       },
       "id": "0af8d4f9-d6dc-43be-a2e6-d2cb81c8412c",
@@ -140,7 +140,7 @@
     },
     {
       "parameters": {
-        "model": "text-embedding-3-large",
+        "model": "text-embedding-3-small",
         "options": {}
       },
       "id": "c830160b-2d50-4a8b-a560-e4d274980e1d",
@@ -423,7 +423,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "79f068e4-6495-474e-b6b3-c8436f4ffb4f",
+  "versionId": "a860c4b2-abd4-44e5-a82b-20231b994de6",
   "triggerCount": 3,
   "tags": [
     {

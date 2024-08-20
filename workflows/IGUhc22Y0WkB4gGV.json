@@ -1,13 +1,13 @@
 {
   "createdAt": "2024-07-21T13:25:13.104Z",
-  "updatedAt": "2024-07-23T07:04:25.000Z",
+  "updatedAt": "2024-08-20T22:13:15.000Z",
   "id": "IGUhc22Y0WkB4gGV",
   "name": "Index WordPress clicksports.de",
   "active": true,
   "nodes": [
     {
       "parameters": {
-        "model": "text-embedding-3-large",
+        "model": "text-embedding-3-small",
         "options": {}
       },
       "id": "9f08badc-aac1-456a-b5c7-8c48699617a8",
@@ -449,9 +449,7 @@
       "parameters": {
         "rule": {
           "interval": [
-            {
-              "field": "hours"
-            }
+            {}
           ]
         }
       },
@@ -934,7 +932,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "79abc9b9-8ccd-4ea2-9976-a65f0dac154f",
+  "versionId": "239aae9d-d023-477a-a611-fa2f41aca59e",
   "triggerCount": 1,
   "tags": [
     {

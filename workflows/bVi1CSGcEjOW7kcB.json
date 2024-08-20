@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-07-18T14:20:01.270Z",
-  "updatedAt": "2024-08-09T07:44:03.000Z",
+  "updatedAt": "2024-08-20T22:10:03.000Z",
   "id": "bVi1CSGcEjOW7kcB",
   "name": "Generate text comment for Jira issue",
   "active": true,
@@ -56,7 +56,7 @@
     },
     {
       "parameters": {
-        "model": "text-embedding-3-large",
+        "model": "text-embedding-3-small",
         "options": {}
       },
       "id": "a11f03fd-a1ed-4afa-a5dd-54c91b8c6d94",
@@ -282,7 +282,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "a3720f93-3ce0-4a80-94a4-60120a65bded",
+  "versionId": "73cb2715-235a-4f10-bcfd-faf5f4d0f041",
   "triggerCount": 1,
   "tags": [
     {

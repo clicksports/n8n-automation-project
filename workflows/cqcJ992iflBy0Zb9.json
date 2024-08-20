@@ -1,13 +1,13 @@
 {
   "createdAt": "2024-07-18T13:45:15.038Z",
-  "updatedAt": "2024-08-12T08:51:50.000Z",
+  "updatedAt": "2024-08-20T22:11:16.000Z",
   "id": "cqcJ992iflBy0Zb9",
   "name": "Find issue for mail",
   "active": false,
   "nodes": [
     {
       "parameters": {
-        "model": "text-embedding-3-large",
+        "model": "text-embedding-3-small",
         "options": {}
       },
       "id": "1a043935-b2dc-4391-b944-144f1b338c40",
@@ -132,7 +132,7 @@
     },
     {
       "parameters": {
-        "model": "text-embedding-3-large",
+        "model": "text-embedding-3-small",
         "options": {}
       },
       "id": "231aaf1f-7e01-424d-a52f-0ce2094657c8",
@@ -220,7 +220,7 @@
     },
     {
       "parameters": {
-        "model": "text-embedding-3-large",
+        "model": "text-embedding-3-small",
         "options": {}
       },
       "id": "9941c173-9aee-4659-8e65-f2ef16ce7a4e",
@@ -497,7 +497,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "21c81c1d-c28d-4140-897b-9566246535f9",
+  "versionId": "d7675385-f998-413f-a8b8-2e62e7c9fdd7",
   "triggerCount": 0,
   "tags": [
     {

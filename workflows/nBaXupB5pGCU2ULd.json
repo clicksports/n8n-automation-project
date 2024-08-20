@@ -1,13 +1,13 @@
 {
   "createdAt": "2024-07-18T13:57:52.509Z",
-  "updatedAt": "2024-07-19T13:11:28.000Z",
+  "updatedAt": "2024-08-20T22:13:34.000Z",
   "id": "nBaXupB5pGCU2ULd",
   "name": "Classify ticket",
   "active": true,
   "nodes": [
     {
       "parameters": {
-        "model": "text-embedding-3-large",
+        "model": "text-embedding-3-small",
         "options": {}
       },
       "id": "c25ef031-23b8-4efa-8153-6ac9781813e5",
@@ -355,7 +355,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "1d1c8dbd-7c0f-4574-8b0b-b7f640a86de9",
+  "versionId": "ce3c1387-6655-4110-af4c-c3fd66b5a6f8",
   "triggerCount": 1,
   "tags": [
     {

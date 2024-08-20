@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-07-18T11:47:48.486Z",
-  "updatedAt": "2024-08-16T06:17:02.000Z",
+  "updatedAt": "2024-08-20T22:12:00.000Z",
   "id": "taQ1njcTXVWU3ghh",
   "name": "Mailhandler",
   "active": true,
@@ -310,27 +310,6 @@
         1600
       ],
       "onError": "continueRegularOutput"
-    },
-    {
-      "parameters": {
-        "resource": "audio",
-        "operation": "transcribe",
-        "options": {}
-      },
-      "id": "c7820708-959d-416a-ad79-54b400a5536f",
-      "name": "Transcribe Phone message",
-      "type": "@n8n/n8n-nodes-langchain.openAi",
-      "typeVersion": 1.4,
-      "position": [
-        1200,
-        1040
-      ],
-      "credentials": {
-        "openAiApi": {
-          "id": "y8NvNd30QFsYf7Hw",
-          "name": "OpenAI"
-        }
-      }
     },
     {
       "parameters": {
@@ -1424,6 +1403,27 @@
     },
     {
       "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {}
+      },
+      "id": "c7820708-959d-416a-ad79-54b400a5536f",
+      "name": "Transcribe Phone message",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.4,
+      "position": [
+        1200,
+        1040
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "y8NvNd30QFsYf7Hw",
+          "name": "OpenAI"
+        }
+      }
+    },
+    {
+      "parameters": {
         "modelId": {
           "__rl": true,
           "value": "gpt-4o-mini",
@@ -1542,17 +1542,6 @@
         [
           {
             "node": "If",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Transcribe Phone message": {
-      "main": [
-        [
-          {
-            "node": "Create call issue",
             "type": "main",
             "index": 0
           }
@@ -2129,6 +2118,17 @@
         ]
       ]
     },
+    "Transcribe Phone message": {
+      "main": [
+        [
+          {
+            "node": "Create call issue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "Relevance and Reference": {
       "main": [
         [
@@ -2156,7 +2156,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "19729edb-8c3b-4c9b-92bc-3bc92158d2bb",
+  "versionId": "253fd161-c0cb-4b4d-a3f0-c2fb4a54124d",
   "triggerCount": 1,
   "tags": [
     {
