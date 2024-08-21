@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-07-18T14:16:00.169Z",
-  "updatedAt": "2024-08-17T06:14:27.000Z",
+  "updatedAt": "2024-08-21T12:23:52.000Z",
   "id": "Lzw399ANe04HZ6wK",
   "name": "Validate processing SSL orders",
   "active": true,
@@ -529,21 +529,6 @@
     },
     {
       "parameters": {
-        "mode": "combine",
-        "combineBy": "combineByPosition",
-        "options": {}
-      },
-      "id": "7937ab14-a456-4f60-ad9e-2dc2af3b56b2",
-      "name": "Validation",
-      "type": "n8n-nodes-base.merge",
-      "typeVersion": 3,
-      "position": [
-        1760,
-        680
-      ]
-    },
-    {
-      "parameters": {
         "assignments": {
           "assignments": [
             {
@@ -994,6 +979,21 @@
       },
       "disabled": true,
       "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "id": "7937ab14-a456-4f60-ad9e-2dc2af3b56b2",
+      "name": "Validation",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        1760,
+        680
+      ]
     }
   ],
   "connections": {
@@ -1225,17 +1225,6 @@
         ]
       ]
     },
-    "Validation": {
-      "main": [
-        [
-          {
-            "node": "SSH",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Edit Fields": {
       "main": [
         [
@@ -1356,11 +1345,6 @@
         ]
       ]
     },
-    "Change validation method to https": {
-      "main": [
-        []
-      ]
-    },
     "If": {
       "main": [
         [
@@ -1441,6 +1425,17 @@
           }
         ]
       ]
+    },
+    "Validation": {
+      "main": [
+        [
+          {
+            "node": "SSH",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -1460,7 +1455,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "be4b838f-f241-4595-b100-4aec183fbd59",
+  "versionId": "97115a14-69a4-4e66-a6d4-ea947bd34049",
   "triggerCount": 1,
   "tags": [
     {
