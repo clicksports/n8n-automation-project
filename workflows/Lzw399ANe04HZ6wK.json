@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-07-18T14:16:00.169Z",
-  "updatedAt": "2024-08-21T12:23:52.000Z",
+  "updatedAt": "2024-08-21T14:59:43.000Z",
   "id": "Lzw399ANe04HZ6wK",
   "name": "Validate processing SSL orders",
   "active": true,
@@ -30,7 +30,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 3,
       "position": [
-        -2420,
+        -2980,
         900
       ],
       "executeOnce": true
@@ -51,7 +51,7 @@
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.1,
       "position": [
-        -2640,
+        -3200,
         900
       ]
     },
@@ -113,7 +113,7 @@
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
       "position": [
-        -2600,
+        -3160,
         660
       ]
     },
@@ -271,7 +271,8 @@
     },
     {
       "parameters": {
-        "amount": "=300"
+        "amount": "=5",
+        "unit": "minutes"
       },
       "id": "6c2905e7-3691-4924-bfb4-85936b90377f",
       "name": "Wait",
@@ -341,7 +342,7 @@
     },
     {
       "parameters": {
-        "amount": 300
+        "unit": "minutes"
       },
       "id": "e3ba8dd8-6111-472e-ba25-b2c47fc53820",
       "name": "Wait1",
@@ -441,7 +442,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 3,
       "position": [
-        -2180,
+        -2740,
         900
       ],
       "credentials": {
@@ -475,7 +476,9 @@
       "onError": "continueRegularOutput"
     },
     {
-      "parameters": {},
+      "parameters": {
+        "unit": "minutes"
+      },
       "id": "eb902209-58a3-4556-9feb-90caca414f83",
       "name": "Wait2",
       "type": "n8n-nodes-base.wait",
@@ -729,7 +732,7 @@
       "type": "n8n-nodes-base.itemLists",
       "typeVersion": 3,
       "position": [
-        -1900,
+        -2500,
         900
       ]
     },
@@ -745,7 +748,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 3,
       "position": [
-        -1380,
+        -1360,
         580
       ],
       "credentials": {
@@ -782,8 +785,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 3,
       "position": [
-        -1600,
-        320
+        -1760,
+        780
       ],
       "alwaysOutputData": true,
       "credentials": {
@@ -792,7 +795,6 @@
           "name": "GoGetSSL"
         }
       },
-      "disabled": true,
       "onError": "continueRegularOutput"
     },
     {
@@ -823,7 +825,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        -1640,
+        -2280,
         900
       ]
     },
@@ -994,6 +996,36 @@
         1760,
         680
       ]
+    },
+    {
+      "parameters": {
+        "amount": "=5",
+        "unit": "minutes"
+      },
+      "id": "ec0c146b-eb1e-4956-b785-764be0441994",
+      "name": "Wait4",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -1980,
+        780
+      ],
+      "webhookId": "a3a34f6c-9895-45fb-8472-73a6f36ada52"
+    },
+    {
+      "parameters": {
+        "amount": "=5",
+        "unit": "minutes"
+      },
+      "id": "06e692da-6256-49a7-b3fc-c9e1022e4240",
+      "name": "Wait5",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -1580,
+        580
+      ],
+      "webhookId": "a3a34f6c-9895-45fb-8472-73a6f36ada52"
     }
   ],
   "connections": {
@@ -1349,7 +1381,7 @@
       "main": [
         [
           {
-            "node": "validation data",
+            "node": "Wait4",
             "type": "main",
             "index": 0
           }
@@ -1436,6 +1468,39 @@
           }
         ]
       ]
+    },
+    "Change validation method to https": {
+      "main": [
+        [
+          {
+            "node": "Wait5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait4": {
+      "main": [
+        [
+          {
+            "node": "Change validation method to https",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait5": {
+      "main": [
+        [
+          {
+            "node": "validation data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -1455,7 +1520,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "97115a14-69a4-4e66-a6d4-ea947bd34049",
+  "versionId": "94bea182-a568-4cd9-b550-9b7860914419",
   "triggerCount": 1,
   "tags": [
     {
