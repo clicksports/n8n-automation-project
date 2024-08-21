@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-07-18T14:20:01.270Z",
-  "updatedAt": "2024-08-20T22:10:03.000Z",
+  "updatedAt": "2024-08-21T15:22:51.000Z",
   "id": "bVi1CSGcEjOW7kcB",
   "name": "Generate text comment for Jira issue",
   "active": true,
@@ -64,48 +64,13 @@
       "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
       "typeVersion": 1,
       "position": [
-        1060,
+        1000,
         700
       ],
       "credentials": {
         "openAiApi": {
           "id": "y8NvNd30QFsYf7Hw",
           "name": "OpenAI"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "pineconeIndex": {
-          "__rl": true,
-          "value": "n8n",
-          "mode": "list",
-          "cachedResultName": "n8n"
-        },
-        "options": {
-          "pineconeNamespace": "issues",
-          "metadata": {
-            "metadataValues": [
-              {
-                "name": "issuekey",
-                "value": "={{ $json.body['issue.key'] }}"
-              }
-            ]
-          }
-        }
-      },
-      "id": "23146014-d299-4e4e-b274-45a986054fa7",
-      "name": "Pinecone Vector Store3",
-      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
-      "typeVersion": 1,
-      "position": [
-        980,
-        540
-      ],
-      "credentials": {
-        "pineconeApi": {
-          "id": "8lDKmR3gvMj1szqg",
-          "name": "Pinecone"
         }
       }
     },
@@ -183,6 +148,41 @@
         480,
         360
       ]
+    },
+    {
+      "parameters": {
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "n8n",
+          "mode": "list",
+          "cachedResultName": "n8n"
+        },
+        "options": {
+          "pineconeNamespace": "issues",
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "issuekey",
+                "value": "={{ $json.body['issue.key'] }}"
+              }
+            ]
+          }
+        }
+      },
+      "id": "23146014-d299-4e4e-b274-45a986054fa7",
+      "name": "Pinecone Vector Store3",
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1,
+      "position": [
+        980,
+        540
+      ],
+      "credentials": {
+        "pineconeApi": {
+          "id": "8lDKmR3gvMj1szqg",
+          "name": "Pinecone"
+        }
+      }
     }
   ],
   "connections": {
@@ -214,17 +214,6 @@
           {
             "node": "Pinecone Vector Store3",
             "type": "ai_embedding",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Pinecone Vector Store3": {
-      "ai_vectorStore": [
-        [
-          {
-            "node": "Vector Store Retriever",
-            "type": "ai_vectorStore",
             "index": 0
           }
         ]
@@ -269,6 +258,17 @@
           }
         ]
       ]
+    },
+    "Pinecone Vector Store3": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "Vector Store Retriever",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -282,7 +282,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "73cb2715-235a-4f10-bcfd-faf5f4d0f041",
+  "versionId": "4e050c12-ed90-4b9b-aa90-e7aa62ebb16f",
   "triggerCount": 1,
   "tags": [
     {
