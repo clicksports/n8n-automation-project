@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-07-18T14:16:00.169Z",
-  "updatedAt": "2024-08-21T15:13:55.000Z",
+  "updatedAt": "2024-08-22T07:57:58.000Z",
   "id": "Lzw399ANe04HZ6wK",
   "name": "Validate processing SSL orders",
   "active": true,
@@ -95,8 +95,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 3,
       "position": [
-        4260,
-        940
+        3580,
+        920
       ],
       "credentials": {
         "httpQueryAuth": {
@@ -270,7 +270,7 @@
     },
     {
       "parameters": {
-        "amount": "=5",
+        "amount": "=6",
         "unit": "minutes"
       },
       "id": "6c2905e7-3691-4924-bfb4-85936b90377f",
@@ -341,20 +341,6 @@
     },
     {
       "parameters": {
-        "unit": "minutes"
-      },
-      "id": "e3ba8dd8-6111-472e-ba25-b2c47fc53820",
-      "name": "Wait1",
-      "type": "n8n-nodes-base.wait",
-      "typeVersion": 1.1,
-      "position": [
-        3040,
-        480
-      ],
-      "webhookId": "b0271979-7ac3-4b4e-9c6c-98d8b875fe11"
-    },
-    {
-      "parameters": {
         "method": "POST",
         "url": "=https://my.gogetssl.com/api/orders/ssl/revalidate/{{ $('Validation').item.json.order_id }}",
         "authentication": "genericCredentialType",
@@ -378,39 +364,6 @@
       "position": [
         2540,
         680
-      ],
-      "credentials": {
-        "httpQueryAuth": {
-          "id": "pskjhKSslGfoyCfJ",
-          "name": "GoGetSSL"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "=https://my.gogetssl.com/api/orders/ssl/revalidate/{{ $('Validation').item.json.order_id }}",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpQueryAuth",
-        "sendBody": true,
-        "contentType": "multipart-form-data",
-        "bodyParameters": {
-          "parameters": [
-            {
-              "name": "domain",
-              "value": "={{ $('Validation').item.json.domain }}"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "id": "877d53a7-4b62-4f67-ab94-53b32a7d4ece",
-      "name": "Try revalidate https",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 3,
-      "position": [
-        3280,
-        700
       ],
       "credentials": {
         "httpQueryAuth": {
@@ -462,8 +415,8 @@
       "type": "n8n-nodes-base.ssh",
       "typeVersion": 1,
       "position": [
-        5340,
-        1060
+        4660,
+        1040
       ],
       "alwaysOutputData": true,
       "credentials": {
@@ -476,6 +429,7 @@
     },
     {
       "parameters": {
+        "amount": 1,
         "unit": "minutes"
       },
       "id": "eb902209-58a3-4556-9feb-90caca414f83",
@@ -483,51 +437,10 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        3520,
-        700
+        2840,
+        680
       ],
       "webhookId": "d5f33be3-f06c-430f-a548-deb0fac283ad"
-    },
-    {
-      "parameters": {
-        "rules": {
-          "values": [
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict"
-                },
-                "conditions": [
-                  {
-                    "leftValue": "={{ $json.description }}",
-                    "rightValue": "locked",
-                    "operator": {
-                      "type": "string",
-                      "operation": "contains"
-                    }
-                  }
-                ],
-                "combinator": "and"
-              },
-              "renameOutput": true,
-              "outputKey": "locked"
-            }
-          ]
-        },
-        "options": {
-          "fallbackOutput": "extra"
-        }
-      },
-      "id": "37e7dcd5-160d-4ad2-a97f-81a28929714c",
-      "name": "Switch1",
-      "type": "n8n-nodes-base.switch",
-      "typeVersion": 3,
-      "position": [
-        2800,
-        680
-      ]
     },
     {
       "parameters": {
@@ -548,8 +461,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        4820,
-        940
+        4140,
+        920
       ]
     },
     {
@@ -564,8 +477,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 3,
       "position": [
-        3760,
-        700
+        3080,
+        680
       ],
       "credentials": {
         "httpQueryAuth": {
@@ -586,8 +499,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 3,
       "position": [
-        4540,
-        940
+        3860,
+        920
       ],
       "credentials": {
         "httpQueryAuth": {
@@ -605,8 +518,8 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        5600,
-        1060
+        4920,
+        1040
       ],
       "webhookId": "ac0669d7-afcc-4773-9654-2f86c503564f"
     },
@@ -621,8 +534,8 @@
       "type": "n8n-nodes-base.ssh",
       "typeVersion": 1,
       "position": [
-        5340,
-        820
+        4660,
+        800
       ],
       "alwaysOutputData": true,
       "credentials": {
@@ -631,7 +544,6 @@
           "name": "SSH Hcloud"
         }
       },
-      "disabled": true,
       "onError": "continueRegularOutput"
     },
     {
@@ -644,16 +556,15 @@
       "type": "n8n-nodes-base.ssh",
       "typeVersion": 1,
       "position": [
-        6160,
-        600
+        5480,
+        580
       ],
       "credentials": {
         "sshPrivateKey": {
           "id": "7cM8UD60RNSc7v3k",
           "name": "SSH Hcloud"
         }
-      },
-      "disabled": true
+      }
     },
     {
       "parameters": {
@@ -666,26 +577,9 @@
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1,
       "position": [
-        5560,
-        820
-      ],
-      "disabled": true
-    },
-    {
-      "parameters": {
-        "mode": "combine",
-        "combineBy": "combineAll",
-        "options": {}
-      },
-      "id": "156f72a0-e964-43a4-842f-fc6fb0edae8a",
-      "name": "Merge1",
-      "type": "n8n-nodes-base.merge",
-      "typeVersion": 3,
-      "position": [
-        5740,
-        480
-      ],
-      "disabled": true
+        4880,
+        800
+      ]
     },
     {
       "parameters": {
@@ -710,8 +604,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 3,
       "position": [
-        5840,
-        1060
+        5160,
+        1040
       ],
       "credentials": {
         "httpQueryAuth": {
@@ -953,8 +847,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        3980,
-        700
+        3300,
+        680
       ]
     },
     {
@@ -969,8 +863,8 @@
       "type": "n8n-nodes-base.ssh",
       "typeVersion": 1,
       "position": [
-        4260,
-        560
+        3580,
+        540
       ],
       "credentials": {
         "sshPrivateKey": {
@@ -1025,6 +919,22 @@
         580
       ],
       "webhookId": "a3a34f6c-9895-45fb-8472-73a6f36ada52"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "id": "156f72a0-e964-43a4-842f-fc6fb0edae8a",
+      "name": "Merge1",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        5060,
+        460
+      ],
+      "disabled": true
     }
   ],
   "connections": {
@@ -1176,28 +1086,6 @@
       "main": [
         [
           {
-            "node": "Switch1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Wait1": {
-      "main": [
-        [
-          {
-            "node": "Try revalidate https",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Try revalidate https": {
-      "main": [
-        [
-          {
             "node": "Wait2",
             "type": "main",
             "index": 0
@@ -1232,24 +1120,6 @@
         [
           {
             "node": "Validation status",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Switch1": {
-      "main": [
-        [
-          {
-            "node": "Wait1",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Try revalidate https",
             "type": "main",
             "index": 0
           }
@@ -1339,17 +1209,6 @@
             "node": "Merge1",
             "type": "main",
             "index": 1
-          }
-        ]
-      ]
-    },
-    "Merge1": {
-      "main": [
-        [
-          {
-            "node": "Delete",
-            "type": "main",
-            "index": 0
           }
         ]
       ]
@@ -1500,6 +1359,17 @@
           }
         ]
       ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Delete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -1519,7 +1389,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "ffa729dc-30dd-4eae-b901-5e2938298d3d",
+  "versionId": "7b9baa9d-732a-4b27-9dcc-b8e4498d5f89",
   "triggerCount": 1,
   "tags": [
     {
