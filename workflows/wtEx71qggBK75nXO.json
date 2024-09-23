@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-07-18T13:45:27.059Z",
-  "updatedAt": "2024-07-18T13:45:38.000Z",
+  "updatedAt": "2024-09-23T12:59:39.580Z",
   "id": "wtEx71qggBK75nXO",
   "name": "Phone voice generator",
   "active": false,
@@ -50,12 +50,15 @@
     }
   },
   "settings": {
-    "executionOrder": "v1"
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "oXwbRnZHgYHUkKj4"
   },
   "staticData": null,
   "meta": null,
   "pinData": {},
-  "versionId": "919d2d0a-c361-4ae0-a971-11402533deac",
+  "versionId": "4c51373b-e2ab-43ad-b305-057ea5a681ae",
   "triggerCount": 0,
   "tags": []
 }

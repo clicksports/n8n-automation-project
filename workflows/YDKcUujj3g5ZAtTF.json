@@ -1,8 +1,8 @@
 {
   "createdAt": "2024-07-18T13:59:19.426Z",
-  "updatedAt": "2024-08-20T21:48:25.000Z",
+  "updatedAt": "2024-09-23T09:51:32.641Z",
   "id": "YDKcUujj3g5ZAtTF",
-  "name": "Get all active SSL certs from WHMCS that expire within 29 days",
+  "name": "Renew SSL certs from WHMCS that expire soon",
   "active": true,
   "nodes": [
     {
@@ -121,15 +121,16 @@
           "options": {
             "caseSensitive": true,
             "leftValue": "",
-            "typeValidation": "strict"
+            "typeValidation": "loose",
+            "version": 1
           },
           "conditions": [
             {
               "id": "e33d1be5-59ed-4995-9c83-5f55878b910e",
-              "leftValue": "={{ $json.nextduedate.toDateTime().format('y-MM-d') }}",
-              "rightValue": "={{ $today.plus({days: 29}).format('y-MM-d') }}",
+              "leftValue": "={{ $json.nextduedate }}",
+              "rightValue": "={{ $today.plus(30, 'days').format('y-MM-d') }}",
               "operator": {
-                "type": "dateTime",
+                "type": "string",
                 "operation": "equals"
               }
             },
@@ -146,7 +147,9 @@
           ],
           "combinator": "and"
         },
-        "options": {}
+        "options": {
+          "looseTypeValidation": true
+        }
       },
       "id": "2370ab54-fbe6-4e5a-8dac-7f3abe7df530",
       "name": "Filter active and due",
@@ -178,9 +181,7 @@
             "value": "5eba311706a3eb0b7e415e2c",
             "mode": "list",
             "cachedResultName": "Christian Gick"
-          },
-          "description": "=https://www.clicksports.de/portal/admin/clientsservices.php?productselect={{ $json.id }}",
-          "parentIssueKey": "86887"
+          }
         }
       },
       "id": "c9691a25-29f1-48de-852a-eab503c9f87d",
@@ -199,21 +200,6 @@
           "name": "Jira christian.gick@clicksports.de"
         }
       }
-    },
-    {
-      "parameters": {
-        "workflowId": "Lzw399ANe04HZ6wK",
-        "mode": "each",
-        "options": {}
-      },
-      "id": "84166417-31ce-4e37-b905-e38052c0d29f",
-      "name": "Validation",
-      "type": "n8n-nodes-base.executeWorkflow",
-      "typeVersion": 1,
-      "position": [
-        1540,
-        700
-      ]
     },
     {
       "parameters": {
@@ -255,6 +241,32 @@
         "httpCustomAuth": {
           "id": "aD4Z71wqUYZUL79C",
           "name": "WHMCS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://clicksports.atlassian.net/rest/api/3/issue/{{ $('Create issue').item.json.key }}/remotelink",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "jiraSoftwareCloudApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"object\": {\n    \"title\": \"Dauerleistung in WHMCS\",\n    \"url\": \"https://www.clicksports.de/portal/admin/clientsservices.php?productselect={{ $('Filter active and due').item.json.id }}\"\n  }\n}",
+        "options": {}
+      },
+      "id": "6076349f-76d9-495b-84a2-b9e3c0e4a517",
+      "name": "Link WHMCS service",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1540,
+        460
+      ],
+      "credentials": {
+        "jiraSoftwareCloudApi": {
+          "id": "HlsaLdc6YFfeasWO",
+          "name": "Jira christian.gick@clicksports.de"
         }
       }
     }
@@ -320,11 +332,11 @@
         ]
       ]
     },
-    "Renew in WHMCS": {
+    "Create issue": {
       "main": [
         [
           {
-            "node": "Validation",
+            "node": "Link WHMCS service",
             "type": "main",
             "index": 0
           }
@@ -348,7 +360,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "8354f813-49e4-455f-9b6c-d03820a6d445",
+  "versionId": "96ae379f-3330-4ed0-acf1-4dd3ae6b3684",
   "triggerCount": 1,
   "tags": [
     {

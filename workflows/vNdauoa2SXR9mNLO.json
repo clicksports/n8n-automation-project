@@ -1,9 +1,9 @@
 {
   "createdAt": "2024-07-22T11:45:13.325Z",
-  "updatedAt": "2024-07-27T07:05:32.000Z",
+  "updatedAt": "2024-09-23T12:59:45.912Z",
   "id": "vNdauoa2SXR9mNLO",
   "name": "hcloud Volume",
-  "active": true,
+  "active": false,
   "nodes": [
     {
       "parameters": {
@@ -812,14 +812,17 @@
     }
   },
   "settings": {
-    "executionOrder": "v1"
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "oXwbRnZHgYHUkKj4"
   },
   "staticData": null,
   "meta": {
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "e226c1e5-d282-41e0-bb04-349499c03b9f",
+  "versionId": "5117988f-a835-45f4-9f73-3bea562140ab",
   "triggerCount": 2,
   "tags": [
     {

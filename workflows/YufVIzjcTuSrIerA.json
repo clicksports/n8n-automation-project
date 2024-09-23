@@ -1,0 +1,149 @@
+{
+  "createdAt": "2024-09-23T11:40:57.513Z",
+  "updatedAt": "2024-09-23T13:00:48.299Z",
+  "id": "YufVIzjcTuSrIerA",
+  "name": "My workflow",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "0052157f-f9bb-4ed3-affc-ead1dcfd7dda",
+      "name": "When clicking ‘Test workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        620,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "9bd0d7a9-9188-4086-bfc4-e9be60b92475",
+      "name": "Default Data Loader",
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1,
+      "position": [
+        1080,
+        820
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "6e0247f7-43af-49ad-825a-8c9b591db0b0",
+      "name": "Character Text Splitter",
+      "type": "@n8n/n8n-nodes-langchain.textSplitterCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        1080,
+        1040
+      ]
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-small",
+        "options": {}
+      },
+      "id": "32d55ddb-c86a-4f81-ad6c-85893b825a02",
+      "name": "Embeddings OpenAI",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1,
+      "position": [
+        940,
+        780
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "y8NvNd30QFsYf7Hw",
+          "name": "OpenAI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "qdrantCollection": {
+          "__rl": true,
+          "value": "n8n",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "id": "d08f3dcf-ba1f-4154-a373-ab048ac66d5f",
+      "name": "Qdrant Vector Store",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "typeVersion": 1,
+      "position": [
+        940,
+        560
+      ],
+      "credentials": {
+        "qdrantApi": {
+          "id": "EF7g7Gu0GqFf23bE",
+          "name": "QdrantApi account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "oXwbRnZHgYHUkKj4"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "2cbf7146-63c3-492d-9b7d-4ef756d2c921",
+  "triggerCount": 0,
+  "tags": []
+}

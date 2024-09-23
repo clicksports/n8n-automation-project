@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-07-18T14:16:00.169Z",
-  "updatedAt": "2024-08-22T07:57:58.000Z",
+  "updatedAt": "2024-09-23T09:51:31.403Z",
   "id": "Lzw399ANe04HZ6wK",
   "name": "Validate processing SSL orders",
   "active": true,
@@ -30,8 +30,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 3,
       "position": [
-        -2980,
-        900
+        -3700,
+        700
       ],
       "executeOnce": true
     },
@@ -40,7 +40,8 @@
         "rule": {
           "interval": [
             {
-              "field": "hours"
+              "field": "minutes",
+              "minutesInterval": 15
             }
           ]
         }
@@ -50,8 +51,8 @@
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.1,
       "position": [
-        -3200,
-        900
+        -3960,
+        860
       ]
     },
     {
@@ -64,14 +65,14 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -1120,
-        580
+        -2240,
+        840
       ]
     },
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://my.gogetssl.com/api/orders/ssl/change_validation_method/{{ $('Validation').item.json.order_id }}/",
+        "url": "=https://my.gogetssl.com/api/orders/ssl/change_validation_method/{{ $('Order data').item.json.order_id }}/",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpQueryAuth",
         "sendBody": true,
@@ -80,7 +81,7 @@
           "parameters": [
             {
               "name": "domain",
-              "value": "={{ $('Validation').item.json.domain }}"
+              "value": "={{ $('Order data').item.json.domain }}"
             },
             {
               "name": "new_method",
@@ -95,8 +96,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 3,
       "position": [
-        3580,
-        920
+        3220,
+        1160
       ],
       "credentials": {
         "httpQueryAuth": {
@@ -112,9 +113,10 @@
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
       "position": [
-        -3160,
-        660
-      ]
+        -3940,
+        540
+      ],
+      "disabled": true
     },
     {
       "parameters": {
@@ -129,53 +131,8 @@
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1,
       "position": [
-        -620,
-        900
-      ]
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict"
-          },
-          "conditions": [
-            {
-              "id": "75f7657b-7717-4c36-90fa-30a42100978c",
-              "leftValue": "={{ $json.code }}",
-              "rightValue": 0,
-              "operator": {
-                "type": "number",
-                "operation": "equals"
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "id": "a977b91b-2080-43c7-a1b7-be76c4ac4197",
-      "name": "If3",
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2,
-      "position": [
-        820,
-        800
-      ]
-    },
-    {
-      "parameters": {
-        "errorMessage": "={{ $json.stderr }}"
-      },
-      "id": "b7e96a29-adc3-4041-a042-7477dd1b6dce",
-      "name": "Could not search for vhost",
-      "type": "n8n-nodes-base.stopAndError",
-      "typeVersion": 1,
-      "position": [
-        1180,
-        980
+        -640,
+        1260
       ]
     },
     {
@@ -185,7 +142,7 @@
             {
               "id": "f53176f2-5673-4715-bcfb-c76508895782",
               "name": "plesk_domainpool",
-              "value": "=[\"www.{{ $json.domain }}\", \"{{ $json.domain }}\", \"{{ $json.baseDomain }}\", \"plesk.{{ $json.domain }}\", \"plesk.{{ $json.baseDomain }}\", \"org-www.clicksports.de\"]",
+              "value": "=[\"www.{{ $json.domain }}\", \"{{ $json.domain }}\", \"{{ $json.baseDomain }}\", \"plesk.{{ $json.domain }}\", \"plesk.{{ $json.baseDomain }}\"]",
               "type": "array"
             },
             {
@@ -217,8 +174,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.3,
       "position": [
-        -920,
-        900
+        -2020,
+        840
       ]
     },
     {
@@ -264,42 +221,9 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1180,
-        780
+        660,
+        1220
       ]
-    },
-    {
-      "parameters": {
-        "amount": "=6",
-        "unit": "minutes"
-      },
-      "id": "6c2905e7-3691-4924-bfb4-85936b90377f",
-      "name": "Wait",
-      "type": "n8n-nodes-base.wait",
-      "typeVersion": 1.1,
-      "position": [
-        2300,
-        680
-      ],
-      "webhookId": "a3a34f6c-9895-45fb-8472-73a6f36ada52"
-    },
-    {
-      "parameters": {
-        "operation": "toText",
-        "sourceProperty": "approver_method.https.content",
-        "options": {
-          "fileName": "={{ $json.approver_method.https.filename }}"
-        }
-      },
-      "id": "474c7f1e-1de1-4606-81c1-608f529697c6",
-      "name": "Convert to File",
-      "type": "n8n-nodes-base.convertToFile",
-      "typeVersion": 1.1,
-      "position": [
-        -620,
-        660
-      ],
-      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
@@ -313,8 +237,8 @@
       "type": "n8n-nodes-base.ssh",
       "typeVersion": 1,
       "position": [
-        2040,
-        680
+        1520,
+        920
       ],
       "credentials": {
         "sshPrivateKey": {
@@ -323,21 +247,6 @@
         }
       },
       "onError": "continueRegularOutput"
-    },
-    {
-      "parameters": {
-        "compare": "selectedFields",
-        "fieldsToCompare": "validationfolder",
-        "options": {}
-      },
-      "id": "43226c53-2256-4b81-a45f-f088c06bfcbd",
-      "name": "Remove Duplicates",
-      "type": "n8n-nodes-base.removeDuplicates",
-      "typeVersion": 1.1,
-      "position": [
-        1480,
-        780
-      ]
     },
     {
       "parameters": {
@@ -362,8 +271,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 3,
       "position": [
-        2540,
-        680
+        2000,
+        920
       ],
       "credentials": {
         "httpQueryAuth": {
@@ -394,8 +303,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 3,
       "position": [
-        -2740,
-        900
+        -3440,
+        860
       ],
       "credentials": {
         "httpQueryAuth": {
@@ -407,7 +316,7 @@
     {
       "parameters": {
         "authentication": "privateKey",
-        "command": "=plesk bin dns --add {{ $('Validation').item.json.domain.replace(/^www\\./, '') }} -cname $(echo {{ $('DNS Validation').item.json.approver_method.dns.record.split(' ')[0] }} | sed 's/\\.{{ $('Validation').item.json.domain.replace(/^www\\./, '')}}//') -canonical {{ $('DNS Validation').item.json.approver_method.dns.record.split(' ')[2] }}",
+        "command": "=plesk bin dns --add {{ $('Domain').item.json.domain_name.replace(/^www\\./, '') }} -cname $(echo {{ $('DNS Validation').item.json.approver_method.dns.record.split(' ')[0] }} | sed 's/\\.{{ $('DNS Validation').item.json.domain.replace(/^www\\./, '')}}//') -canonical {{ $('DNS Validation').item.json.approver_method.dns.record.split(' ')[2] }}",
         "cwd": "=/"
       },
       "id": "396b2c64-b437-4b23-924d-327fa0b0e731",
@@ -415,8 +324,8 @@
       "type": "n8n-nodes-base.ssh",
       "typeVersion": 1,
       "position": [
-        4660,
-        1040
+        5220,
+        1340
       ],
       "alwaysOutputData": true,
       "credentials": {
@@ -429,16 +338,15 @@
     },
     {
       "parameters": {
-        "amount": 1,
-        "unit": "minutes"
+        "amount": 10
       },
       "id": "eb902209-58a3-4556-9feb-90caca414f83",
       "name": "Wait2",
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        2840,
-        680
+        2260,
+        920
       ],
       "webhookId": "d5f33be3-f06c-430f-a548-deb0fac283ad"
     },
@@ -449,7 +357,7 @@
             {
               "id": "e250fa17-495a-46de-91ca-5f3fc8b8f836",
               "name": "hostname",
-              "value": "={{ $('Validation').item.json.hostname }}",
+              "value": "={{ $('Folders1').item.json.hostname }}",
               "type": "string"
             }
           ]
@@ -461,13 +369,13 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        4140,
-        920
+        3780,
+        1160
       ]
     },
     {
       "parameters": {
-        "url": "=https://my.gogetssl.com/api/orders/status/{{ $('Validation').item.json.order_id }}",
+        "url": "=https://my.gogetssl.com/api/orders/status/{{ $('Domain').item.json.order_id }}",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpQueryAuth",
         "options": {}
@@ -477,29 +385,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 3,
       "position": [
-        3080,
-        680
-      ],
-      "credentials": {
-        "httpQueryAuth": {
-          "id": "pskjhKSslGfoyCfJ",
-          "name": "GoGetSSL"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "url": "=https://my.gogetssl.com/api/orders/status/{{ $('Validation').item.json.order_id }}",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpQueryAuth",
-        "options": {}
-      },
-      "id": "7ea42742-d241-430e-a96a-dbf0c4741b56",
-      "name": "DNS Validation",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 3,
-      "position": [
-        3860,
+        2500,
         920
       ],
       "credentials": {
@@ -511,6 +397,29 @@
     },
     {
       "parameters": {
+        "url": "=https://my.gogetssl.com/api/orders/status/{{ $('Order data').item.json.order_id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "options": {}
+      },
+      "id": "7ea42742-d241-430e-a96a-dbf0c4741b56",
+      "name": "DNS Validation",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        3500,
+        1160
+      ],
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "pskjhKSslGfoyCfJ",
+          "name": "GoGetSSL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 1,
         "unit": "minutes"
       },
       "id": "b341d4b4-f345-4943-881f-e6e8729a8715",
@@ -518,15 +427,15 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        4920,
-        1040
+        5480,
+        1340
       ],
       "webhookId": "ac0669d7-afcc-4773-9654-2f86c503564f"
     },
     {
       "parameters": {
         "authentication": "privateKey",
-        "command": "=plesk bin dns --info {{ $('Validation').item.json.domain.replace(/^www\\./, '') }} | grep 'sectigo'",
+        "command": "=plesk bin dns --info {{ $('Order data').item.json.domain.replace(/^www\\./, '') }} | grep 'sectigo'",
         "cwd": "=/"
       },
       "id": "f3e85cc1-fe1f-4087-8fbc-2b7208cab767",
@@ -534,8 +443,8 @@
       "type": "n8n-nodes-base.ssh",
       "typeVersion": 1,
       "position": [
-        4660,
-        800
+        4040,
+        940
       ],
       "alwaysOutputData": true,
       "credentials": {
@@ -549,15 +458,15 @@
     {
       "parameters": {
         "authentication": "privateKey",
-        "command": "= plesk bin dns --del {{ $('Validation').item.json.domain.replace(/^www\\./, '') }} -cname  -canonical "
+        "command": "= plesk bin dns --del {{ $('Order data').item.json.domain.replace(/^www\\./, '') }} -cname {{ $json.cname.trim() }} -canonical {{ $json.canonical.trim() }}"
       },
       "id": "153ca7ed-1174-4d76-a521-06090fd03dce",
       "name": "Delete",
       "type": "n8n-nodes-base.ssh",
       "typeVersion": 1,
       "position": [
-        5480,
-        580
+        4720,
+        1140
       ],
       "credentials": {
         "sshPrivateKey": {
@@ -568,23 +477,8 @@
     },
     {
       "parameters": {
-        "fieldToSplitOut": "={{ $json.stdout.split('\\n')  }}",
-        "include": "allOtherFields",
-        "options": {}
-      },
-      "id": "91792b14-9749-4d52-9132-dc8e1a8c2a41",
-      "name": "Split Out1",
-      "type": "n8n-nodes-base.splitOut",
-      "typeVersion": 1,
-      "position": [
-        4880,
-        800
-      ]
-    },
-    {
-      "parameters": {
         "method": "POST",
-        "url": "=https://my.gogetssl.com/api/orders/ssl/revalidate/{{ $('Validation').item.json.order_id }}",
+        "url": "=https://my.gogetssl.com/api/orders/ssl/revalidate/{{ $('Domain').item.json.order_id }}",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpQueryAuth",
         "sendBody": true,
@@ -593,7 +487,7 @@
           "parameters": [
             {
               "name": "domain",
-              "value": "={{ $('Validation').item.json.domain }}"
+              "value": "={{ $('Domain').item.json.domain_name }}"
             }
           ]
         },
@@ -604,8 +498,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 3,
       "position": [
-        5160,
-        1040
+        5720,
+        1340
       ],
       "credentials": {
         "httpQueryAuth": {
@@ -625,31 +519,9 @@
       "type": "n8n-nodes-base.itemLists",
       "typeVersion": 3,
       "position": [
-        -2500,
-        900
+        -3200,
+        860
       ]
-    },
-    {
-      "parameters": {
-        "url": "=https://my.gogetssl.com/api/orders/status/{{ $('Orders').item.json.orders.order_id }}",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpQueryAuth",
-        "options": {}
-      },
-      "id": "660abb61-8a56-40a8-95b4-52fd4a217fad",
-      "name": "validation data",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 3,
-      "position": [
-        -1360,
-        580
-      ],
-      "credentials": {
-        "httpQueryAuth": {
-          "id": "pskjhKSslGfoyCfJ",
-          "name": "GoGetSSL"
-        }
-      }
     },
     {
       "parameters": {
@@ -678,8 +550,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 3,
       "position": [
-        -1760,
-        780
+        -2700,
+        840
       ],
       "alwaysOutputData": true,
       "credentials": {
@@ -718,8 +590,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        -2280,
-        900
+        -2980,
+        860
       ]
     },
     {
@@ -741,21 +613,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -340,
-        900
-      ]
-    },
-    {
-      "parameters": {
-        "options": {}
-      },
-      "id": "95e1b9ad-f056-43db-a3e2-c85ce030f98f",
-      "name": "Loop Over Items",
-      "type": "n8n-nodes-base.splitInBatches",
-      "typeVersion": 3,
-      "position": [
-        -120,
-        900
+        -140,
+        1460
       ]
     },
     {
@@ -769,7 +628,7 @@
           "conditions": [
             {
               "id": "a944e985-f927-4e44-b4fa-8631e5064580",
-              "leftValue": "={{ $json.code }}",
+              "leftValue": "={{ $json.stdout }}",
               "rightValue": "",
               "operator": {
                 "type": "string",
@@ -789,32 +648,9 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        480,
-        920
+        380,
+        1240
       ]
-    },
-    {
-      "parameters": {
-        "authentication": "privateKey",
-        "command": "=plesk bin domain -i {{ $('Domain').item.json.domain_name.replace(/^www\\./, '') }} | sed -n 's/.*--WWW-Root--: //p'",
-        "cwd": "=/"
-      },
-      "id": "3a260382-427d-426b-99d3-5881923bf11c",
-      "name": "Get domain root",
-      "type": "n8n-nodes-base.ssh",
-      "typeVersion": 1,
-      "position": [
-        200,
-        920
-      ],
-      "alwaysOutputData": true,
-      "credentials": {
-        "sshPrivateKey": {
-          "id": "7cM8UD60RNSc7v3k",
-          "name": "SSH Hcloud"
-        }
-      },
-      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
@@ -847,33 +683,244 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        3300,
-        680
+        2700,
+        920
       ]
     },
     {
       "parameters": {
-        "authentication": "privateKey",
-        "resource": "file",
-        "path": "={{ $('Validation').item.json.validationfolder }}",
         "options": {}
       },
-      "id": "8eaac8fd-fac4-4086-b917-ed86660e6069",
-      "name": "Update certificate in Plesk",
+      "id": "4bd5ba40-744a-4093-8872-061d9f3ac990",
+      "name": "Loop Over Items1",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -420,
+        1260
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "75b0df5e-45fe-4708-b470-6fc606878e24",
+              "name": "cname",
+              "value": "=  {{ $json.stdout.split(\" \")[0].split(\".\")[0] }}",
+              "type": "string"
+            },
+            {
+              "id": "3b281aba-00fd-4eec-b8e7-d7a359d17bbc",
+              "name": "canonical",
+              "value": "={{ $json.stdout.split(\" \")[3] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b02ea79c-43de-4e77-9de4-33e95ee9eda2",
+      "name": "Edit Fields2",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4260,
+        940
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://my.gogetssl.com/api/orders/status/{{ $('Orders').item.json.orders.order_id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "options": {}
+      },
+      "id": "660abb61-8a56-40a8-95b4-52fd4a217fad",
+      "name": "Order data",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        -2480,
+        840
+      ],
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "pskjhKSslGfoyCfJ",
+          "name": "GoGetSSL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "privateKey",
+        "command": "=plesk bin domain -i {{ $('Loop Over Items1').item.json.plesk_domain_root.replace(/^www\\./, '') }} | sed -n 's/.*--WWW-Root--: //p'",
+        "cwd": "=/"
+      },
+      "id": "3a260382-427d-426b-99d3-5881923bf11c",
+      "name": "Get domain folder",
       "type": "n8n-nodes-base.ssh",
       "typeVersion": 1,
       "position": [
-        3580,
-        540
+        80,
+        1460
       ],
+      "alwaysOutputData": true,
       "credentials": {
         "sshPrivateKey": {
           "id": "7cM8UD60RNSc7v3k",
           "name": "SSH Hcloud"
         }
       },
-      "disabled": true,
       "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "id": "156f72a0-e964-43a4-842f-fc6fb0edae8a",
+      "name": "Merge1",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        4480,
+        1140
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "id": "c712bc22-c535-4475-83c3-c63e9387cb0c",
+      "name": "Merge3",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        4940,
+        1340
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "toText",
+        "sourceProperty": "approver_method.https.content",
+        "options": {
+          "fileName": "={{ $json.approver_method.https.filename }}"
+        }
+      },
+      "id": "e404e7fe-b93e-4416-9b77-55755de7c449",
+      "name": "Convert to File",
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        -2240,
+        460
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "amount": 10
+      },
+      "id": "c5cfc73f-9e19-4fc7-bd7d-da771b4c7e62",
+      "name": "Wait",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1760,
+        920
+      ],
+      "webhookId": "d5f33be3-f06c-430f-a548-deb0fac283ad"
+    },
+    {
+      "parameters": {
+        "unit": "minutes"
+      },
+      "id": "6fc0c3c2-882c-4bd5-9dc0-4941064a7551",
+      "name": "Wait4",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2960,
+        1160
+      ],
+      "webhookId": "d5f33be3-f06c-430f-a548-deb0fac283ad"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "273c8e68-e764-4b01-8b3f-e2761baab19c",
+              "name": "domain_name_redirect",
+              "value": "={{$json.headers.link.match(/https?:\\/\\/([^/]+)/)[1] || ''}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "554f2cc9-4349-4986-a95e-3277b3abac72",
+      "name": "Extract redirect domain",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1640,
+        1280
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "id": "f09c3d1f-249f-472e-9cf6-ebae67b03aa6",
+      "name": "Merge",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        -1360,
+        1260
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "2cb9f96b-1867-4690-b6e4-dc225b75dbd0",
+              "leftValue": "={{ $json['domain_name_redirect'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "id": "cba5cace-c3d5-4782-8997-d95d31dee951",
+      "name": "If3",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.1,
+      "position": [
+        -1140,
+        1260
+      ]
     },
     {
       "parameters": {
@@ -886,55 +933,143 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3,
       "position": [
-        1760,
-        680
+        1260,
+        920
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "434b24de-4f20-4001-890a-0c2da65ac937",
+      "name": "Limit",
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        940,
+        1220
       ]
     },
     {
       "parameters": {
-        "amount": "=5",
-        "unit": "minutes"
+        "url": "=https://{{ $('Domain').item.json.domain_name }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
       },
-      "id": "ec0c146b-eb1e-4956-b785-764be0441994",
-      "name": "Wait4",
-      "type": "n8n-nodes-base.wait",
-      "typeVersion": 1.1,
+      "id": "9e74bbc4-2119-4f11-87d8-1ff9a98f9e61",
+      "name": "Check for redirect",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
       "position": [
-        -1980,
-        780
-      ],
-      "webhookId": "a3a34f6c-9895-45fb-8472-73a6f36ada52"
+        -1860,
+        1280
+      ]
     },
     {
       "parameters": {
-        "amount": "=5",
-        "unit": "minutes"
-      },
-      "id": "06e692da-6256-49a7-b3fc-c9e1022e4240",
-      "name": "Wait5",
-      "type": "n8n-nodes-base.wait",
-      "typeVersion": 1.1,
-      "position": [
-        -1580,
-        580
-      ],
-      "webhookId": "a3a34f6c-9895-45fb-8472-73a6f36ada52"
-    },
-    {
-      "parameters": {
-        "mode": "combine",
-        "combineBy": "combineAll",
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2818c393-4af0-4a99-ab2b-e956ccc41f99",
+              "name": "plesk_domain_root",
+              "value": "={{ $json.domain_name_redirect }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
         "options": {}
       },
-      "id": "156f72a0-e964-43a4-842f-fc6fb0edae8a",
-      "name": "Merge1",
-      "type": "n8n-nodes-base.merge",
-      "typeVersion": 3,
+      "id": "b2cdbf33-6087-4e58-9098-db2bffb9b788",
+      "name": "Original domain",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
       "position": [
-        5060,
-        460
-      ],
-      "disabled": true
+        -880,
+        1120
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2818c393-4af0-4a99-ab2b-e956ccc41f99",
+              "name": "plesk_domain_root",
+              "value": "={{ $json.domain_name }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "f097de7e-9b80-4979-8c7f-7e24979afd71",
+      "name": "Redirect domain",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -880,
+        1360
+      ]
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "ChZSuDnXj7ofvvuC",
+          "mode": "list",
+          "cachedResultName": "Deploy SSL certificate to Plesk"
+        },
+        "mode": "each",
+        "options": {}
+      },
+      "id": "908a71f0-efe4-48fe-b9f0-da0d449927b6",
+      "name": "Deploy cert",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.1,
+      "position": [
+        6420,
+        620
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "c333694a-917b-45c7-bd3a-c9e5d0d1962a",
+              "leftValue": "={{ $json.status_description }}",
+              "rightValue": "validation",
+              "operator": {
+                "type": "string",
+                "operation": "notContains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "ignoreCase": true,
+          "looseTypeValidation": true
+        }
+      },
+      "id": "94dfd29b-ba7a-4347-af86-b8ab06f43304",
+      "name": "If5",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        5960,
+        1340
+      ]
     }
   ],
   "connections": {
@@ -943,17 +1078,6 @@
         [
           {
             "node": "Get processing orders",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Schedule Trigger": {
-      "main": [
-        [
-          {
-            "node": "Authentication",
             "type": "main",
             "index": 0
           }
@@ -986,25 +1110,7 @@
       "main": [
         [
           {
-            "node": "Host",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "If3": {
-      "main": [
-        [
-          {
-            "node": "Folders",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Could not search for vhost",
+            "node": "Loop Over Items1",
             "type": "main",
             "index": 0
           }
@@ -1015,12 +1121,17 @@
       "main": [
         [
           {
-            "node": "Split Out",
+            "node": "Validation",
             "type": "main",
             "index": 0
           },
           {
-            "node": "Convert to File",
+            "node": "Check for redirect",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
             "type": "main",
             "index": 0
           }
@@ -1031,29 +1142,7 @@
       "main": [
         [
           {
-            "node": "Remove Duplicates",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Wait": {
-      "main": [
-        [
-          {
-            "node": "Try validate https",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Convert to File": {
-      "main": [
-        [
-          {
-            "node": "Validation",
+            "node": "Limit",
             "type": "main",
             "index": 0
           }
@@ -1067,17 +1156,6 @@
             "node": "Wait",
             "type": "main",
             "index": 0
-          }
-        ]
-      ]
-    },
-    "Remove Duplicates": {
-      "main": [
-        [
-          {
-            "node": "Validation",
-            "type": "main",
-            "index": 1
           }
         ]
       ]
@@ -1135,14 +1213,14 @@
             "index": 0
           },
           {
-            "node": "Add new DNS record",
-            "type": "main",
-            "index": 0
-          },
-          {
             "node": "Merge1",
             "type": "main",
-            "index": 0
+            "index": 1
+          },
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 1
           }
         ]
       ]
@@ -1195,20 +1273,9 @@
       "main": [
         [
           {
-            "node": "Split Out1",
+            "node": "Edit Fields2",
             "type": "main",
             "index": 0
-          }
-        ]
-      ]
-    },
-    "Split Out1": {
-      "main": [
-        [
-          {
-            "node": "Merge1",
-            "type": "main",
-            "index": 1
           }
         ]
       ]
@@ -1224,22 +1291,11 @@
         ]
       ]
     },
-    "validation data": {
-      "main": [
-        [
-          {
-            "node": "Code",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "If": {
       "main": [
         [
           {
-            "node": "Wait4",
+            "node": "Change validation method to https",
             "type": "main",
             "index": 0
           }
@@ -1250,19 +1306,7 @@
       "main": [
         [
           {
-            "node": "Loop Over Items",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Loop Over Items": {
-      "main": [
-        [],
-        [
-          {
-            "node": "Get domain root",
+            "node": "Get domain folder",
             "type": "main",
             "index": 0
           }
@@ -1273,25 +1317,7 @@
       "main": [
         [
           {
-            "node": "If3",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Loop Over Items",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Get domain root": {
-      "main": [
-        [
-          {
-            "node": "If2",
+            "node": "Folders",
             "type": "main",
             "index": 0
           }
@@ -1302,14 +1328,197 @@
       "main": [
         [
           {
-            "node": "Update certificate in Plesk",
+            "node": "Deploy cert",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
+            "node": "Wait4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Change validation method to https": {
+      "main": [
+        [
+          {
+            "node": "Order data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items1": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Host",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete": {
+      "main": [
+        [
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Order data": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get domain folder": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Delete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge3": {
+      "main": [
+        [
+          {
+            "node": "Add new DNS record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Validation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Try validate https",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Authentication",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait4": {
+      "main": [
+        [
+          {
             "node": "Change validation method to dns",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract redirect domain": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If3": {
+      "main": [
+        [
+          {
+            "node": "Original domain",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Redirect domain",
             "type": "main",
             "index": 0
           }
@@ -1327,44 +1536,66 @@
         ]
       ]
     },
-    "Change validation method to https": {
+    "Limit": {
       "main": [
         [
           {
-            "node": "Wait5",
+            "node": "Validation",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Check for redirect": {
+      "main": [
+        [
+          {
+            "node": "Extract redirect domain",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Wait4": {
+    "Original domain": {
       "main": [
         [
           {
-            "node": "Change validation method to https",
+            "node": "Split Out",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Wait5": {
+    "Redirect domain": {
       "main": [
         [
           {
-            "node": "validation data",
+            "node": "Split Out",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Merge1": {
+    "Validate DNS": {
       "main": [
         [
           {
-            "node": "Delete",
+            "node": "If5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If5": {
+      "main": [
+        [
+          {
+            "node": "Deploy cert",
             "type": "main",
             "index": 0
           }
@@ -1389,7 +1620,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "7b9baa9d-732a-4b27-9dcc-b8e4498d5f89",
+  "versionId": "b8585b67-a03c-4a0a-bc13-594a01378cf3",
   "triggerCount": 1,
   "tags": [
     {

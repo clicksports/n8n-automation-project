@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-07-18T13:55:22.365Z",
-  "updatedAt": "2024-08-13T11:31:30.000Z",
+  "updatedAt": "2024-09-23T09:51:29.549Z",
   "id": "weBWjVFPDtzIGy4x",
   "name": "Send WhatsApp message to Jira",
   "active": true,
@@ -136,7 +136,8 @@
     },
     {
       "parameters": {
-        "amount": 10
+        "amount": 15,
+        "unit": "minutes"
       },
       "id": "c487bc4c-641e-481b-b0d8-1574147ac6cd",
       "name": "Wait",
@@ -205,12 +206,13 @@
           "options": {
             "caseSensitive": true,
             "leftValue": "",
-            "typeValidation": "strict"
+            "typeValidation": "strict",
+            "version": 1
           },
           "conditions": [
             {
               "id": "275fd692-0dc8-4626-87af-73ba880a8d47",
-              "leftValue": "={{ $json.key }}",
+              "leftValue": "={{ $('Find created issue').item.json.key }}",
               "rightValue": "",
               "operator": {
                 "type": "string",
@@ -349,7 +351,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "5bc4db7d-c5fe-4730-a6ed-f4dafc7825e0",
+  "versionId": "379916be-556f-4353-aaca-45dd5a1179ce",
   "triggerCount": 1,
   "tags": []
 }

@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-07-18T13:45:15.038Z",
-  "updatedAt": "2024-08-20T22:11:16.000Z",
+  "updatedAt": "2024-09-23T13:01:14.083Z",
   "id": "cqcJ992iflBy0Zb9",
   "name": "Find issue for mail",
   "active": false,
@@ -263,7 +263,8 @@
           "id": "8lDKmR3gvMj1szqg",
           "name": "Pinecone"
         }
-      }
+      },
+      "disabled": true
     },
     {
       "parameters": {
@@ -290,7 +291,8 @@
           "id": "8lDKmR3gvMj1szqg",
           "name": "Pinecone"
         }
-      }
+      },
+      "disabled": true
     },
     {
       "parameters": {
@@ -351,6 +353,79 @@
         "pineconeApi": {
           "id": "8lDKmR3gvMj1szqg",
           "name": "Pinecone"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "qdrantCollection": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "options": {}
+      },
+      "id": "7f7bc4b2-f32c-4246-a215-9951bd4425bf",
+      "name": "Qdrant Vector Store",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "typeVersion": 1,
+      "position": [
+        -280,
+        480
+      ],
+      "credentials": {
+        "qdrantApi": {
+          "id": "EF7g7Gu0GqFf23bE",
+          "name": "QdrantApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "qdrantCollection": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "options": {}
+      },
+      "id": "2a9e10d1-341c-4f1b-bb92-0ae932f46bfa",
+      "name": "Qdrant Vector Store1",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "typeVersion": 1,
+      "position": [
+        -540,
+        1320
+      ],
+      "credentials": {
+        "qdrantApi": {
+          "id": "EF7g7Gu0GqFf23bE",
+          "name": "QdrantApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "qdrantCollection": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "options": {}
+      },
+      "id": "97f7693a-d9a5-45c8-98cd-97d7b07bd45b",
+      "name": "Qdrant Vector Store2",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "typeVersion": 1,
+      "position": [
+        480,
+        1300
+      ],
+      "credentials": {
+        "qdrantApi": {
+          "id": "EF7g7Gu0GqFf23bE",
+          "name": "QdrantApi account"
         }
       }
     }
@@ -490,14 +565,17 @@
     }
   },
   "settings": {
-    "executionOrder": "v1"
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "oXwbRnZHgYHUkKj4"
   },
   "staticData": null,
   "meta": {
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "d7675385-f998-413f-a8b8-2e62e7c9fdd7",
+  "versionId": "b6119577-e901-4583-a76a-01c08fe9da4e",
   "triggerCount": 0,
   "tags": [
     {
@@ -513,10 +591,10 @@
       "name": "openai"
     },
     {
-      "createdAt": "2024-07-19T11:40:04.689Z",
-      "updatedAt": "2024-07-19T11:40:04.689Z",
-      "id": "wNSc3sQpRZI8CPoy",
-      "name": "pinecone"
+      "createdAt": "2024-09-23T12:45:52.025Z",
+      "updatedAt": "2024-09-23T12:45:52.025Z",
+      "id": "kc4ZjqkDUkLQSaff",
+      "name": "qdrant"
     }
   ]
 }

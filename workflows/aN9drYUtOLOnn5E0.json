@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-08-02T11:54:52.386Z",
-  "updatedAt": "2024-08-02T18:21:12.000Z",
+  "updatedAt": "2024-09-23T13:32:18.377Z",
   "id": "aN9drYUtOLOnn5E0",
   "name": "Backup n8n workflows",
   "active": true,
@@ -8,7 +8,7 @@
     {
       "parameters": {
         "authentication": "privateKey",
-        "command": "docker exec -u node n8n-n8n-1 n8n export:workflow --backup --output /backup/docker/n8n/workflows"
+        "command": "docker exec -u node n8n n8n export:workflow --backup --output /backup/docker/n8n/workflows"
       },
       "id": "23fd6913-e273-4171-b164-486cb8488a43",
       "name": "SSH",
@@ -54,7 +54,8 @@
           "options": {
             "caseSensitive": true,
             "leftValue": "",
-            "typeValidation": "loose"
+            "typeValidation": "loose",
+            "version": 1
           },
           "conditions": [
             {
@@ -108,7 +109,7 @@
       "type": "n8n-nodes-base.git",
       "typeVersion": 1,
       "position": [
-        2120,
+        2360,
         160
       ]
     },
@@ -125,7 +126,7 @@
       "type": "n8n-nodes-base.git",
       "typeVersion": 1,
       "position": [
-        1460,
+        1500,
         160
       ]
     },
@@ -142,7 +143,7 @@
       "type": "n8n-nodes-base.git",
       "typeVersion": 1,
       "position": [
-        1680,
+        1700,
         160
       ]
     },
@@ -160,7 +161,7 @@
       "type": "n8n-nodes-base.git",
       "typeVersion": 1,
       "position": [
-        2340,
+        2580,
         160
       ],
       "credentials": {
@@ -181,7 +182,7 @@
       "type": "n8n-nodes-base.git",
       "typeVersion": 1,
       "position": [
-        1900,
+        1940,
         160
       ]
     },
@@ -192,7 +193,7 @@
             {
               "id": "0138869e-4baa-49c2-b133-abe46c2d6660",
               "name": "path",
-              "value": "/backup/docker/n8n/workflows",
+              "value": "/backup/docker/n8n",
               "type": "string"
             }
           ]
@@ -226,6 +227,21 @@
         320,
         260
       ]
+    },
+    {
+      "parameters": {
+        "operation": "pull",
+        "repositoryPath": "={{ $('Repo').first().json.path }}"
+      },
+      "id": "f115f567-875e-40bf-9ef8-f48b1212500b",
+      "name": "Git Pull",
+      "type": "n8n-nodes-base.git",
+      "typeVersion": 1,
+      "position": [
+        2160,
+        160
+      ],
+      "disabled": true
     }
   ],
   "connections": {
@@ -306,7 +322,7 @@
       "main": [
         [
           {
-            "node": "Git",
+            "node": "Git Pull",
             "type": "main",
             "index": 0
           }
@@ -334,10 +350,24 @@
           }
         ]
       ]
+    },
+    "Git Pull": {
+      "main": [
+        [
+          {
+            "node": "Git",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
-    "executionOrder": "v1"
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "oXwbRnZHgYHUkKj4"
   },
   "staticData": {
     "node:Schedule Trigger": {
@@ -348,7 +378,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "8fadbb0c-f3c1-4a3e-b8c1-781ae918065a",
+  "versionId": "52056c0d-48cf-4a5d-b389-f90a7b683588",
   "triggerCount": 1,
   "tags": []
 }

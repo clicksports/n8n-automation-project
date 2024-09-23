@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-07-22T06:14:01.837Z",
-  "updatedAt": "2024-07-22T08:32:04.000Z",
+  "updatedAt": "2024-09-23T12:59:51.155Z",
   "id": "p2H0MWUrFeDth8J7",
   "name": "Setup backup for server",
   "active": false,
@@ -95,14 +95,17 @@
     }
   },
   "settings": {
-    "executionOrder": "v1"
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "oXwbRnZHgYHUkKj4"
   },
   "staticData": null,
   "meta": {
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "c5cbde88-731b-4106-a48e-120e28145979",
+  "versionId": "092d5a4d-4c35-47e1-817c-38195c0e0de5",
   "triggerCount": 0,
   "tags": [
     {

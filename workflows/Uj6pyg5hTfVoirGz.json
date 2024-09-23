@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-08-06T09:34:05.300Z",
-  "updatedAt": "2024-08-08T07:58:24.000Z",
+  "updatedAt": "2024-09-23T13:00:34.839Z",
   "id": "Uj6pyg5hTfVoirGz",
   "name": "FLM messages to Sheet",
   "active": true,
@@ -280,14 +280,17 @@
     }
   },
   "settings": {
-    "executionOrder": "v1"
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "oXwbRnZHgYHUkKj4"
   },
   "staticData": null,
   "meta": {
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "33453cec-dd34-4977-a81c-b4acb3ba21d0",
+  "versionId": "595886d7-cc82-4cf4-94c4-d868a8e96538",
   "triggerCount": 2,
   "tags": []
 }

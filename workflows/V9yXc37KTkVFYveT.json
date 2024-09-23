@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-07-18T13:24:24.265Z",
-  "updatedAt": "2024-08-20T22:09:38.000Z",
+  "updatedAt": "2024-09-23T13:24:05.064Z",
   "id": "V9yXc37KTkVFYveT",
   "name": "Index issues",
   "active": true,
@@ -96,8 +96,8 @@
       "type": "n8n-nodes-base.jira",
       "typeVersion": 1,
       "position": [
-        1520,
-        160
+        1680,
+        100
       ],
       "credentials": {
         "jiraSoftwareCloudApi": {
@@ -109,6 +109,7 @@
     {
       "parameters": {
         "operation": "getAll",
+        "limit": 10,
         "options": {
           "expand": [],
           "fields": "summary,description,reporter,status",
@@ -272,7 +273,8 @@
           "options": {
             "caseSensitive": true,
             "leftValue": "",
-            "typeValidation": "strict"
+            "typeValidation": "strict",
+            "version": 1
           },
           "conditions": [
             {
@@ -314,7 +316,7 @@
           "interval": [
             {
               "field": "minutes",
-              "minutesInterval": 1
+              "minutesInterval": 10
             }
           ]
         }
@@ -447,36 +449,6 @@
     },
     {
       "parameters": {
-        "mode": "insert",
-        "pineconeIndex": {
-          "__rl": true,
-          "value": "n8n",
-          "mode": "list",
-          "cachedResultName": "n8n"
-        },
-        "options": {
-          "clearNamespace": false,
-          "pineconeNamespace": "issues"
-        }
-      },
-      "id": "51dd5129-153d-4e0a-aabd-1e207d43aea0",
-      "name": "Pinecone Vector Store",
-      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
-      "typeVersion": 1,
-      "position": [
-        740,
-        1140
-      ],
-      "credentials": {
-        "pineconeApi": {
-          "id": "8lDKmR3gvMj1szqg",
-          "name": "Pinecone"
-        }
-      },
-      "onError": "continueRegularOutput"
-    },
-    {
-      "parameters": {
         "operation": "pdf",
         "options": {
           "joinPages": true
@@ -514,7 +486,8 @@
       "position": [
         -2680,
         880
-      ]
+      ],
+      "alwaysOutputData": true
     },
     {
       "parameters": {
@@ -551,8 +524,8 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 2.1,
       "position": [
-        1180,
-        160
+        1340,
+        100
       ]
     },
     {
@@ -577,7 +550,8 @@
           "options": {
             "caseSensitive": true,
             "leftValue": "",
-            "typeValidation": "strict"
+            "typeValidation": "strict",
+            "version": 1
           },
           "conditions": [
             {
@@ -602,36 +576,8 @@
       "position": [
         -3180,
         1740
-      ]
-    },
-    {
-      "parameters": {
-        "mode": "insert",
-        "pineconeIndex": {
-          "__rl": true,
-          "value": "n8n",
-          "mode": "list",
-          "cachedResultName": "n8n"
-        },
-        "options": {
-          "clearNamespace": false,
-          "pineconeNamespace": "kb"
-        }
-      },
-      "id": "c382b03e-d38b-47a0-9a92-3edd03b1c11e",
-      "name": "Pinecone Vector Store3",
-      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
-      "typeVersion": 1,
-      "position": [
-        520,
-        320
       ],
-      "credentials": {
-        "pineconeApi": {
-          "id": "8lDKmR3gvMj1szqg",
-          "name": "Pinecone"
-        }
-      }
+      "alwaysOutputData": true
     },
     {
       "parameters": {
@@ -720,20 +666,59 @@
           "name": "OpenAI"
         }
       }
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "qdrantCollection": {
+          "__rl": true,
+          "value": "kb",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "id": "40210dec-cf64-4382-96dc-eb6b5b289ae0",
+      "name": "Qdrant Vector Store",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "typeVersion": 1,
+      "position": [
+        500,
+        320
+      ],
+      "credentials": {
+        "qdrantApi": {
+          "id": "EF7g7Gu0GqFf23bE",
+          "name": "QdrantApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "qdrantCollection": {
+          "__rl": true,
+          "value": "issues",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "id": "9e31aed8-d9e4-476b-ba50-77f430be5219",
+      "name": "Qdrant Vector Store1",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "typeVersion": 1,
+      "position": [
+        740,
+        1140
+      ],
+      "credentials": {
+        "qdrantApi": {
+          "id": "EF7g7Gu0GqFf23bE",
+          "name": "QdrantApi account"
+        }
+      }
     }
   ],
   "connections": {
-    "Embeddings OpenAI": {
-      "ai_embedding": [
-        [
-          {
-            "node": "Pinecone Vector Store",
-            "type": "ai_embedding",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Recursive Character Text Splitter": {
       "ai_textSplitter": [
         [
@@ -804,17 +789,6 @@
         ]
       ]
     },
-    "Default Data Loader": {
-      "ai_document": [
-        [
-          {
-            "node": "Pinecone Vector Store",
-            "type": "ai_document",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Merge": {
       "main": [
         [
@@ -866,17 +840,6 @@
         ]
       ]
     },
-    "Embeddings OpenAI3": {
-      "ai_embedding": [
-        [
-          {
-            "node": "Pinecone Vector Store3",
-            "type": "ai_embedding",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Recursive Character Text Splitter1": {
       "ai_textSplitter": [
         [
@@ -884,39 +847,6 @@
             "node": "Default Data Loader1",
             "type": "ai_textSplitter",
             "index": 0
-          }
-        ]
-      ]
-    },
-    "Default Data Loader1": {
-      "ai_document": [
-        [
-          {
-            "node": "Pinecone Vector Store3",
-            "type": "ai_document",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Vector model kb": {
-      "main": [
-        [
-          {
-            "node": "Pinecone Vector Store3",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Pinecone Vector Store": {
-      "main": [
-        [
-          {
-            "node": "Indexed successfully",
-            "type": "main",
-            "index": 1
           }
         ]
       ]
@@ -950,17 +880,6 @@
             "node": "Merge1",
             "type": "main",
             "index": 1
-          }
-        ]
-      ]
-    },
-    "Vector model ticket": {
-      "main": [
-        [
-          {
-            "node": "Pinecone Vector Store",
-            "type": "main",
-            "index": 0
           }
         ]
       ]
@@ -1047,13 +966,92 @@
           }
         ]
       ]
+    },
+    "Embeddings OpenAI3": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader1": {
+      "ai_document": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Vector model kb": {
+      "main": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Qdrant Vector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Qdrant Vector Store1",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Vector model ticket": {
+      "main": [
+        [
+          {
+            "node": "Qdrant Vector Store1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Qdrant Vector Store1": {
+      "main": [
+        [
+          {
+            "node": "Indexed successfully",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
     }
   },
   "settings": {
     "executionOrder": "v1",
     "saveManualExecutions": true,
     "callerPolicy": "workflowsFromSameOwner",
-    "errorWorkflow": "oXwbRnZHgYHUkKj4"
+    "errorWorkflow": "oXwbRnZHgYHUkKj4",
+    "saveDataSuccessExecution": "none",
+    "saveDataErrorExecution": "none"
   },
   "staticData": {
     "node:Schedule Trigger": {
@@ -1065,7 +1063,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "510a7442-f52f-472d-b14a-bb2931a6127d",
+  "versionId": "043f0fc5-56d3-403d-8ef6-a7198b315651",
   "triggerCount": 1,
   "tags": [
     {
@@ -1081,10 +1079,10 @@
       "name": "openai"
     },
     {
-      "createdAt": "2024-07-19T11:40:04.689Z",
-      "updatedAt": "2024-07-19T11:40:04.689Z",
-      "id": "wNSc3sQpRZI8CPoy",
-      "name": "pinecone"
+      "createdAt": "2024-09-23T12:45:52.025Z",
+      "updatedAt": "2024-09-23T12:45:52.025Z",
+      "id": "kc4ZjqkDUkLQSaff",
+      "name": "qdrant"
     }
   ]
 }

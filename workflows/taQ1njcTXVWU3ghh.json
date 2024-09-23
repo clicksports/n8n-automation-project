@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-07-18T11:47:48.486Z",
-  "updatedAt": "2024-08-20T22:12:00.000Z",
+  "updatedAt": "2024-09-23T09:46:59.429Z",
   "id": "taQ1njcTXVWU3ghh",
   "name": "Mailhandler",
   "active": true,
@@ -398,7 +398,7 @@
     {
       "parameters": {
         "authentication": "privateKey",
-        "command": "=find /var/qmail/mailnames/clicksports.de/christian.gick/Maildir/cur/ -type f -exec sh -c 'grep -q \"{{ $json[\"message-id\"] }}\" \"$1\" && cp \"$1\" /tmp/n8n-mail-{{ $json[\"message-id\"].hash() }}.eml' sh {} \\; "
+        "command": "=find /var/qmail/mailnames/clicksports.de/christian.gick/Maildir -type f -exec sh -c 'grep -q \"{{ $json[\"message-id\"] }}\" \"$1\" && cp \"$1\" /tmp/n8n-mail-{{ $json[\"message-id\"].hash() }}.eml' sh {} \\; "
       },
       "id": "88b570a3-a622-46f5-9aa7-5a4614f21801",
       "name": "SSH",
@@ -514,63 +514,6 @@
         -1200,
         960
       ]
-    },
-    {
-      "parameters": {},
-      "id": "63d4ed0c-7dc8-4d5d-b128-945ed71dd1e7",
-      "name": "When clicking ‘Test workflow’",
-      "type": "n8n-nodes-base.manualTrigger",
-      "typeVersion": 1,
-      "position": [
-        -4380,
-        280
-      ],
-      "disabled": true
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "25f7d12d-2142-42b6-9fcc-2df29023a3b7",
-              "name": "hostname",
-              "value": "mail.clicksports.de",
-              "type": "string"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "id": "07fed3a7-b404-42af-b18b-df86fea50ad6",
-      "name": "Hostname",
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        -4140,
-        280
-      ],
-      "disabled": true
-    },
-    {
-      "parameters": {
-        "authentication": "privateKey",
-        "command": "=for file in /var/qmail/mailnames/clicksports.de/christian.gick/Maildir/.N8N.Ham/cur/*; do mv \"$file\" /var/qmail/mailnames/clicksports.de/christian.gick/Maildir/new/\"$(basename \"$file\" | sed 's/:.*//')\"; done\n"
-      },
-      "id": "d74defce-bf47-46ce-817c-14c4139a2285",
-      "name": "Move to inbox",
-      "type": "n8n-nodes-base.ssh",
-      "typeVersion": 1,
-      "position": [
-        -3900,
-        280
-      ],
-      "credentials": {
-        "sshPrivateKey": {
-          "id": "7cM8UD60RNSc7v3k",
-          "name": "SSH Hcloud"
-        }
-      },
-      "disabled": true
     },
     {
       "parameters": {
@@ -726,9 +669,9 @@
       "parameters": {
         "conditions": {
           "options": {
-            "caseSensitive": true,
+            "caseSensitive": false,
             "leftValue": "",
-            "typeValidation": "strict"
+            "typeValidation": "loose"
           },
           "conditions": [
             {
@@ -739,11 +682,24 @@
                 "type": "string",
                 "operation": "equals"
               }
+            },
+            {
+              "id": "e5c0859c-4fe4-4df8-8959-dc9a8d3420c1",
+              "leftValue": "={{ $json.fileExtension }}",
+              "rightValue": "pdf",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
             }
           ],
-          "combinator": "and"
+          "combinator": "or"
         },
-        "options": {}
+        "options": {
+          "ignoreCase": true,
+          "looseTypeValidation": true
+        }
       },
       "id": "f60df310-20e1-492f-a370-efa718dad29c",
       "name": "If invoice pdf",
@@ -767,6 +723,7 @@
         1200,
         620
       ],
+      "disabled": true,
       "onError": "continueRegularOutput"
     },
     {
@@ -1115,19 +1072,158 @@
     },
     {
       "parameters": {
+        "project": {
+          "__rl": true,
+          "value": "22001",
+          "mode": "list",
+          "cachedResultName": "Testprojekt"
+        },
+        "issueType": {
+          "__rl": true,
+          "value": "12401",
+          "mode": "list",
+          "cachedResultName": "Ticket"
+        },
+        "summary": "={{ $json.subject }}",
+        "additionalFields": {
+          "assignee": {
+            "__rl": true,
+            "value": "5eba311706a3eb0b7e415e2c",
+            "mode": "list",
+            "cachedResultName": "Christian Gick"
+          },
+          "description": "={{ $json.message.content.reason }}\n\n{{ $json.message.content.summary }}"
+        }
+      },
+      "id": "927ca376-911b-40e4-84eb-ad07ee81eda0",
+      "name": "Create issue",
+      "type": "n8n-nodes-base.jira",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        2200
+      ],
+      "credentials": {
+        "jiraSoftwareCloudApi": {
+          "id": "HlsaLdc6YFfeasWO",
+          "name": "Jira christian.gick@clicksports.de"
+        }
+      }
+    },
+    {
+      "parameters": {
         "mode": "combine",
         "combineBy": "combineByPosition",
-        "numberInputs": 3,
-        "options": {}
+        "options": {
+          "includeUnpaired": true
+        }
       },
-      "id": "c2d697a3-8e7d-4fb5-a356-b71fa42a5f1a",
-      "name": "Merge7",
+      "id": "0f243b05-ac9a-43b2-b5a2-d93397d595e1",
+      "name": "Merge8",
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3,
       "position": [
-        -280,
-        1040
+        1760,
+        2080
       ]
+    },
+    {
+      "parameters": {
+        "content": "n8n Mail zu Ticket\nhttps://clicksports.atlassian.net/jira/settings/automation#/rule/20715088\n\nwptoolkit\nhttps://clicksports.atlassian.net/jira/settings/automation#/rule/7533058",
+        "height": 120.05335831835134,
+        "width": 528.0467748986426
+      },
+      "id": "d761c01d-9ef3-4ead-99fc-c03c7dba2ca1",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1680,
+        2320
+      ]
+    },
+    {
+      "parameters": {
+        "workflowId": "cqcJ992iflBy0Zb9",
+        "mode": "each",
+        "options": {}
+      },
+      "id": "a908011c-d784-4e7e-9808-3e7a2e223d1b",
+      "name": "Find related issues",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        1960
+      ],
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "from": "+13239248539",
+        "to": "+491714310760",
+        "message": "={{ $json.message.content.abstract }}",
+        "options": {}
+      },
+      "id": "d275c0ad-f0ce-4218-b514-040bf23f5dbd",
+      "name": "SMS Christian",
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        1440
+      ],
+      "credentials": {
+        "twilioApi": {
+          "id": "L0MVSAy5tKyte1Sy",
+          "name": "Twilio"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "from": "+13239248539",
+        "to": "+491716051665",
+        "message": "={{ $json.message.content.abstract }}",
+        "options": {}
+      },
+      "id": "c29af0cc-c03b-45a7-86a2-1a343c1171d4",
+      "name": "SMS Wibke",
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        1260
+      ],
+      "credentials": {
+        "twilioApi": {
+          "id": "L0MVSAy5tKyte1Sy",
+          "name": "Twilio"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {}
+      },
+      "id": "c7820708-959d-416a-ad79-54b400a5536f",
+      "name": "Transcribe Phone message",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.4,
+      "position": [
+        1200,
+        1040
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "y8NvNd30QFsYf7Hw",
+          "name": "OpenAI"
+        }
+      }
     },
     {
       "parameters": {
@@ -1269,158 +1365,19 @@
     },
     {
       "parameters": {
-        "project": {
-          "__rl": true,
-          "value": "22001",
-          "mode": "list",
-          "cachedResultName": "Testprojekt"
-        },
-        "issueType": {
-          "__rl": true,
-          "value": "12401",
-          "mode": "list",
-          "cachedResultName": "Ticket"
-        },
-        "summary": "={{ $json.subject }}",
-        "additionalFields": {
-          "assignee": {
-            "__rl": true,
-            "value": "5eba311706a3eb0b7e415e2c",
-            "mode": "list",
-            "cachedResultName": "Christian Gick"
-          },
-          "description": "={{ $json.message.content.reason }}\n\n{{ $json.message.content.abstract }}\n\n{{ $json.data }}"
-        }
-      },
-      "id": "927ca376-911b-40e4-84eb-ad07ee81eda0",
-      "name": "Create issue",
-      "type": "n8n-nodes-base.jira",
-      "typeVersion": 1,
-      "position": [
-        1500,
-        2200
-      ],
-      "credentials": {
-        "jiraSoftwareCloudApi": {
-          "id": "HlsaLdc6YFfeasWO",
-          "name": "Jira christian.gick@clicksports.de"
-        }
-      }
-    },
-    {
-      "parameters": {
         "mode": "combine",
         "combineBy": "combineByPosition",
-        "options": {
-          "includeUnpaired": true
-        }
+        "numberInputs": 3,
+        "options": {}
       },
-      "id": "0f243b05-ac9a-43b2-b5a2-d93397d595e1",
-      "name": "Merge8",
+      "id": "c2d697a3-8e7d-4fb5-a356-b71fa42a5f1a",
+      "name": "Merge7",
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3,
       "position": [
-        1760,
-        2080
-      ]
-    },
-    {
-      "parameters": {
-        "content": "https://clicksports.atlassian.net/jira/settings/automation#/rule/20715088\n\nOpsgenie wptoolkit\nhttps://clicksports.atlassian.net/jira/settings/automation#/rule/7533058",
-        "height": 120.05335831835134,
-        "width": 788.8118541312942
-      },
-      "id": "d761c01d-9ef3-4ead-99fc-c03c7dba2ca1",
-      "name": "Sticky Note1",
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [
-        1760,
-        2280
-      ]
-    },
-    {
-      "parameters": {
-        "workflowId": "cqcJ992iflBy0Zb9",
-        "mode": "each",
-        "options": {}
-      },
-      "id": "a908011c-d784-4e7e-9808-3e7a2e223d1b",
-      "name": "Find related issues",
-      "type": "n8n-nodes-base.executeWorkflow",
-      "typeVersion": 1,
-      "position": [
-        1500,
-        1960
-      ],
-      "retryOnFail": true,
-      "waitBetweenTries": 5000,
-      "onError": "continueRegularOutput"
-    },
-    {
-      "parameters": {
-        "from": "+13239248539",
-        "to": "+491714310760",
-        "message": "={{ $json.message.content.abstract }}",
-        "options": {}
-      },
-      "id": "d275c0ad-f0ce-4218-b514-040bf23f5dbd",
-      "name": "SMS Christian",
-      "type": "n8n-nodes-base.twilio",
-      "typeVersion": 1,
-      "position": [
-        1200,
-        1440
-      ],
-      "credentials": {
-        "twilioApi": {
-          "id": "L0MVSAy5tKyte1Sy",
-          "name": "Twilio"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "from": "+13239248539",
-        "to": "+491716051665",
-        "message": "={{ $json.message.content.abstract }}",
-        "options": {}
-      },
-      "id": "c29af0cc-c03b-45a7-86a2-1a343c1171d4",
-      "name": "SMS Wibke",
-      "type": "n8n-nodes-base.twilio",
-      "typeVersion": 1,
-      "position": [
-        1200,
-        1260
-      ],
-      "credentials": {
-        "twilioApi": {
-          "id": "L0MVSAy5tKyte1Sy",
-          "name": "Twilio"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "resource": "audio",
-        "operation": "transcribe",
-        "options": {}
-      },
-      "id": "c7820708-959d-416a-ad79-54b400a5536f",
-      "name": "Transcribe Phone message",
-      "type": "@n8n/n8n-nodes-langchain.openAi",
-      "typeVersion": 1.4,
-      "position": [
-        1200,
+        -280,
         1040
-      ],
-      "credentials": {
-        "openAiApi": {
-          "id": "y8NvNd30QFsYf7Hw",
-          "name": "OpenAI"
-        }
-      }
+      ]
     },
     {
       "parameters": {
@@ -1433,7 +1390,7 @@
         "messages": {
           "values": [
             {
-              "content": "=Am Ende findest du eine E-Mail. \n\nAntworte mir bitte im JSON-Format mit einer deutschen Begründung unter Angabe der Aktion die der Sender deiner Einschätzung nach erwartet (Variable reason) und einer Ganzzahl (Variable relevance) die die Relevanz von 0 bis 100 einstuft. \n\nAußerdem brauche ich eine kurze Zusammenfassung von Betreff und Inhalt in einem Text mit allen eindeutigen E-Mail Adressen und Code oder PIN (Variable abstract). \n\notp ist ein Passwort, Code oder TAN für eine einmalige Authentifizierung.\n\nErkenne die Absicht des Senders - welches Ziel wird verfolgt? Optionen sind: call, verify, otp, login, download, reply, buy, pay, meet, support (Variable intent). \n\nDen Absender kannst du unverändert übernehmen (Variable sender).\n\nIrrelevante Mails sind solche, die den Empfang eine automatische Verlängerung oder eine Zustellung bestätigen, darauf hinweisen dass der Vorgang in Bearbeitung ist oder geschlossen wurde oder eine Bewertung wollen oder nur darauf abzielen eine Antwort von mir zu bekommen indem sie mich erinnern oder erneut Hilfe anbieten und weder konkrete Informationen enhält die mit dem Vorgang zu tun haben noch eine einfache Aktion erfordern wie ein Limit anpassen, eine Anmeldung abschließen oder ein Dokument herunterzuladen. Falls die Nachricht konkrete Informationen enthält die aber von einem Monitoring kommen bewerte die Relevanz hoch wenn das Monitoring Fehler oder Sicherheitslücken entdeckt hat oder niedrig falls alles in Ordnung ist. Wenn alles in Ordnung ist ist es unwichtig einen Bericht herunterzuladen. Die Relevanz ist niedrig falls es zwar etwas zu tun gibt aber nicht für jemanden von CLICKSPORTS sondern z.B. für einen Kunden oder Partner - erkennbar wenn der Sender von CLICKSPORTS ist.\n\nSuche nach einem dynamischen Link zum Portal oder Servicedesk des Absenders (Variable ticketlink) in dem relevante Inhalte zum Dialog stehen könnten. Falls die URL Tracking-Parameter wie sda_source enthält entferne diese bitte. Kein Kommentar von dir davor oder danach. Gib mir nur Links zurück die einen variablen Parameter enthalten wie eine ID oder Ticketnummer enthalten, sonst gar keinen.\n\nWenn es bei der Mail um eine Eingangsrechnung geht extrahiere die Rechnungsnummer aus Betreff, Anhang oder Inhalt (Variable invoicenumber). Hängt eine Rechnung an oder muss ein Dokument heruntergeladen oder online angesehen werden um ist das sehr relevant und muss bearbeitet werden.\n\nExtrahiere einen Portallink des Absenders (Variable portallink).\n\nExtrahiere einen Adminlink des Absenders (Variable adminlink).\n\nExtrahiere einen Loginlink des Absenders (Variable loginlink).\n\nDie Mail mit dem Betreff {{ $json.subject }} hat folgenden Inhalt: \"{{ $json.data }}\" und kam von \"{{ $json.from.value[0].name }} {{ $json.from.value[0].address }}\" und hat folgenden Anhang: \"{{ $('Extract from File').item.json.text }}\"",
+              "content": "=Am Ende findest du eine E-Mail. \n\nAntworte mir bitte im JSON-Format mit einer deutschen Begründung unter Angabe der Aktion die der Sender deiner Einschätzung nach erwartet (Variable reason) und einer Ganzzahl (Variable relevance) die die Relevanz von 0 bis 100 einstuft. \n\nAußerdem brauche ich eine kurze Zusammenfassung von Betreff und Inhalt in einem Text mit allen eindeutigen E-Mail Adressen und Code oder PIN (Variable abstract). \n\nDie lange Zusammenfassung für Jira soll alle relevanten Informationen und Links im Format wikimarkup enthalten (Variable summary), Domainnamen oder Projekte sollen gefettet werden indem sie mit * umschlossen werden und Links im Format [Linktext|URL], alles andere Markup und Links zu Socialmedia Plattformen, Logos und Werbung, Signaturen mit Datenschutzbestimmungen und rechtlichen Hinweisen sind nicht nötig (Variable summary).\n\nErkenne die Absicht des Senders - welches Ziel wird verfolgt? (Variable intent). Optionen sind: \n\n* call: wenn es sich um einen Anruf handelt\n* verify: wenn eine Mailadresse bestätigt werden soll\n* otp: wenn ein einmaliger Code für eine 2-Faktor Authentifizierung geschickt wurde. otp ist ein Passwort, Code oder TAN für eine einmalige Authentifizierung\n* login: wenn man sich einloggen soll\n* download: wenn etwas heruntergeladen werden soll\n* reply: wenn eine Entscheidung erwartet wird\n* buy: wenn etwas gekauft werden soll\n* pay: wenn etwas bezahlt werden soll\n* meet: wenn es um ein Meeting geht\n\nDen Absender kannst du unverändert übernehmen (Variable sender).\n\nIrrelevante Mails sind solche, die den Empfang eine automatische Verlängerung oder eine Zustellung bestätigen, darauf hinweisen dass der Vorgang in Bearbeitung ist oder geschlossen wurde oder eine Bewertung wollen oder nur darauf abzielen eine Antwort von mir zu bekommen indem sie mich erinnern oder erneut Hilfe anbieten und weder konkrete Informationen enhält die mit dem Vorgang zu tun haben noch eine einfache Aktion erfordern wie ein Limit anpassen, eine Anmeldung abschließen oder ein Dokument herunterzuladen. Falls die Nachricht konkrete Informationen enthält die aber von einem Monitoring kommen bewerte die Relevanz hoch wenn das Monitoring Fehler oder Sicherheitslücken entdeckt hat oder niedrig falls alles in Ordnung ist. Wenn alles in Ordnung ist ist es unwichtig einen Bericht herunterzuladen. Die Relevanz ist niedrig falls es zwar etwas zu tun gibt aber nicht für jemanden von CLICKSPORTS sondern z.B. für einen Kunden oder Partner - erkennbar wenn der Sender von CLICKSPORTS ist.\n\nSuche nach einem dynamischen Link zum Portal oder Servicedesk des Absenders (Variable ticketlink) in dem relevante Inhalte zum Dialog stehen könnten. Falls die URL Tracking-Parameter wie sda_source enthält entferne diese bitte. Kein Kommentar von dir davor oder danach. Gib mir nur Links zurück die einen variablen Parameter enthalten wie eine ID oder Ticketnummer enthalten, sonst gar keinen.\n\nWenn es bei der Mail um eine Eingangsrechnung oder Zahlungsavis geht extrahiere die Rechnungsnummer aus Betreff, Anhang oder Inhalt (Variable invoicenumber). Hängt eine Rechnung an oder muss ein Dokument heruntergeladen oder online angesehen werden um ist das sehr relevant und muss bearbeitet werden.\n\nExtrahiere einen Portallink des Absenders (Variable portallink).\n\nExtrahiere einen Adminlink des Absenders (Variable adminlink).\n\nExtrahiere einen Loginlink des Absenders (Variable loginlink).\n\nDie Mail mit dem Betreff {{ $json.subject }} hat folgenden Inhalt: \"{{ $json.data }}\" und kam von \"{{ $json.from.value[0].name }} {{ $json.from.value[0].address }}\" und hat folgenden Anhang: \"{{ $('Extract from File').item.json.text }}\"",
               "role": "system"
             }
           ]
@@ -1635,28 +1592,6 @@
         [
           {
             "node": "Relevance and Reference",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "When clicking ‘Test workflow’": {
-      "main": [
-        [
-          {
-            "node": "Hostname",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Hostname": {
-      "main": [
-        [
-          {
-            "node": "Move to inbox",
             "type": "main",
             "index": 0
           }
@@ -1996,73 +1931,6 @@
         ]
       ]
     },
-    "Merge7": {
-      "main": [
-        [
-          {
-            "node": "If relevant",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Intent": {
-      "main": [
-        [
-          {
-            "node": "Read PDF",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Read PDF",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Transcribe Phone message",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Merge6",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Verify mail",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "SMS Christian",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "SMS Wibke",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Merge3",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Create issue": {
       "main": [
         [
@@ -2129,6 +1997,73 @@
         ]
       ]
     },
+    "Intent": {
+      "main": [
+        [
+          {
+            "node": "Read PDF",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Read PDF",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Transcribe Phone message",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge6",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Verify mail",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "SMS Christian",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "SMS Wibke",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge7": {
+      "main": [
+        [
+          {
+            "node": "If relevant",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "Relevance and Reference": {
       "main": [
         [
@@ -2149,14 +2084,14 @@
   },
   "staticData": {
     "node:Mail": {
-      "lastMessageUid": 65963
+      "lastMessageUid": 66841
     }
   },
   "meta": {
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "253fd161-c0cb-4b4d-a3f0-c2fb4a54124d",
+  "versionId": "e707b7d0-216a-4956-b327-482601fc766d",
   "triggerCount": 1,
   "tags": [
     {

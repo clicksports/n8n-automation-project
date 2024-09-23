@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-07-18T14:08:01.627Z",
-  "updatedAt": "2024-08-13T08:54:18.000Z",
+  "updatedAt": "2024-09-23T09:51:38.110Z",
   "id": "7f5NRW9G4szmLXKz",
   "name": "Import WHMCS orders to Jira",
   "active": true,
@@ -200,7 +200,7 @@
             {
               "id": "910e1237-ff0c-4450-b554-5570901968a8",
               "name": "body['vars[orderid]']",
-              "value": "816",
+              "value": "819",
               "type": "string"
             }
           ]
@@ -570,14 +570,15 @@
     "executionOrder": "v1",
     "saveManualExecutions": true,
     "callerPolicy": "workflowsFromSameOwner",
-    "errorWorkflow": "oXwbRnZHgYHUkKj4"
+    "errorWorkflow": "oXwbRnZHgYHUkKj4",
+    "saveDataSuccessExecution": "all"
   },
   "staticData": null,
   "meta": {
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "bb0ef70b-cb1b-4d0b-81dc-819d9ffaa733",
+  "versionId": "a9d37b8b-c6d9-4557-aaf7-8ee1725153c3",
   "triggerCount": 1,
   "tags": [
     {

@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-07-18T14:03:03.922Z",
-  "updatedAt": "2024-07-18T14:06:51.000Z",
+  "updatedAt": "2024-09-23T09:51:41.893Z",
   "id": "GVfmIuPctl7M1OKP",
   "name": "Create Billable item in WHMCS",
   "active": true,
@@ -45,7 +45,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        440,
+        300,
         780
       ]
     },
@@ -75,7 +75,7 @@
             },
             {
               "name": "amount",
-              "value": "={{ $json.billableSeconds / 60 / 60 * 120 }}"
+              "value": "={{ $json.billableSeconds / 60 / 60 * $json.rate }}"
             },
             {
               "name": "unit",
@@ -102,8 +102,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.1,
       "position": [
-        900,
-        640
+        1380,
+        720
       ],
       "credentials": {
         "httpCustomAuth": {
@@ -138,15 +138,16 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.1,
       "position": [
-        1200,
-        200
+        2240,
+        20
       ],
       "credentials": {
         "jiraSoftwareCloudApi": {
           "id": "HlsaLdc6YFfeasWO",
           "name": "Jira christian.gick@clicksports.de"
         }
-      }
+      },
+      "disabled": true
     },
     {
       "parameters": {
@@ -181,8 +182,8 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 2.1,
       "position": [
-        620,
-        640
+        560,
+        760
       ]
     },
     {
@@ -263,7 +264,7 @@
             },
             {
               "name": "description",
-              "value": "={{ $('Webhook').first().json.body.issue.fields.summary }} - {{ $('Webhook').first().json.body.issue.key }}"
+              "value": "={{ $('Webhook').first().json.body.issue.key }}: {{ $('Webhook').first().json.body.issue.fields.summary }}, \nLeistungszeitraum: {{ $('Webhook').item.json.body.issue.fields.customfield_14787.toDateTime().format('dd.MM.yyyy') }} - {{ $today.format('dd.MM.yyyy') }} "
             },
             {
               "name": "amount",
@@ -279,7 +280,7 @@
             },
             {
               "name": "invoiceaction",
-              "value": "noinvoice"
+              "value": "nextcron"
             },
             {
               "name": "duedate",
@@ -294,8 +295,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.1,
       "position": [
-        580,
-        440
+        820,
+        320
       ],
       "credentials": {
         "httpCustomAuth": {
@@ -315,8 +316,8 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 2.1,
       "position": [
-        400,
-        440
+        540,
+        320
       ]
     },
     {
@@ -344,7 +345,7 @@
     {
       "parameters": {
         "operation": "update",
-        "issueKey": "={{ $('Webhook').first().json.body.issue.key }}",
+        "issueKey": "={{ $('Webhook').item.json.body.issue.key }}",
         "updateFields": {
           "labels": [],
           "statusId": {
@@ -359,8 +360,8 @@
       "type": "n8n-nodes-base.jira",
       "typeVersion": 1,
       "position": [
-        960,
-        180
+        1940,
+        440
       ],
       "credentials": {
         "jiraSoftwareCloudApi": {
@@ -393,8 +394,8 @@
       "type": "n8n-nodes-base.jira",
       "typeVersion": 1,
       "position": [
-        1180,
-        640
+        1940,
+        240
       ],
       "credentials": {
         "jiraSoftwareCloudApi": {
@@ -413,8 +414,8 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        1380,
-        360
+        2300,
+        260
       ]
     },
     {
@@ -434,6 +435,139 @@
         560
       ],
       "webhookId": "50ce5def-019d-492d-a71b-79cb285c1d74"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "a90a439d-262b-49e0-a923-a55cc360913f",
+              "leftValue": "={{ $json.billableid }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "id": "26f1549a-7b74-494c-9348-e1f972c54692",
+      "name": "If",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.1,
+      "position": [
+        1640,
+        540
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "db0de32c-1a14-46cc-9529-079e71742645",
+      "name": "When clicking ‘Test workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -320,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.id }}",
+                    "rightValue": 1017,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": "="
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "id": "79983a27-8e97-4459-9a3c-8de926ae676e",
+      "name": "Switch",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.1,
+      "position": [
+        780,
+        760
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a67f2fbd-fa1d-4e5c-bf00-687f428a0eb6",
+              "name": "rate",
+              "value": 120,
+              "type": "number"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "e9d145a2-5bdb-4050-bf57-16f079a46e31",
+      "name": "Default rate",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1060,
+        840
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a67f2fbd-fa1d-4e5c-bf00-687f428a0eb6",
+              "name": "rate",
+              "value": 30,
+              "type": "number"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "87ee042f-20f2-43b5-81aa-133589ac987e",
+      "name": "eToro rate",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1060,
+        620
+      ]
     }
   ],
   "connections": {
@@ -474,7 +608,7 @@
       "main": [
         [
           {
-            "node": "AddBillableItem to WHMCS",
+            "node": "Switch",
             "type": "main",
             "index": 0
           }
@@ -542,22 +676,11 @@
         ]
       ]
     },
-    "Resolve issue": {
-      "main": [
-        [
-          {
-            "node": "Create Comment with Link",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "AddBillableItem to WHMCS": {
       "main": [
         [
           {
-            "node": "Set billing period",
+            "node": "If",
             "type": "main",
             "index": 0
           }
@@ -574,20 +697,88 @@
           }
         ]
       ]
+    },
+    "AddBillableItem to WHMCS1": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Set billing period",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Resolve issue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "eToro rate",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Default rate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default rate": {
+      "main": [
+        [
+          {
+            "node": "AddBillableItem to WHMCS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "eToro rate": {
+      "main": [
+        [
+          {
+            "node": "AddBillableItem to WHMCS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
     "executionOrder": "v1",
     "saveManualExecutions": true,
     "callerPolicy": "workflowsFromSameOwner",
-    "errorWorkflow": "oXwbRnZHgYHUkKj4"
+    "errorWorkflow": "oXwbRnZHgYHUkKj4",
+    "saveDataSuccessExecution": "all"
   },
   "staticData": null,
   "meta": {
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "4faf3ff0-b6af-4746-b733-808142bf089b",
+  "versionId": "0a6efec9-0b0a-4244-8ed7-3f57cd427e27",
   "triggerCount": 1,
   "tags": [
     {

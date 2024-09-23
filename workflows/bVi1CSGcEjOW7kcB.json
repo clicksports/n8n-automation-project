@@ -1,9 +1,9 @@
 {
   "createdAt": "2024-07-18T14:20:01.270Z",
-  "updatedAt": "2024-08-21T15:22:51.000Z",
+  "updatedAt": "2024-09-23T12:48:59.916Z",
   "id": "bVi1CSGcEjOW7kcB",
   "name": "Generate text comment for Jira issue",
-  "active": true,
+  "active": false,
   "nodes": [
     {
       "parameters": {
@@ -64,8 +64,8 @@
       "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
       "typeVersion": 1,
       "position": [
-        1000,
-        700
+        880,
+        800
       ],
       "credentials": {
         "openAiApi": {
@@ -151,36 +151,27 @@
     },
     {
       "parameters": {
-        "pineconeIndex": {
+        "qdrantCollection": {
           "__rl": true,
           "value": "n8n",
-          "mode": "list",
-          "cachedResultName": "n8n"
+          "mode": "id"
         },
         "options": {
-          "pineconeNamespace": "issues",
-          "metadata": {
-            "metadataValues": [
-              {
-                "name": "issuekey",
-                "value": "={{ $json.body['issue.key'] }}"
-              }
-            ]
-          }
+          "searchFilterJson": "={\n  \"should\": [\n    {\n      \"key\": \"metadata.batch\",\n      \"match\": {\n        \"value\": {{ $json.body['issue.key'] }}\n      }\n    }\n  ]\n}"
         }
       },
-      "id": "23146014-d299-4e4e-b274-45a986054fa7",
-      "name": "Pinecone Vector Store3",
-      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "id": "84aca48a-fa10-4fad-84a5-f02474506d10",
+      "name": "Qdrant Vector Store",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
       "typeVersion": 1,
       "position": [
-        980,
-        540
+        920,
+        600
       ],
       "credentials": {
-        "pineconeApi": {
-          "id": "8lDKmR3gvMj1szqg",
-          "name": "Pinecone"
+        "qdrantApi": {
+          "id": "EF7g7Gu0GqFf23bE",
+          "name": "QdrantApi account"
         }
       }
     }
@@ -203,17 +194,6 @@
           {
             "node": "Question and Answer Chain",
             "type": "ai_retriever",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Embeddings OpenAI3": {
-      "ai_embedding": [
-        [
-          {
-            "node": "Pinecone Vector Store3",
-            "type": "ai_embedding",
             "index": 0
           }
         ]
@@ -259,12 +239,23 @@
         ]
       ]
     },
-    "Pinecone Vector Store3": {
+    "Qdrant Vector Store": {
       "ai_vectorStore": [
         [
           {
             "node": "Vector Store Retriever",
             "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI3": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "ai_embedding",
             "index": 0
           }
         ]
@@ -282,7 +273,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "4e050c12-ed90-4b9b-aa90-e7aa62ebb16f",
+  "versionId": "203ab4f3-9952-4585-bf5f-06b8bb03de82",
   "triggerCount": 1,
   "tags": [
     {
@@ -296,6 +287,12 @@
       "updatedAt": "2024-07-18T11:59:49.236Z",
       "id": "pp35M0Su309OL8L3",
       "name": "rag"
+    },
+    {
+      "createdAt": "2024-09-23T12:45:52.025Z",
+      "updatedAt": "2024-09-23T12:45:52.025Z",
+      "id": "kc4ZjqkDUkLQSaff",
+      "name": "qdrant"
     }
   ]
 }

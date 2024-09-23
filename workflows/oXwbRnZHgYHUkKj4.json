@@ -1,8 +1,8 @@
 {
   "createdAt": "2024-07-18T13:45:52.660Z",
-  "updatedAt": "2024-07-19T11:40:57.000Z",
+  "updatedAt": "2024-09-23T13:00:00.627Z",
   "id": "oXwbRnZHgYHUkKj4",
-  "name": "Error Workflow",
+  "name": "Error Workflow Opsgenie",
   "active": false,
   "nodes": [
     {
@@ -36,7 +36,7 @@
           "parameters": [
             {
               "name": "description",
-              "value": "={{ $json.execution.error.message }} in {{ $json.execution.url }}\n\n {{ $json.execution.error.stack }}"
+              "value": "=Error {{ $json.execution.error.message }} in Execution {{ $json.execution.url }}:\n\n {{ $json.execution.error.stack }}"
             },
             {
               "name": "alias",
@@ -49,7 +49,7 @@
           ]
         },
         "options": {
-          "allowUnauthorizedCerts": false
+          "allowUnauthorizedCerts": true
         }
       },
       "id": "f94be9df-64f8-458b-a03d-c36a7e5519c1",
@@ -82,14 +82,17 @@
     }
   },
   "settings": {
-    "executionOrder": "v1"
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "oXwbRnZHgYHUkKj4"
   },
   "staticData": null,
   "meta": {
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "f2944de0-1633-4fc0-aa6e-ea86e28ec9d4",
+  "versionId": "cd0cc6cb-fffe-4a5a-a1b9-0984472e7fc7",
   "triggerCount": 0,
   "tags": [
     {
@@ -97,6 +100,12 @@
       "updatedAt": "2024-07-19T11:40:57.729Z",
       "id": "1aORyKdZjViVm2wN",
       "name": "opsgenie"
+    },
+    {
+      "createdAt": "2024-07-19T11:41:10.307Z",
+      "updatedAt": "2024-07-19T11:41:10.307Z",
+      "id": "KjOZ3fk6ysEni7CZ",
+      "name": "jira"
     }
   ]
 }
