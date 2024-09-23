@@ -1,6 +1,6 @@
 {
   "createdAt": "2024-08-02T11:54:52.386Z",
-  "updatedAt": "2024-09-23T13:32:18.377Z",
+  "updatedAt": "2024-09-23T13:33:25.071Z",
   "id": "aN9drYUtOLOnn5E0",
   "name": "Backup n8n workflows",
   "active": true,
@@ -152,9 +152,7 @@
         "authentication": "gitPassword",
         "operation": "push",
         "repositoryPath": "={{ $('Repo').first().json.path }}",
-        "options": {
-          "targetRepository": "https://bitbucket.org/clicksports/n8n.git"
-        }
+        "options": {}
       },
       "id": "cbd7d855-3b52-4f4d-8584-c516fca139a0",
       "name": "Git2",
@@ -378,7 +376,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "52056c0d-48cf-4a5d-b389-f90a7b683588",
+  "versionId": "1ffe80a8-b242-4f43-840e-9783c4e853ba",
   "triggerCount": 1,
   "tags": []
 }
