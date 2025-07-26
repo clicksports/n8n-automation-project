@@ -1,0 +1,9 @@
+CREATE TABLE insights_by_period (
+  id INTEGER NOT NULL,
+  metaId INTEGER NOT NULL,
+  type INTEGER NOT NULL,
+  value INTEGER NOT NULL,
+  periodUnit INTEGER NOT NULL,
+  periodStart TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id)
+);

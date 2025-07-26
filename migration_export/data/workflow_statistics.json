@@ -1,0 +1,30 @@
+[
+  {
+    "count": 1,
+    "latestEvent": "2025-07-26 10:16:02",
+    "name": "manual_error",
+    "workflowId": "sU8WiDF4UnAQq9PC",
+    "rootCount": 0
+  },
+  {
+    "count": 1,
+    "latestEvent": "2025-07-26 10:19:21",
+    "name": "manual_error",
+    "workflowId": "JWL1s21OQx2lOpBL",
+    "rootCount": 0
+  },
+  {
+    "count": 1,
+    "latestEvent": "2025-07-26 12:24:02.509",
+    "name": "data_loaded",
+    "workflowId": "d74bb1275e9a48ac",
+    "rootCount": 1
+  },
+  {
+    "count": 3,
+    "latestEvent": "2025-07-26 12:24:18",
+    "name": "manual_success",
+    "workflowId": "d74bb1275e9a48ac",
+    "rootCount": 0
+  }
+]

@@ -1,0 +1,10 @@
+CREATE TABLE credentials_entity (
+  id VARCHAR(36) NOT NULL,
+  name VARCHAR(128) NOT NULL,
+  data TEXT NOT NULL,
+  type VARCHAR(32) NOT NULL,
+  createdAt TIMESTAMP NOT NULL DEFAULT STRFTIME('%Y-%m-%d %H:%M:%f', 'NOW'),
+  updatedAt TIMESTAMP NOT NULL DEFAULT STRFTIME('%Y-%m-%d %H:%M:%f', 'NOW'),
+  isManaged BOOLEAN NOT NULL DEFAULT 0,
+  PRIMARY KEY (id)
+);

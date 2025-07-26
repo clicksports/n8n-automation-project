@@ -1,0 +1,8 @@
+CREATE TABLE auth_identity (
+  userId VARCHAR,
+  providerId VARCHAR NOT NULL,
+  providerType VARCHAR NOT NULL,
+  createdAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updatedAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (providerId, providerType)
+);

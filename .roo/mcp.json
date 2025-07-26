@@ -1,0 +1,47 @@
+{
+  "mcpServers": {
+    "memory": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-memory"
+      ]
+    },
+    "context7": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@upstash/context7-mcp"
+      ],
+      "env": {
+        "DEFAULT_MINIMUM_TOKENS": ""
+      }
+    },
+    "sequentialthinking": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-sequential-thinking"
+      ]
+    },
+    "time": {
+      "command": "uvx",
+      "args": [
+        "mcp-server-time"
+      ]
+    },
+    "postgrest": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@supabase/mcp-server-postgrest@latest",
+        "--apiUrl",
+        "http://localhost:3000  txt",
+        "--apiKey",
+        "",
+        "--schema",
+        "public"
+      ]
+    }
+  }
+}

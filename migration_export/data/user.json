@@ -1,0 +1,19 @@
+[
+  {
+    "id": "f624dd0d-b63b-4cb7-9da8-2451dcca12fc",
+    "email": "admin@n8n.local",
+    "firstName": "Admin",
+    "lastName": "User",
+    "password": "$2a$10$d6C7Rirg3Fo4omEPKSKgiO7bwGjhWasO2xRch5VNYWOjKJzLsUQNa",
+    "personalizationAnswers": "{\"version\":\"v4\",\"personalization_survey_submitted_at\":\"2025-07-26T06:59:30.398Z\",\"personalization_survey_n8n_version\":\"1.102.3\"}",
+    "createdAt": "2025-07-26 06:43:51.842",
+    "updatedAt": "2025-07-26 12:21:17",
+    "settings": "{\"userActivated\":false}",
+    "disabled": 0,
+    "mfaEnabled": 0,
+    "mfaSecret": null,
+    "mfaRecoveryCodes": null,
+    "role": "global:owner",
+    "lastActiveAt": "2025-07-26"
+  }
+]

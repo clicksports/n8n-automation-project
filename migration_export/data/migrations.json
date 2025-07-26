@@ -1,0 +1,437 @@
+[
+  {
+    "id": 1,
+    "timestamp": 1588102412422,
+    "name": "InitialMigration1588102412422"
+  },
+  {
+    "id": 2,
+    "timestamp": 1592445003908,
+    "name": "WebhookModel1592445003908"
+  },
+  {
+    "id": 3,
+    "timestamp": 1594825041918,
+    "name": "CreateIndexStoppedAt1594825041918"
+  },
+  {
+    "id": 4,
+    "timestamp": 1607431743769,
+    "name": "MakeStoppedAtNullable1607431743769"
+  },
+  {
+    "id": 5,
+    "timestamp": 1611071044839,
+    "name": "AddWebhookId1611071044839"
+  },
+  {
+    "id": 6,
+    "timestamp": 1617213344594,
+    "name": "CreateTagEntity1617213344594"
+  },
+  {
+    "id": 7,
+    "timestamp": 1620821879465,
+    "name": "UniqueWorkflowNames1620821879465"
+  },
+  {
+    "id": 8,
+    "timestamp": 1621707690587,
+    "name": "AddWaitColumn1621707690587"
+  },
+  {
+    "id": 9,
+    "timestamp": 1630330987096,
+    "name": "UpdateWorkflowCredentials1630330987096"
+  },
+  {
+    "id": 10,
+    "timestamp": 1644421939510,
+    "name": "AddExecutionEntityIndexes1644421939510"
+  },
+  {
+    "id": 11,
+    "timestamp": 1646992772331,
+    "name": "CreateUserManagement1646992772331"
+  },
+  {
+    "id": 12,
+    "timestamp": 1648740597343,
+    "name": "LowerCaseUserEmail1648740597343"
+  },
+  {
+    "id": 13,
+    "timestamp": 1652254514001,
+    "name": "CommunityNodes1652254514001"
+  },
+  {
+    "id": 14,
+    "timestamp": 1652367743993,
+    "name": "AddUserSettings1652367743993"
+  },
+  {
+    "id": 15,
+    "timestamp": 1652905585850,
+    "name": "AddAPIKeyColumn1652905585850"
+  },
+  {
+    "id": 16,
+    "timestamp": 1654089251344,
+    "name": "IntroducePinData1654089251344"
+  },
+  {
+    "id": 17,
+    "timestamp": 1658930531669,
+    "name": "AddNodeIds1658930531669"
+  },
+  {
+    "id": 18,
+    "timestamp": 1659888469333,
+    "name": "AddJsonKeyPinData1659888469333"
+  },
+  {
+    "id": 19,
+    "timestamp": 1660062385367,
+    "name": "CreateCredentialsUserRole1660062385367"
+  },
+  {
+    "id": 20,
+    "timestamp": 1663755770892,
+    "name": "CreateWorkflowsEditorRole1663755770892"
+  },
+  {
+    "id": 21,
+    "timestamp": 1664196174000,
+    "name": "WorkflowStatistics1664196174000"
+  },
+  {
+    "id": 22,
+    "timestamp": 1665484192211,
+    "name": "CreateCredentialUsageTable1665484192211"
+  },
+  {
+    "id": 23,
+    "timestamp": 1665754637024,
+    "name": "RemoveCredentialUsageTable1665754637024"
+  },
+  {
+    "id": 24,
+    "timestamp": 1669739707124,
+    "name": "AddWorkflowVersionIdColumn1669739707124"
+  },
+  {
+    "id": 25,
+    "timestamp": 1669823906993,
+    "name": "AddTriggerCountColumn1669823906993"
+  },
+  {
+    "id": 26,
+    "timestamp": 1671535397530,
+    "name": "MessageEventBusDestinations1671535397530"
+  },
+  {
+    "id": 27,
+    "timestamp": 1671726148419,
+    "name": "RemoveWorkflowDataLoadedFlag1671726148419"
+  },
+  {
+    "id": 28,
+    "timestamp": 1673268682475,
+    "name": "DeleteExecutionsWithWorkflows1673268682475"
+  },
+  {
+    "id": 29,
+    "timestamp": 1674138566000,
+    "name": "AddStatusToExecutions1674138566000"
+  },
+  {
+    "id": 30,
+    "timestamp": 1674509946020,
+    "name": "CreateLdapEntities1674509946020"
+  },
+  {
+    "id": 31,
+    "timestamp": 1675940580449,
+    "name": "PurgeInvalidWorkflowConnections1675940580449"
+  },
+  {
+    "id": 32,
+    "timestamp": 1676996103000,
+    "name": "MigrateExecutionStatus1676996103000"
+  },
+  {
+    "id": 33,
+    "timestamp": 1677237073720,
+    "name": "UpdateRunningExecutionStatus1677237073720"
+  },
+  {
+    "id": 34,
+    "timestamp": 1677501636752,
+    "name": "CreateVariables1677501636752"
+  },
+  {
+    "id": 35,
+    "timestamp": 1679416281777,
+    "name": "CreateExecutionMetadataTable1679416281777"
+  },
+  {
+    "id": 36,
+    "timestamp": 1681134145996,
+    "name": "AddUserActivatedProperty1681134145996"
+  },
+  {
+    "id": 37,
+    "timestamp": 1681134145997,
+    "name": "RemoveSkipOwnerSetup1681134145997"
+  },
+  {
+    "id": 38,
+    "timestamp": 1690000000002,
+    "name": "MigrateIntegerKeysToString1690000000002"
+  },
+  {
+    "id": 39,
+    "timestamp": 1690000000010,
+    "name": "SeparateExecutionData1690000000010"
+  },
+  {
+    "id": 40,
+    "timestamp": 1690000000020,
+    "name": "FixMissingIndicesFromStringIdMigration1690000000020"
+  },
+  {
+    "id": 41,
+    "timestamp": 1690000000030,
+    "name": "RemoveResetPasswordColumns1690000000030"
+  },
+  {
+    "id": 42,
+    "timestamp": 1690000000030,
+    "name": "AddMfaColumns1690000000030"
+  },
+  {
+    "id": 43,
+    "timestamp": 1691088862123,
+    "name": "CreateWorkflowNameIndex1691088862123"
+  },
+  {
+    "id": 44,
+    "timestamp": 1692967111175,
+    "name": "CreateWorkflowHistoryTable1692967111175"
+  },
+  {
+    "id": 45,
+    "timestamp": 1693491613982,
+    "name": "ExecutionSoftDelete1693491613982"
+  },
+  {
+    "id": 46,
+    "timestamp": 1693554410387,
+    "name": "DisallowOrphanExecutions1693554410387"
+  },
+  {
+    "id": 47,
+    "timestamp": 1695128658538,
+    "name": "AddWorkflowMetadata1695128658538"
+  },
+  {
+    "id": 48,
+    "timestamp": 1695829275184,
+    "name": "ModifyWorkflowHistoryNodesAndConnections1695829275184"
+  },
+  {
+    "id": 49,
+    "timestamp": 1700571993961,
+    "name": "AddGlobalAdminRole1700571993961"
+  },
+  {
+    "id": 50,
+    "timestamp": 1705429061930,
+    "name": "DropRoleMapping1705429061930"
+  },
+  {
+    "id": 51,
+    "timestamp": 1711018413374,
+    "name": "RemoveFailedExecutionStatus1711018413374"
+  },
+  {
+    "id": 52,
+    "timestamp": 1711390882123,
+    "name": "MoveSshKeysToDatabase1711390882123"
+  },
+  {
+    "id": 53,
+    "timestamp": 1712044305787,
+    "name": "RemoveNodesAccess1712044305787"
+  },
+  {
+    "id": 54,
+    "timestamp": 1714133768519,
+    "name": "CreateProject1714133768519"
+  },
+  {
+    "id": 55,
+    "timestamp": 1714133768521,
+    "name": "MakeExecutionStatusNonNullable1714133768521"
+  },
+  {
+    "id": 56,
+    "timestamp": 1717498465931,
+    "name": "AddActivatedAtUserSetting1717498465931"
+  },
+  {
+    "id": 57,
+    "timestamp": 1720101653148,
+    "name": "AddConstraintToExecutionMetadata1720101653148"
+  },
+  {
+    "id": 58,
+    "timestamp": 1723627610222,
+    "name": "CreateInvalidAuthTokenTable1723627610222"
+  },
+  {
+    "id": 59,
+    "timestamp": 1723796243146,
+    "name": "RefactorExecutionIndices1723796243146"
+  },
+  {
+    "id": 60,
+    "timestamp": 1724753530828,
+    "name": "CreateAnnotationTables1724753530828"
+  },
+  {
+    "id": 61,
+    "timestamp": 1724951148974,
+    "name": "AddApiKeysTable1724951148974"
+  },
+  {
+    "id": 62,
+    "timestamp": 1726606152711,
+    "name": "CreateProcessedDataTable1726606152711"
+  },
+  {
+    "id": 63,
+    "timestamp": 1727427440136,
+    "name": "SeparateExecutionCreationFromStart1727427440136"
+  },
+  {
+    "id": 64,
+    "timestamp": 1728659839644,
+    "name": "AddMissingPrimaryKeyOnAnnotationTagMapping1728659839644"
+  },
+  {
+    "id": 65,
+    "timestamp": 1729607673464,
+    "name": "UpdateProcessedDataValueColumnToText1729607673464"
+  },
+  {
+    "id": 66,
+    "timestamp": 1729607673469,
+    "name": "AddProjectIcons1729607673469"
+  },
+  {
+    "id": 67,
+    "timestamp": 1730386903556,
+    "name": "CreateTestDefinitionTable1730386903556"
+  },
+  {
+    "id": 68,
+    "timestamp": 1731404028106,
+    "name": "AddDescriptionToTestDefinition1731404028106"
+  },
+  {
+    "id": 69,
+    "timestamp": 1731582748663,
+    "name": "MigrateTestDefinitionKeyToString1731582748663"
+  },
+  {
+    "id": 70,
+    "timestamp": 1732271325258,
+    "name": "CreateTestMetricTable1732271325258"
+  },
+  {
+    "id": 71,
+    "timestamp": 1732549866705,
+    "name": "CreateTestRun1732549866705"
+  },
+  {
+    "id": 72,
+    "timestamp": 1733133775640,
+    "name": "AddMockedNodesColumnToTestDefinition1733133775640"
+  },
+  {
+    "id": 73,
+    "timestamp": 1734479635324,
+    "name": "AddManagedColumnToCredentialsTable1734479635324"
+  },
+  {
+    "id": 74,
+    "timestamp": 1736172058779,
+    "name": "AddStatsColumnsToTestRun1736172058779"
+  },
+  {
+    "id": 75,
+    "timestamp": 1736947513045,
+    "name": "CreateTestCaseExecutionTable1736947513045"
+  },
+  {
+    "id": 76,
+    "timestamp": 1737715421462,
+    "name": "AddErrorColumnsToTestRuns1737715421462"
+  },
+  {
+    "id": 77,
+    "timestamp": 1738709609940,
+    "name": "CreateFolderTable1738709609940"
+  },
+  {
+    "id": 78,
+    "timestamp": 1739549398681,
+    "name": "CreateAnalyticsTables1739549398681"
+  },
+  {
+    "id": 79,
+    "timestamp": 1740445074052,
+    "name": "UpdateParentFolderIdColumn1740445074052"
+  },
+  {
+    "id": 80,
+    "timestamp": 1741167584277,
+    "name": "RenameAnalyticsToInsights1741167584277"
+  },
+  {
+    "id": 81,
+    "timestamp": 1742918400000,
+    "name": "AddScopesColumnToApiKeys1742918400000"
+  },
+  {
+    "id": 82,
+    "timestamp": 1745322634000,
+    "name": "ClearEvaluation1745322634000"
+  },
+  {
+    "id": 83,
+    "timestamp": 1745587087521,
+    "name": "AddWorkflowStatisticsRootCount1745587087521"
+  },
+  {
+    "id": 84,
+    "timestamp": 1745934666076,
+    "name": "AddWorkflowArchivedColumn1745934666076"
+  },
+  {
+    "id": 85,
+    "timestamp": 1745934666077,
+    "name": "DropRoleTable1745934666077"
+  },
+  {
+    "id": 86,
+    "timestamp": 1747824239000,
+    "name": "AddProjectDescriptionColumn1747824239000"
+  },
+  {
+    "id": 87,
+    "timestamp": 1750252139166,
+    "name": "AddLastActiveAtColumnToUser1750252139166"
+  }
+]

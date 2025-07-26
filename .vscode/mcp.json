@@ -1,0 +1,25 @@
+{
+  "mcpServers": {
+    "postgrest": {
+      "command": "node",
+      "args": [
+        "${workspaceFolder}/supabase-mcp/packages/mcp-server-postgrest/dist/stdio.cjs"
+      ],
+      "env": {
+        "POSTGREST_URL": "http://localhost:3000",
+        "POSTGREST_API_KEY": "",
+        "POSTGREST_SCHEMA": "public"
+      }
+    },
+    "github": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-github"
+      ],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"
+      }
+    }
+  }
+}

@@ -1,0 +1,152 @@
+{
+  "export_time": "2025-07-26T14:28:25.949430",
+  "total_tables": 36,
+  "tables_with_data": 13,
+  "total_rows": 185,
+  "tables": {
+    "migrations": {
+      "row_count": 87,
+      "exported": true
+    },
+    "settings": {
+      "row_count": 7,
+      "exported": true
+    },
+    "installed_packages": {
+      "row_count": 0,
+      "exported": false
+    },
+    "installed_nodes": {
+      "row_count": 0,
+      "exported": false
+    },
+    "event_destinations": {
+      "row_count": 0,
+      "exported": false
+    },
+    "auth_identity": {
+      "row_count": 0,
+      "exported": false
+    },
+    "auth_provider_sync_history": {
+      "row_count": 0,
+      "exported": false
+    },
+    "tag_entity": {
+      "row_count": 4,
+      "exported": true
+    },
+    "workflows_tags": {
+      "row_count": 49,
+      "exported": true
+    },
+    "workflow_statistics": {
+      "row_count": 4,
+      "exported": true
+    },
+    "webhook_entity": {
+      "row_count": 0,
+      "exported": false
+    },
+    "variables": {
+      "row_count": 0,
+      "exported": false
+    },
+    "execution_data": {
+      "row_count": 5,
+      "exported": true
+    },
+    "workflow_history": {
+      "row_count": 0,
+      "exported": false
+    },
+    "credentials_entity": {
+      "row_count": 0,
+      "exported": false
+    },
+    "project_relation": {
+      "row_count": 1,
+      "exported": true
+    },
+    "shared_credentials": {
+      "row_count": 0,
+      "exported": false
+    },
+    "shared_workflow": {
+      "row_count": 15,
+      "exported": true
+    },
+    "execution_metadata": {
+      "row_count": 0,
+      "exported": false
+    },
+    "invalid_auth_token": {
+      "row_count": 1,
+      "exported": true
+    },
+    "execution_annotations": {
+      "row_count": 0,
+      "exported": false
+    },
+    "annotation_tag_entity": {
+      "row_count": 0,
+      "exported": false
+    },
+    "execution_annotation_tags": {
+      "row_count": 0,
+      "exported": false
+    },
+    "user": {
+      "row_count": 1,
+      "exported": true
+    },
+    "execution_entity": {
+      "row_count": 5,
+      "exported": true
+    },
+    "processed_data": {
+      "row_count": 0,
+      "exported": false
+    },
+    "project": {
+      "row_count": 1,
+      "exported": true
+    },
+    "folder": {
+      "row_count": 0,
+      "exported": false
+    },
+    "folder_tag": {
+      "row_count": 0,
+      "exported": false
+    },
+    "workflow_entity": {
+      "row_count": 5,
+      "exported": true
+    },
+    "insights_metadata": {
+      "row_count": 0,
+      "exported": false
+    },
+    "insights_raw": {
+      "row_count": 0,
+      "exported": false
+    },
+    "insights_by_period": {
+      "row_count": 0,
+      "exported": false
+    },
+    "user_api_keys": {
+      "row_count": 0,
+      "exported": false
+    },
+    "test_run": {
+      "row_count": 0,
+      "exported": false
+    },
+    "test_case_execution": {
+      "row_count": 0,
+      "exported": false
+    }
+  }
+}

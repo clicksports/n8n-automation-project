@@ -1,0 +1,72 @@
+[
+  {
+    "id": 1,
+    "workflowId": "sU8WiDF4UnAQq9PC",
+    "finished": 0,
+    "mode": "manual",
+    "retryOf": null,
+    "retrySuccessId": null,
+    "startedAt": "2025-07-26 10:16:02.406",
+    "stoppedAt": "2025-07-26 10:16:02.460",
+    "waitTill": null,
+    "status": "error",
+    "deletedAt": null,
+    "createdAt": "2025-07-26 10:16:02.390"
+  },
+  {
+    "id": 2,
+    "workflowId": "JWL1s21OQx2lOpBL",
+    "finished": 0,
+    "mode": "manual",
+    "retryOf": null,
+    "retrySuccessId": null,
+    "startedAt": "2025-07-26 10:19:21.703",
+    "stoppedAt": "2025-07-26 10:19:21.808",
+    "waitTill": null,
+    "status": "error",
+    "deletedAt": null,
+    "createdAt": "2025-07-26 10:19:21.683"
+  },
+  {
+    "id": 3,
+    "workflowId": "d74bb1275e9a48ac",
+    "finished": 1,
+    "mode": "manual",
+    "retryOf": null,
+    "retrySuccessId": null,
+    "startedAt": "2025-07-26 12:24:02.073",
+    "stoppedAt": "2025-07-26 12:24:03.235",
+    "waitTill": null,
+    "status": "success",
+    "deletedAt": null,
+    "createdAt": "2025-07-26 12:24:02.053"
+  },
+  {
+    "id": 4,
+    "workflowId": "d74bb1275e9a48ac",
+    "finished": 1,
+    "mode": "manual",
+    "retryOf": null,
+    "retrySuccessId": null,
+    "startedAt": "2025-07-26 12:24:13.442",
+    "stoppedAt": "2025-07-26 12:24:14.084",
+    "waitTill": null,
+    "status": "success",
+    "deletedAt": null,
+    "createdAt": "2025-07-26 12:24:13.429"
+  },
+  {
+    "id": 5,
+    "workflowId": "d74bb1275e9a48ac",
+    "finished": 1,
+    "mode": "manual",
+    "retryOf": null,
+    "retrySuccessId": null,
+    "startedAt": "2025-07-26 12:24:17.919",
+    "stoppedAt": "2025-07-26 12:24:18.493",
+    "waitTill": null,
+    "status": "success",
+    "deletedAt": null,
+    "createdAt": "2025-07-26 12:24:17.886"
+  }
+]

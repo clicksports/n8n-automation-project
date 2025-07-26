@@ -1,0 +1,9 @@
+{
+  "timestamp": "20250726-144840",
+  "backup_dir": "backups/pre-local-postgresql-migration-20250726-144840",
+  "migration_type": "sqlite_to_local_postgresql",
+  "files_backed_up": [
+    "database.sqlite",
+    "docker-compose.yml"
+  ]
+}

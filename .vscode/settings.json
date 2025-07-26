@@ -10,6 +10,17 @@
         "env": {
           "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"
         }
+      },
+      "postgrest": {
+        "command": "node",
+        "args": [
+          "${workspaceFolder}/supabase-mcp/packages/mcp-server-postgrest/dist/stdio.cjs"
+        ],
+        "env": {
+          "POSTGREST_URL": "${POSTGREST_URL}",
+          "POSTGREST_API_KEY": "${POSTGREST_API_KEY}",
+          "POSTGREST_SCHEMA": "${POSTGREST_SCHEMA:-public}"
+        }
       }
     }
   }
