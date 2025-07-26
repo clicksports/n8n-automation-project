@@ -5,12 +5,20 @@ Directly inserts workflow into the n8n Docker database.
 """
 
 import json
-import sqlite3
+import psycopg2
+import psycopg2.extras
 import uuid
 from datetime import datetime
+import os
 
 # Configuration
-DB_PATH = "docker/database.sqlite"
+DB_CONFIG = {
+    'host': os.getenv('DB_POSTGRESDB_HOST', 'localhost'),
+    'port': os.getenv('DB_POSTGRESDB_PORT', '5432'),
+    'database': os.getenv('DB_POSTGRESDB_DATABASE', 'n8n'),
+    'user': os.getenv('DB_POSTGRESDB_USER', 'n8n_user'),
+    'password': os.getenv('DB_POSTGRESDB_PASSWORD', 'n8n_password')
+}
 WORKFLOW_FILE = "best_workflow_for_import.json"
 
 def log(message):
@@ -32,8 +40,8 @@ def main():
         
         # Connect to database
         log("🔌 Connecting to n8n database...")
-        conn = sqlite3.connect(DB_PATH)
-        cursor = conn.cursor()
+        conn = psycopg2.connect(**DB_CONFIG)
+        cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         
         # Check existing workflows
         cursor.execute("SELECT id, name FROM workflow_entity")

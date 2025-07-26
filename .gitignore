@@ -2,6 +2,8 @@
 .n8n/
 *.sqlite
 *.db
+*.sql.backup
+postgres_data/
 
 # Environment variables
 .env

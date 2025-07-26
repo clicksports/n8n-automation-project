@@ -55,8 +55,8 @@ if [ -z "$PASSWORD_HASH" ]; then
 fi
 
 echo "🔄 Updating password in database..."
-sqlite3 docker/database.sqlite "
-UPDATE user 
+docker-compose exec postgres psql -U n8n_user -d n8n -c "
+UPDATE user_entity
 SET password = '$PASSWORD_HASH' 
 WHERE email = 'admin@n8n.local';
 "
