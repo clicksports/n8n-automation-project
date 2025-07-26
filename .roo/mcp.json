@@ -41,7 +41,8 @@
         "",
         "--schema",
         "public"
-      ]
+      ],
+      "alwaysAllow": []
     }
   }
 }

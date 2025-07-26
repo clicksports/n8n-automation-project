@@ -45,6 +45,24 @@ services:
       timeout: 5s
       retries: 5
 
+  # Qdrant Vector Database
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: n8n-qdrant
+    restart: unless-stopped
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    networks:
+      - n8n-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:6333/ || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   # n8n Application
   n8n:
     image: n8nio/n8n:latest
@@ -97,6 +115,8 @@ volumes:
       o: bind
       device: ${PWD}/docker/binaryData
   postgres_data:
+    driver: local
+  qdrant_data:
     driver: local
 
 networks:

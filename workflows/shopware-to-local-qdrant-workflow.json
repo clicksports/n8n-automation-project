@@ -1,0 +1,379 @@
+{
+  "name": "Shopware to Local Qdrant Production",
+  "active": true,
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "f8b0c5e1-8a2d-4c3e-9f1a-2b3c4d5e6f7g",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        240,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://shop.held.de/api/oauth/token",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "grant_type",
+              "value": "client_credentials"
+            },
+            {
+              "name": "client_id",
+              "value": "SWIANEPSMGTHMLJMT1BHEFAZNW"
+            },
+            {
+              "name": "client_secret",
+              "value": "UVJKRGFWZENoVW9OY1ZuUktYNkN6NFRucVNVQU1VR1B0cElhUzE"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000,
+          "retry": {
+            "enabled": true,
+            "maxRetries": 3,
+            "retryInterval": 1000
+          }
+        }
+      },
+      "id": "a1b2c3d4-5e6f-7g8h-9i0j-1k2l3m4n5o6p",
+      "name": "Get OAuth Token",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        460,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Validate OAuth response and initialize pagination\nconst items = $input.all();\nconst response = items[0].json;\n\n// Check if we got a valid access token\nif (!response.access_token) {\n  throw new Error('Failed to obtain access token from Shopware API');\n}\n\nconsole.log('✅ Successfully obtained OAuth token');\nconsole.log(`Token type: ${response.token_type}`);\nconsole.log(`Expires in: ${response.expires_in} seconds`);\n\n// Set initial pagination parameters\nconst paginationData = {\n  page: 1,\n  limit: 10, // Reduced for testing\n  totalPages: null,\n  accessToken: response.access_token,\n  allProducts: [],\n  startTime: new Date().toISOString(),\n  errors: []\n};\n\nreturn [{\n  json: paginationData\n}];"
+      },
+      "id": "b2c3d4e5-6f7g-8h9i-0j1k-2l3m4n5o6p7q",
+      "name": "Validate Token & Initialize",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        680,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://shop.held.de/api/product?page={{ $json.page }}&limit={{ $json.limit }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.accessToken }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 60000,
+          "retry": {
+            "enabled": true,
+            "maxRetries": 3,
+            "retryInterval": 2000
+          }
+        }
+      },
+      "id": "c3d4e5f6-7g8h-9i0j-1k2l-3m4n5o6p7q8r",
+      "name": "Fetch Products Page",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        900,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Process the API response with comprehensive error handling\nconst items = $input.all();\nconst response = items[0].json;\n\n// Validate API response structure\nif (!response || typeof response !== 'object') {\n  throw new Error('Invalid API response format');\n}\n\n// Extract products and pagination info with fallbacks\nconst products = response.data || [];\nconst total = response.total || 0;\nconst currentPage = response.page || 1;\nconst limit = response.limit || 10;\nconst totalPages = Math.ceil(total / limit);\n\n// Get existing data from previous iterations\nlet allProducts = $node[\"Validate Token & Initialize\"].json.allProducts || [];\nlet errors = $node[\"Validate Token & Initialize\"].json.errors || [];\n\n// Validate products data\nif (!Array.isArray(products)) {\n  const error = `Page ${currentPage}: Products data is not an array`;\n  errors.push(error);\n  console.warn('⚠️ ' + error);\n} else {\n  // Add current page products to the collection\n  allProducts = allProducts.concat(products);\n  console.log(`📦 Fetched page ${currentPage}/${totalPages} - ${products.length} products (Total: ${allProducts.length}/${total})`);\n}\n\n// Determine if we need to fetch more pages (limit to 2 pages for testing)\nconst hasMorePages = currentPage < Math.min(totalPages, 2);\n\nif (hasMorePages) {\n  // Return data for next page\n  return [{\n    json: {\n      page: currentPage + 1,\n      limit: limit,\n      totalPages: totalPages,\n      accessToken: $node[\"Validate Token & Initialize\"].json.accessToken,\n      allProducts: allProducts,\n      hasMorePages: true,\n      currentTotal: allProducts.length,\n      expectedTotal: total,\n      startTime: $node[\"Validate Token & Initialize\"].json.startTime,\n      errors: errors\n    }\n  }];\n} else {\n  // All pages fetched, return final collection\n  const endTime = new Date().toISOString();\n  const duration = new Date(endTime) - new Date($node[\"Validate Token & Initialize\"].json.startTime);\n  \n  console.log(`🎉 Pagination complete! Fetched ${allProducts.length} products in ${Math.round(duration/1000)}s`);\n  \n  if (errors.length > 0) {\n    console.warn(`⚠️ ${errors.length} errors encountered during fetch:`);\n    errors.forEach(error => console.warn(`  - ${error}`));\n  }\n  \n  return [{\n    json: {\n      allProducts: allProducts,\n      hasMorePages: false,\n      totalProducts: allProducts.length,\n      paginationComplete: true,\n      startTime: $node[\"Validate Token & Initialize\"].json.startTime,\n      endTime: endTime,\n      duration: Math.round(duration/1000),\n      errors: errors\n    }\n  }];\n}"
+      },
+      "id": "d4e5f6g7-8h9i-0j1k-2l3m-4n5o6p7q8r9s",
+      "name": "Process Page & Check Pagination",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "c1a2b3c4-d5e6-f7g8-h9i0-j1k2l3m4n5o6",
+              "leftValue": "={{ $json.hasMorePages }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equal",
+                "rightType": "boolean"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "e5f6g7h8-9i0j-1k2l-3m4n-5o6p7q8r9s0t",
+      "name": "Has More Pages?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1340,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Transform products for vector storage with enhanced error handling\nconst items = $input.all();\nconst allProducts = items[0].json.allProducts;\nconst previousErrors = items[0].json.errors || [];\n\nif (!Array.isArray(allProducts)) {\n  throw new Error('Products data is not an array');\n}\n\nconsole.log(`🔄 Starting transformation of ${allProducts.length} products...`);\n\nconst transformedProducts = [];\nconst transformErrors = [];\n\nallProducts.forEach((product, index) => {\n  try {\n    // Validate required fields\n    if (!product || typeof product !== 'object') {\n      transformErrors.push(`Product ${index}: Invalid product object`);\n      return;\n    }\n\n    if (!product.id) {\n      transformErrors.push(`Product ${index}: Missing product ID`);\n      return;\n    }\n\n    // Safely extract and combine text fields\n    const textParts = [];\n    \n    // Extract name from translations or direct field\n    let productName = product.name;\n    if (!productName && product.translations && Array.isArray(product.translations)) {\n      const translation = product.translations.find(t => t.name);\n      productName = translation?.name;\n    }\n    if (productName && typeof productName === 'string') {\n      textParts.push(productName.trim());\n    }\n    \n    // Extract description from translations or direct field\n    let productDescription = product.description;\n    if (!productDescription && product.translations && Array.isArray(product.translations)) {\n      const translation = product.translations.find(t => t.description);\n      productDescription = translation?.description;\n    }\n    if (productDescription && typeof productDescription === 'string') {\n      // Strip HTML tags from description\n      const cleanDescription = productDescription.replace(/<[^>]*>/g, ' ').replace(/\\s+/g, ' ').trim();\n      if (cleanDescription.length > 0) {\n        textParts.push(cleanDescription);\n      }\n    }\n    \n    // Add EAN if available\n    if (product.ean && typeof product.ean === 'string') {\n      textParts.push(`EAN: ${product.ean.trim()}`);\n    }\n    \n    // Add manufacturer number if available\n    if (product.manufacturerNumber && typeof product.manufacturerNumber === 'string') {\n      textParts.push(`MFG: ${product.manufacturerNumber.trim()}`);\n    }\n\n    // Combine all text parts\n    const textContent = textParts.filter(part => part.length > 0).join(' | ');\n    \n    // For products with minimal content, create basic description\n    let finalTextContent = textContent;\n    if (finalTextContent.trim().length === 0) {\n      finalTextContent = `Product ID: ${product.id}`;\n      if (product.ean) finalTextContent += ` | EAN: ${product.ean}`;\n      if (product.active) finalTextContent += ' | Active Product';\n    }\n\n    // Safely extract price information\n    let price = 0;\n    let currency = 'EUR';\n    if (Array.isArray(product.price) && product.price.length > 0) {\n      const priceObj = product.price[0];\n      if (priceObj && typeof priceObj.gross === 'number') {\n        price = priceObj.gross;\n      }\n      if (priceObj && priceObj.currencyId) {\n        currency = priceObj.currencyId;\n      }\n    }\n\n    // Prepare metadata with safe defaults\n    const metadata = {\n      id: product.id,\n      name: productName || '',\n      price: price,\n      currency: currency,\n      stock: typeof product.stock === 'number' ? product.stock : 0,\n      active: Boolean(product.active),\n      manufacturerNumber: product.manufacturerNumber || '',\n      ean: product.ean || '',\n      createdAt: product.createdAt || null,\n      updatedAt: product.updatedAt || null\n    };\n\n    transformedProducts.push({\n      pageContent: finalTextContent,\n      metadata: metadata\n    });\n\n  } catch (error) {\n    transformErrors.push(`Product ${product.id || index}: ${error.message}`);\n  }\n});\n\nconsole.log(`✅ Transformed ${transformedProducts.length} products successfully`);\nif (transformErrors.length > 0) {\n  console.warn(`⚠️ ${transformErrors.length} transformation errors:`);\n  transformErrors.slice(0, 5).forEach(error => console.warn(`  - ${error}`));\n}\n\n// Return transformed products with error tracking\nconst result = transformedProducts.map(product => ({ \n  json: {\n    ...product,\n    _metadata: {\n      totalErrors: previousErrors.length + transformErrors.length,\n      transformErrors: transformErrors.length\n    }\n  }\n}));\n\nif (result.length === 0) {\n  throw new Error('No products could be transformed successfully');\n}\n\nreturn result;"
+      },
+      "id": "f6g7h8i9-0j1k-2l3m-4n5o-6p7q8r9s0t1u",
+      "name": "Transform Products for Vector Storage",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1560,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Store products in Qdrant using HTTP API\nconst items = $input.all();\n\nif (!Array.isArray(items) || items.length === 0) {\n  throw new Error('No products to store in Qdrant');\n}\n\nconsole.log(`🔄 Preparing to store ${items.length} products in Qdrant...`);\n\n// Prepare points for Qdrant\nconst points = [];\nconst errors = [];\n\nitems.forEach((item, index) => {\n  try {\n    const product = item.json;\n    \n    if (!product || !product.pageContent || !product.metadata || !product.metadata.id) {\n      errors.push(`Item ${index}: Missing required fields`);\n      return;\n    }\n\n    // Create a simple vector (placeholder since we don't have embeddings yet)\n    // In a real implementation, you'd generate embeddings from pageContent\n    const vector = new Array(1536).fill(0).map(() => Math.random() * 0.1);\n    \n    const point = {\n      id: product.metadata.id,\n      vector: vector,\n      payload: {\n        content: product.pageContent,\n        name: product.metadata.name,\n        price: product.metadata.price,\n        currency: product.metadata.currency,\n        stock: product.metadata.stock,\n        active: product.metadata.active,\n        ean: product.metadata.ean,\n        manufacturerNumber: product.metadata.manufacturerNumber,\n        createdAt: product.metadata.createdAt,\n        updatedAt: product.metadata.updatedAt\n      }\n    };\n    \n    points.push(point);\n    \n  } catch (error) {\n    errors.push(`Item ${index}: ${error.message}`);\n  }\n});\n\nif (points.length === 0) {\n  throw new Error('No valid points could be prepared for Qdrant storage');\n}\n\nconsole.log(`✅ Prepared ${points.length} points for Qdrant storage`);\nif (errors.length > 0) {\n  console.warn(`⚠️ ${errors.length} preparation errors:`);\n  errors.slice(0, 3).forEach(error => console.warn(`  - ${error}`));\n}\n\n// Return the points data for the HTTP request\nreturn [{\n  json: {\n    points: points,\n    totalPoints: points.length,\n    errors: errors\n  }\n}];"
+      },
+      "id": "g7h8i9j0-1k2l-3m4n-5o6p-7q8r9s0t1u2v",
+      "name": "Prepare Qdrant Points",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1780,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "http://qdrant:6333/collections/shopware_products/points",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "points",
+              "value": "={{ $json.points }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 60000,
+          "retry": {
+            "enabled": true,
+            "maxRetries": 2,
+            "retryInterval": 3000
+          }
+        }
+      },
+      "id": "h8i9j0k1-2l3m-4n5o-6p7q-8r9s0t1u2v3w",
+      "name": "Store in Local Qdrant Vector DB",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        2000,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Enhanced completion logging with Qdrant storage results\nconst items = $input.all();\nconst qdrantResponse = items[0].json;\n\n// Parse Qdrant response\nlet successfulInserts = 0;\nlet failedInserts = 0;\nlet totalProcessed = 0;\n\nif (qdrantResponse && qdrantResponse.status === 'ok') {\n  successfulInserts = qdrantResponse.result?.operation_id ? 1 : 0;\n  totalProcessed = 1;\n} else {\n  failedInserts = 1;\n  totalProcessed = 1;\n}\n\nconst completionTime = new Date().toISOString();\n\n// Log completion status\nconsole.log('🎉 ===== IMPORT COMPLETED =====');\nconsole.log(`📊 Batch operations processed: ${totalProcessed}`);\nconsole.log(`✅ Successfully stored in Qdrant: ${successfulInserts}`);\nif (failedInserts > 0) {\n  console.log(`❌ Failed to store: ${failedInserts}`);\n  console.log(`Response: ${JSON.stringify(qdrantResponse, null, 2)}`);\n}\nconsole.log(`⏰ Completion time: ${completionTime}`);\nconsole.log('================================');\n\nreturn [{\n  json: {\n    status: 'completed',\n    totalProcessed: totalProcessed,\n    successfulInserts: successfulInserts,\n    failedInserts: failedInserts,\n    errorRate: totalProcessed > 0 ? (failedInserts / totalProcessed * 100).toFixed(2) + '%' : '0%',\n    message: `Successfully processed batch operation, ${successfulInserts} operations completed`,\n    timestamp: completionTime,\n    qdrantResponse: qdrantResponse\n  }\n}];"
+      },
+      "id": "i9j0k1l2-3m4n-5o6p-7q8r-9s0t1u2v3w4x",
+      "name": "Log Completion & Statistics",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2220,
+        420
+      ]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get OAuth Token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get OAuth Token": {
+      "main": [
+        [
+          {
+            "node": "Validate Token & Initialize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Token & Initialize": {
+      "main": [
+        [
+          {
+            "node": "Fetch Products Page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Products Page": {
+      "main": [
+        [
+          {
+            "node": "Process Page & Check Pagination",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Page & Check Pagination": {
+      "main": [
+        [
+          {
+            "node": "Has More Pages?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has More Pages?": {
+      "main": [
+        [
+          {
+            "node": "Fetch Products Page",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Transform Products for Vector Storage",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transform Products for Vector Storage": {
+      "main": [
+        [
+          {
+            "node": "Prepare Qdrant Points",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Qdrant Points": {
+      "main": [
+        [
+          {
+            "node": "Store in Local Qdrant Vector DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Store in Local Qdrant Vector DB": {
+      "main": [
+        [
+          {
+            "node": "Log Completion & Statistics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "updatedAt": "2024-01-01T00:00:00.000Z",
+      "id": "tag1",
+      "name": "shopware"
+    },
+    {
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "updatedAt": "2024-01-01T00:00:00.000Z",
+      "id": "tag2",
+      "name": "qdrant"
+    },
+    {
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "updatedAt": "2024-01-01T00:00:00.000Z",
+      "id": "tag3",
+      "name": "local"
+    }
+  ],
+  "triggerCount": 1,
+  "updatedAt": "2024-01-01T00:00:00.000Z",
+  "versionId": "4"
+}
