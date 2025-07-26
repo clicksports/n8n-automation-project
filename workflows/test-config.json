@@ -1,0 +1,92 @@
+{
+  "name": "Shopware to Qdrant Test Import (Small Batch)",
+  "description": "Test version with limited products for validation",
+  "testParameters": {
+    "maxProducts": 10,
+    "pageLimit": 5,
+    "testCollectionName": "shopware_products_test"
+  },
+  "modifications": {
+    "Initialize Pagination": {
+      "limit": 5,
+      "description": "Reduced from 50 to 5 products per page for testing"
+    },
+    "Process Page & Check Pagination": {
+      "maxPages": 2,
+      "description": "Stop after 2 pages (max 10 products) for testing"
+    },
+    "Insert into Qdrant": {
+      "collection": "shopware_products_test",
+      "description": "Use test collection to avoid affecting production data"
+    }
+  },
+  "testChecklist": [
+    {
+      "step": "Pre-test Setup",
+      "tasks": [
+        "Verify Qdrant test collection exists",
+        "Confirm OpenAI API key has sufficient credits",
+        "Check Shopware API accessibility",
+        "Backup any existing test data"
+      ]
+    },
+    {
+      "step": "Execute Test",
+      "tasks": [
+        "Import the test workflow",
+        "Configure credentials (OpenAI, Qdrant)",
+        "Run workflow manually",
+        "Monitor execution logs"
+      ]
+    },
+    {
+      "step": "Validation",
+      "tasks": [
+        "Verify products appear in Qdrant test collection",
+        "Check vector embeddings are generated correctly",
+        "Validate metadata structure",
+        "Test semantic search functionality"
+      ]
+    },
+    {
+      "step": "Production Readiness",
+      "tasks": [
+        "Update collection name to production",
+        "Increase batch sizes to full values",
+        "Remove page limits",
+        "Schedule or execute full import"
+      ]
+    }
+  ],
+  "expectedResults": {
+    "products": "5-10 products imported",
+    "executionTime": "1-3 minutes",
+    "vectorDimensions": 1536,
+    "metadataFields": [
+      "id", "name", "price", "currency", "stock", 
+      "active", "manufacturerNumber", "ean", 
+      "categories", "properties", "url", 
+      "createdAt", "updatedAt"
+    ]
+  },
+  "troubleshooting": {
+    "commonIssues": [
+      {
+        "issue": "OAuth authentication fails",
+        "solution": "Verify client_id and client_secret in Shopware admin"
+      },
+      {
+        "issue": "No products returned",
+        "solution": "Check if products exist and are active in Shopware"
+      },
+      {
+        "issue": "Embedding generation fails",
+        "solution": "Verify OpenAI API key and check credit balance"
+      },
+      {
+        "issue": "Qdrant insertion fails",
+        "solution": "Confirm collection exists and credentials are correct"
+      }
+    ]
+  }
+}

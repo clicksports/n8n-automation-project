@@ -1,0 +1,345 @@
+{
+  "name": "Shopware to Qdrant Product Import",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "f8b0c5e1-8a2d-4c3e-9f1a-2b3c4d5e6f7g",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        240,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "url": "https://shop.held.de/api/oauth/token",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "grant_type",
+              "value": "client_credentials"
+            },
+            {
+              "name": "client_id",
+              "value": "SWIANEPSMGTHMLJMT1BHEFAZNW"
+            },
+            {
+              "name": "client_secret",
+              "value": "UVJKRGFWZENoVW9OY1ZuUktYNkN6NFRucVNVQU1VR1B0cElhUzE"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a1b2c3d4-5e6f-7g8h-9i0j-1k2l3m4n5o6p",
+      "name": "Get OAuth Token",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        460,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Initialize pagination variables\nconst items = $input.all();\n\n// Set initial pagination parameters\nconst paginationData = {\n  page: 1,\n  limit: 50, // Shopware default limit\n  totalPages: null,\n  accessToken: items[0].json.access_token,\n  allProducts: []\n};\n\nreturn [{\n  json: paginationData\n}];"
+      },
+      "id": "b2c3d4e5-6f7g-8h9i-0j1k-2l3m4n5o6p7q",
+      "name": "Initialize Pagination",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        680,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://shop.held.de/api/product?page={{ $json.page }}&limit={{ $json.limit }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.accessToken }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c3d4e5f6-7g8h-9i0j-1k2l-3m4n5o6p7q8r",
+      "name": "Fetch Products Page",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        900,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Process the API response and handle pagination\nconst items = $input.all();\nconst response = items[0].json;\n\n// Extract products and pagination info\nconst products = response.data || [];\nconst total = response.total || 0;\nconst currentPage = response.page || 1;\nconst limit = response.limit || 50;\nconst totalPages = Math.ceil(total / limit);\n\n// Get existing data from previous iterations\nlet allProducts = $node[\"Initialize Pagination\"].json.allProducts || [];\n\n// Add current page products to the collection\nallProducts = allProducts.concat(products);\n\n// Determine if we need to fetch more pages\nconst hasMorePages = currentPage < totalPages;\n\nif (hasMorePages) {\n  // Return data for next page\n  return [{\n    json: {\n      page: currentPage + 1,\n      limit: limit,\n      totalPages: totalPages,\n      accessToken: $node[\"Initialize Pagination\"].json.accessToken,\n      allProducts: allProducts,\n      hasMorePages: true,\n      currentTotal: allProducts.length,\n      expectedTotal: total\n    }\n  }];\n} else {\n  // All pages fetched, return final collection\n  return [{\n    json: {\n      allProducts: allProducts,\n      hasMorePages: false,\n      totalProducts: allProducts.length,\n      paginationComplete: true\n    }\n  }];\n}"
+      },
+      "id": "d4e5f6g7-8h9i-0j1k-2l3m-4n5o6p7q8r9s",
+      "name": "Process Page & Check Pagination",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "c1a2b3c4-d5e6-f7g8-h9i0-j1k2l3m4n5o6",
+              "leftValue": "={{ $json.hasMorePages }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equal"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "e5f6g7h8-9i0j-1k2l-3m4n-5o6p7q8r9s0t",
+      "name": "Has More Pages?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1340,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Transform products for vector storage\nconst items = $input.all();\nconst allProducts = items[0].json.allProducts;\n\nconst transformedProducts = allProducts.map(product => {\n  // Combine relevant text fields for embedding\n  const textContent = [\n    product.name || '',\n    product.description || '',\n    product.metaDescription || '',\n    (product.properties || []).map(prop => `${prop.name}: ${prop.value}`).join(', '),\n    (product.categories || []).map(cat => cat.name).join(', '),\n    product.manufacturerNumber || '',\n    product.ean || ''\n  ].filter(text => text.trim() !== '').join(' | ');\n\n  // Prepare metadata\n  const metadata = {\n    id: product.id,\n    name: product.name || '',\n    price: product.price?.[0]?.gross || 0,\n    currency: product.price?.[0]?.currencyId || 'EUR',\n    stock: product.stock || 0,\n    active: product.active || false,\n    manufacturerNumber: product.manufacturerNumber || '',\n    ean: product.ean || '',\n    categories: (product.categories || []).map(cat => cat.name),\n    properties: product.properties || [],\n    url: product.seoUrls?.[0]?.seoPathInfo || '',\n    createdAt: product.createdAt,\n    updatedAt: product.updatedAt\n  };\n\n  return {\n    pageContent: textContent,\n    metadata: metadata\n  };\n}).filter(item => item.pageContent.trim() !== ''); // Filter out products with no content\n\nreturn transformedProducts.map(product => ({ json: product }));"
+      },
+      "id": "f6g7h8i9-0j1k-2l3m-4n5o-6p7q8r9s0t1u",
+      "name": "Transform Products for Vector Storage",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1560,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-small",
+        "options": {
+          "batchSize": 100
+        }
+      },
+      "id": "g7h8i9j0-1k2l-3m4n-5o6p-7q8r9s0t1u2v",
+      "name": "Generate Embeddings",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1,
+      "position": [
+        1780,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "qdrantCollection": {
+          "__rl": true,
+          "value": "shopware_products",
+          "mode": "name"
+        },
+        "options": {
+          "batchSize": 50
+        }
+      },
+      "id": "h8i9j0k1-2l3m-4n5o-6p7q-8r9s0t1u2v3w",
+      "name": "Insert into Qdrant",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "typeVersion": 1,
+      "position": [
+        2000,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Log the completion status\nconst items = $input.all();\nconst totalProcessed = items.length;\n\nconsole.log(`Successfully processed ${totalProcessed} products`);\nconsole.log('Import completed successfully!');\n\nreturn [{\n  json: {\n    status: 'completed',\n    totalProductsProcessed: totalProcessed,\n    message: `Successfully imported ${totalProcessed} products into Qdrant`,\n    timestamp: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "i9j0k1l2-3m4n-5o6p-7q8r-9s0t1u2v3w4x",
+      "name": "Log Completion",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2220,
+        420
+      ]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get OAuth Token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get OAuth Token": {
+      "main": [
+        [
+          {
+            "node": "Initialize Pagination",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Initialize Pagination": {
+      "main": [
+        [
+          {
+            "node": "Fetch Products Page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Products Page": {
+      "main": [
+        [
+          {
+            "node": "Process Page & Check Pagination",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Page & Check Pagination": {
+      "main": [
+        [
+          {
+            "node": "Has More Pages?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has More Pages?": {
+      "main": [
+        [
+          {
+            "node": "Fetch Products Page",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Transform Products for Vector Storage",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transform Products for Vector Storage": {
+      "main": [
+        [
+          {
+            "node": "Generate Embeddings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Embeddings": {
+      "main": [
+        [
+          {
+            "node": "Insert into Qdrant",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert into Qdrant": {
+      "main": [
+        [
+          {
+            "node": "Log Completion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "updatedAt": "2024-01-01T00:00:00.000Z",
+      "id": "tag1",
+      "name": "shopware"
+    },
+    {
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "updatedAt": "2024-01-01T00:00:00.000Z",
+      "id": "tag2",
+      "name": "qdrant"
+    },
+    {
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "updatedAt": "2024-01-01T00:00:00.000Z",
+      "id": "tag3",
+      "name": "vector-database"
+    }
+  ],
+  "triggerCount": 1,
+  "updatedAt": "2024-01-01T00:00:00.000Z",
+  "versionId": "1"
+}

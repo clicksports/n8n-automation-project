@@ -1,0 +1,9 @@
+# n8n Sync Configuration
+N8N_URL=http://localhost:5678
+WORKFLOWS_DIR=/Users/christian.gick/Documents/VisualStudio/n8n/workflows
+EXPORT_DIR=/Users/christian.gick/Documents/VisualStudio/n8n/workflows/exported
+BACKUP_DIR=/Users/christian.gick/Documents/VisualStudio/n8n/workflows/backups
+LAST_SYNC=2025-07-26T06:36:38Z
+AUTO_BACKUP=true
+EXCLUDE_PATTERNS=("*.log" "*.tmp" "*~")
+INCLUDE_PATTERNS=("*.json")
