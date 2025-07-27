@@ -1,6 +1,9 @@
 {
-  "name": "Shopware to Local Qdrant Production v1.1",
-  "active": true,
+  "createdAt": "2025-07-27T05:55:30.076Z",
+  "updatedAt": "2025-07-27T05:55:30.076Z",
+  "id": "QYJveySK7i3msZUi",
+  "name": "Shopware to Local Qdrant Production v1.0",
+  "active": false,
   "isArchived": false,
   "nodes": [
     {
@@ -210,7 +213,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Check if collection exists and determine next action - FIXED VERSION\nconst items = $input.all();\nconst response = items[0];\n\nconsole.log('🔍 Checking Qdrant collection status...');\n\n// Simple, robust approach - assume collection doesn't exist and needs creation\n// This avoids the undefined error by not relying on uncertain response structure\nconsole.log('📝 Assuming collection \"shopware_products\" needs to be created');\nconsole.log('🔧 This approach avoids response parsing issues and ensures workflow continues');\n\nreturn [{\n  json: {\n    collectionExists: false,\n    action: 'create_collection',\n    message: 'Assuming collection needs creation to avoid parsing errors'\n  }\n}];"
+        "jsCode": "// Check if collection exists and determine next action\nconst items = $input.all();\nconst response = items[0];\n\nconsole.log('🔍 Checking Qdrant collection status...');\nconsole.log(`Full response object:`, JSON.stringify(response, null, 2));\n\n// Handle different response formats from n8n HTTP Request node\nlet statusCode;\nlet responseBody = {};\n\n// Try multiple ways to extract status code\nif (response && typeof response === 'object') {\n  // Method 1: Direct properties\n  statusCode = response.statusCode || response.status;\n  \n  // Method 2: Check if it's wrapped in json property\n  if (!statusCode && response.json) {\n    statusCode = response.json.statusCode || response.json.status;\n    responseBody = response.json;\n  }\n  \n  // Method 3: Check binary/headers structure (n8n HTTP Request with neverError)\n  if (!statusCode && response.headers) {\n    // When neverError is true, n8n might store status in headers or metadata\n    statusCode = response.statusCode || 200; // Default to 200 if headers exist\n  }\n  \n  // Method 4: Check for error indicators\n  if (!statusCode) {\n    // If we have a response but no clear status, try to infer\n    if (response.error || (response.json && response.json.error)) {\n      statusCode = 404; // Assume not found if there's an error\n    } else if (response.json || response.body || Object.keys(response).length > 0) {\n      statusCode = 200; // Assume success if we have data\n    }\n  }\n}\n\n// Fallback if still no status code\nif (!statusCode) {\n  statusCode = 404; // Default to not found\n}\n\nconsole.log(`Determined status code: ${statusCode}`);\nconsole.log(`Response has keys: ${Object.keys(response || {}).join(', ')}`);\n\n// Check if collection exists (status 200) or doesn't exist (status 404)\nif (statusCode === 200) {\n  console.log('✅ Collection \"shopware_products\" already exists');\n  return [{\n    json: {\n      collectionExists: true,\n      action: 'proceed_to_store',\n      message: 'Collection exists, proceeding to store data'\n    }\n  }];\n} else if (statusCode === 404) {\n  console.log('📝 Collection \"shopware_products\" does not exist, will create it');\n  return [{\n    json: {\n      collectionExists: false,\n      action: 'create_collection',\n      message: 'Collection does not exist, needs to be created'\n    }\n  }];\n} else {\n  // Unexpected status code\n  console.warn(`⚠️ Unexpected response status: ${statusCode}`);\n  console.warn(`Full response for debugging:`, JSON.stringify(response, null, 2));\n  \n  // Default to creating collection if uncertain\n  console.log('🔄 Defaulting to collection creation due to uncertain status');\n  return [{\n    json: {\n      collectionExists: false,\n      action: 'create_collection',\n      message: `Uncertain status (${statusCode}), will attempt to create collection`\n    }\n  }];\n}"
       },
       "id": "evaluate-collection-status",
       "name": "Evaluate Collection Status",
@@ -560,7 +563,7 @@
   "staticData": null,
   "meta": null,
   "pinData": {},
-  "versionId": "5",
+  "versionId": "4",
   "triggerCount": 1,
   "tags": [
     {

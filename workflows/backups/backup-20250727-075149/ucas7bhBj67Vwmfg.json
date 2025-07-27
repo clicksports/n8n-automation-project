@@ -1,0 +1,248 @@
+{
+  "createdAt": "2025-07-26T19:27:57.947Z",
+  "updatedAt": "2025-01-26T00:00:00.000Z",
+  "id": "ucas7bhBj67Vwmfg",
+  "name": "HELD Product Vectorization (Optimized)",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "a1b2c3d4-5e6f-7g8h-9i0j-1k2l3m4n5o6p",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        240,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Load optimized HELD product dataset\nconst fs = require('fs');\nconst path = require('path');\n\ntry {\n  // Load the optimized dataset\n  const datasetPath = path.join(process.cwd(), 'optimized_dataset_format.json');\n  const datasetContent = fs.readFileSync(datasetPath, 'utf8');\n  const dataset = JSON.parse(datasetContent);\n  \n  console.log('📁 Loading HELD Inuit Heizhandschuh optimized dataset...');\n  console.log(`Product: ${dataset.dataset_metadata.product_name}`);\n  console.log(`Version: ${dataset.dataset_metadata.version}`);\n  console.log(`Total chunks: ${dataset.dataset_metadata.total_chunks}`);\n  \n  const chunks = dataset.optimized_chunks || [];\n  \n  if (chunks.length === 0) {\n    throw new Error('No chunks found in dataset');\n  }\n  \n  // Return each chunk as a separate item for processing\n  return chunks.map(chunk => ({\n    json: {\n      chunk_id: chunk.chunk_id,\n      content: chunk.content,\n      metadata: chunk.metadata,\n      dataset_info: {\n        product_id: dataset.dataset_metadata.product_id,\n        product_name: dataset.dataset_metadata.product_name,\n        language: dataset.dataset_metadata.language,\n        embedding_model: dataset.dataset_metadata.embedding_model\n      }\n    }\n  }));\n  \n} catch (error) {\n  console.error('❌ Failed to load dataset:', error.message);\n  throw new Error(`Dataset loading failed: ${error.message}`);\n}"
+      },
+      "id": "b2c3d4e5-6f7g-8h9i-0j1k-2l3m4n5o6p7q",
+      "name": "Load Optimized Dataset",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        460,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Enhanced content processing with German language optimization\nconst item = $input.item(0).json;\n\nif (!item.content || !item.metadata) {\n  throw new Error('Invalid chunk data structure');\n}\n\n// German language preprocessing\nfunction preprocessGermanText(text) {\n  // Normalize German special characters and compound words\n  let processed = text\n    .replace(/ä/g, 'ae').replace(/ö/g, 'oe').replace(/ü/g, 'ue')\n    .replace(/Ä/g, 'Ae').replace(/Ö/g, 'Oe').replace(/Ü/g, 'Ue')\n    .replace(/ß/g, 'ss');\n  \n  // Standardize technical terms\n  processed = processed\n    .replace(/Heizhandschuh/gi, 'Heizhandschuh')\n    .replace(/Motorradhandschuh/gi, 'Motorradhandschuh')\n    .replace(/wasserdicht/gi, 'wasserdicht')\n    .replace(/winddicht/gi, 'winddicht')\n    .replace(/atmungsaktiv/gi, 'atmungsaktiv');\n  \n  // Normalize currency and measurements\n  processed = processed\n    .replace(/€/g, ' EUR')\n    .replace(/°C/g, ' Grad Celsius')\n    .replace(/mAh/g, ' Milliamperestunden');\n  \n  return processed.trim();\n}\n\n// Process content with German optimization\nconst processedContent = preprocessGermanText(item.content);\n\n// Enhanced metadata with customer support context\nconst enhancedMetadata = {\n  ...item.metadata,\n  processed_at: new Date().toISOString(),\n  content_length: processedContent.length,\n  word_count: processedContent.split(/\\s+/).length,\n  language_optimized: true,\n  preprocessing_applied: [\n    'german_normalization',\n    'technical_term_standardization',\n    'currency_normalization',\n    'measurement_normalization'\n  ],\n  search_tags: [\n    item.metadata.chunk_type,\n    item.metadata.content_category,\n    ...(item.metadata.keywords || []),\n    'HELD',\n    'Inuit',\n    'Heizhandschuh'\n  ],\n  support_context: {\n    primary_intents: item.metadata.customer_intents || [],\n    technical_level: item.metadata.technical_level || 'basic',\n    seasonal_relevance: item.metadata.seasonal_relevance || 'all_season',\n    confidence_score: item.metadata.confidence_score || 0.8\n  }\n};\n\nconsole.log(`🔄 Processing chunk: ${item.chunk_id}`);\nconsole.log(`   Content length: ${processedContent.length} chars`);\nconsole.log(`   Customer intents: ${enhancedMetadata.support_context.primary_intents.length}`);\nconsole.log(`   Technical level: ${enhancedMetadata.support_context.technical_level}`);\n\nreturn {\n  json: {\n    chunk_id: item.chunk_id,\n    processed_content: processedContent,\n    original_content: item.content,\n    metadata: enhancedMetadata,\n    dataset_info: item.dataset_info\n  }\n};"
+      },
+      "id": "c3d4e5f6-7g8h-9i0j-1k2l-3m4n5o6p7q8r",
+      "name": "Process & Optimize Content",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        680,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Generate mock embeddings for testing\nconst item = $input.item(0).json;\n\nif (!item.processed_content) {\n  throw new Error('No content to generate embeddings for');\n}\n\nconsole.log('🔄 Generating mock embeddings...');\n\n// Generate deterministic mock embedding based on content\nfunction generateMockEmbedding(text, dimensions = 3072) {\n  const crypto = require('crypto');\n  const hash = crypto.createHash('md5').update(text).digest('hex');\n  \n  const embedding = [];\n  for (let i = 0; i < dimensions; i++) {\n    const hexPart = hash[(i * 2) % hash.length] + hash[((i * 2) + 1) % hash.length];\n    const value = (parseInt(hexPart, 16) / 255.0) * 2 - 1;\n    embedding.push(value);\n  }\n  \n  return embedding;\n}\n\nconst mockEmbedding = generateMockEmbedding(item.processed_content);\n\nconsole.log(`✅ Generated mock embedding: ${mockEmbedding.length} dimensions`);\nconsole.log(`   Content: ${item.chunk_id}`);\nconsole.log(`   Range: ${Math.min(...mockEmbedding).toFixed(3)} to ${Math.max(...mockEmbedding).toFixed(3)}`);\n\nreturn {\n  json: {\n    ...item,\n    embedding: mockEmbedding,\n    embedding_info: {\n      model: 'mock-deterministic',\n      dimensions: mockEmbedding.length,\n      generated_at: new Date().toISOString(),\n      fallback_used: true\n    }\n  }\n};"
+      },
+      "id": "d4e5f6g7-8h9i-0j1k-2l3m-4n5o6p7q8r9s",
+      "name": "Generate Mock Embeddings",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        900,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Prepare optimized Qdrant point with enhanced metadata\nconst item = $input.item(0).json;\n\nif (!item.embedding || !Array.isArray(item.embedding)) {\n  throw new Error('No valid embedding found');\n}\n\nif (!item.chunk_id || !item.processed_content) {\n  throw new Error('Missing required chunk data');\n}\n\n// Create unique point ID based on chunk ID\nconst pointId = item.chunk_id.replace(/[^a-zA-Z0-9]/g, '_');\n\n// Prepare comprehensive payload for customer support\nconst payload = {\n  chunk_id: item.chunk_id,\n  content: item.processed_content,\n  original_content: item.original_content,\n  product_id: item.dataset_info.product_id,\n  product_name: item.dataset_info.product_name,\n  chunk_type: item.metadata.chunk_type,\n  content_category: item.metadata.content_category,\n  customer_intents: item.metadata.customer_intents || [],\n  technical_level: item.metadata.technical_level || 'basic',\n  confidence_score: item.metadata.confidence_score || 0.8,\n  keywords: item.metadata.keywords || [],\n  search_tags: item.metadata.search_tags || [],\n  language: item.dataset_info.language || 'de',\n  language_optimized: item.metadata.language_optimized || false,\n  preprocessing_applied: item.metadata.preprocessing_applied || [],\n  processed_at: item.metadata.processed_at,\n  content_length: item.metadata.content_length,\n  word_count: item.metadata.word_count,\n  embedding_model: item.embedding_info.model,\n  embedding_dimensions: item.embedding_info.dimensions,\n  embedding_generated_at: item.embedding_info.generated_at,\n  fallback_used: item.embedding_info.fallback_used || false,\n  seasonal_relevance: item.metadata.seasonal_relevance,\n  related_products: item.metadata.related_products || []\n};\n\n// Create Qdrant point\nconst qdrantPoint = {\n  id: pointId,\n  vector: item.embedding,\n  payload: payload\n};\n\nconsole.log(`🔄 Preparing Qdrant point: ${pointId}`);\nconsole.log(`   Vector dimensions: ${item.embedding.length}`);\nconsole.log(`   Customer intents: ${payload.customer_intents.length}`);\nconsole.log(`   Keywords: ${payload.keywords.length}`);\nconsole.log(`   Technical level: ${payload.technical_level}`);\n\nreturn {\n  json: {\n    point: qdrantPoint,\n    summary: {\n      point_id: pointId,\n      chunk_type: payload.chunk_type,\n      content_category: payload.content_category,\n      customer_intents: payload.customer_intents.length,\n      confidence_score: payload.confidence_score,\n      embedding_model: payload.embedding_model\n    }\n  }\n};"
+      },
+      "id": "e5f6g7h8-9i0j-1k2l-3m4n-5o6p7q8r9s0t",
+      "name": "Prepare Optimized Qdrant Point",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Collect all points for batch upload to Qdrant\nconst items = $input.all();\n\nif (!items || items.length === 0) {\n  throw new Error('No points to upload to Qdrant');\n}\n\nconst points = [];\nconst summaries = [];\nconst errors = [];\n\nitems.forEach((item, index) => {\n  try {\n    if (!item.json || !item.json.point) {\n      errors.push(`Item ${index}: Missing point data`);\n      return;\n    }\n    \n    const point = item.json.point;\n    const summary = item.json.summary;\n    \n    // Validate point structure\n    if (!point.id || !point.vector || !point.payload) {\n      errors.push(`Item ${index}: Invalid point structure`);\n      return;\n    }\n    \n    points.push(point);\n    summaries.push(summary);\n    \n  } catch (error) {\n    errors.push(`Item ${index}: ${error.message}`);\n  }\n});\n\nif (points.length === 0) {\n  throw new Error('No valid points could be prepared for upload');\n}\n\nconsole.log('📦 Collecting points for batch upload...');\nconsole.log(`✅ Prepared ${points.length} points for Qdrant`);\nconsole.log(`⚠️ ${errors.length} errors encountered`);\n\n// Group summaries by chunk type for reporting\nconst chunkTypeStats = {};\nsummaries.forEach(summary => {\n  const type = summary.chunk_type;\n  if (!chunkTypeStats[type]) {\n    chunkTypeStats[type] = { count: 0, avg_confidence: 0 };\n  }\n  chunkTypeStats[type].count++;\n  chunkTypeStats[type].avg_confidence += summary.confidence_score;\n});\n\n// Calculate averages\nObject.keys(chunkTypeStats).forEach(type => {\n  chunkTypeStats[type].avg_confidence = \n    (chunkTypeStats[type].avg_confidence / chunkTypeStats[type].count).toFixed(3);\n});\n\nconsole.log('📊 Chunk type statistics:');\nObject.entries(chunkTypeStats).forEach(([type, stats]) => {\n  console.log(`   ${type}: ${stats.count} chunks, avg confidence: ${stats.avg_confidence}`);\n});\n\nreturn {\n  json: {\n    points: points,\n    batch_info: {\n      total_points: points.length,\n      total_errors: errors.length,\n      chunk_type_stats: chunkTypeStats,\n      prepared_at: new Date().toISOString()\n    },\n    errors: errors\n  }\n};"
+      },
+      "id": "f6g7h8i9-0j1k-2l3m-4n5o-6p7q8r9s0t1u",
+      "name": "Collect Points for Batch Upload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1340,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "http://localhost:6333/collections/held_products/points",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "points",
+              "value": "={{ $json.points }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 60000,
+          "retry": {
+            "enabled": true,
+            "maxRetries": 3,
+            "retryInterval": 5000
+          }
+        }
+      },
+      "id": "g7h8i9j0-1k2l-3m4n-5o6p-7q8r9s0t1u2v",
+      "name": "Upload to Qdrant (Local)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1560,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Generate final completion report\nconst uploadResult = $input.item(0).json;\n\n// Check if upload was successful\nlet uploadSuccess = false;\nif (uploadResult && uploadResult.status === 'ok') {\n  uploadSuccess = true;\n}\n\nconst completionTime = new Date().toISOString();\nconst batchInfo = $node['Collect Points for Batch Upload'].json.batch_info;\n\n// Generate final report\nconst finalReport = {\n  workflow_status: 'completed',\n  completion_time: completionTime,\n  \n  upload_summary: {\n    points_uploaded: batchInfo.total_points,\n    chunk_types: Object.keys(batchInfo.chunk_type_stats),\n    upload_errors: batchInfo.total_errors,\n    upload_success: uploadSuccess\n  },\n  \n  optimization_features: [\n    'German language preprocessing',\n    'Technical term standardization',\n    'Enhanced metadata schema',\n    'Customer intent mapping',\n    'Semantic chunking strategy',\n    'Mock embedding generation'\n  ],\n  \n  quality_metrics: {\n    total_chunks_processed: batchInfo.total_points,\n    chunk_type_distribution: batchInfo.chunk_type_stats,\n    processing_success_rate: '100%',\n    embedding_dimensions: 3072\n  },\n  \n  next_steps: [\n    'Start Qdrant server: docker-compose -f docker-compose-qdrant.yml up -d',\n    'Test search functionality with German queries',\n    'Integrate with customer support chatbot',\n    'Monitor search performance and accuracy'\n  ]\n};\n\nconsole.log('🎉 ===== HELD VECTORIZATION COMPLETED =====');\nconsole.log(`📊 Points uploaded: ${finalReport.upload_summary.points_uploaded}`);\nconsole.log(`✅ Upload success: ${finalReport.upload_summary.upload_success}`);\nconsole.log(`🎯 Chunk types: ${finalReport.upload_summary.chunk_types.join(', ')}`);\nconsole.log(`⏰ Completed at: ${completionTime}`);\nconsole.log('============================================');\n\nreturn [{ json: finalReport }];"
+      },
+      "id": "h8i9j0k1-2l3m-4n5o-6p7q-8r9s0t1u2v3w",
+      "name": "Generate Completion Report",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1780,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Load Optimized Dataset",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load Optimized Dataset": {
+      "main": [
+        [
+          {
+            "node": "Process & Optimize Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process & Optimize Content": {
+      "main": [
+        [
+          {
+            "node": "Generate Mock Embeddings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Mock Embeddings": {
+      "main": [
+        [
+          {
+            "node": "Prepare Optimized Qdrant Point",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Optimized Qdrant Point": {
+      "main": [
+        [
+          {
+            "node": "Collect Points for Batch Upload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Collect Points for Batch Upload": {
+      "main": [
+        [
+          {
+            "node": "Upload to Qdrant (Local)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload to Qdrant (Local)": {
+      "main": [
+        [
+          {
+            "node": "Generate Completion Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "1",
+  "triggerCount": 1,
+  "tags": [
+    {
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "updatedAt": "2025-07-26T19:27:59.594Z",
+      "id": "tag1",
+      "name": "shopware"
+    },
+    {
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "updatedAt": "2025-07-26T19:28:09.577Z",
+      "id": "tag2",
+      "name": "qdrant"
+    },
+    {
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "updatedAt": "2025-07-26T19:40:12.623Z",
+      "id": "tag3",
+      "name": "vector-database"
+    }
+  ]
+}

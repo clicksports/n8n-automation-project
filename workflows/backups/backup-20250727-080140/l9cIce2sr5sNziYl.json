@@ -1,6 +1,9 @@
 {
-  "name": "Shopware to Local Qdrant Production v1.1",
-  "active": true,
+  "createdAt": "2025-07-27T06:00:08.933Z",
+  "updatedAt": "2025-07-27T06:00:08.933Z",
+  "id": "l9cIce2sr5sNziYl",
+  "name": "Shopware to Local Qdrant Production v1.0",
+  "active": false,
   "isArchived": false,
   "nodes": [
     {
@@ -560,7 +563,7 @@
   "staticData": null,
   "meta": null,
   "pinData": {},
-  "versionId": "5",
+  "versionId": "4",
   "triggerCount": 1,
   "tags": [
     {

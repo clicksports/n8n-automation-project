@@ -1,6 +1,9 @@
 {
-  "name": "Shopware to Local Qdrant Production v1.1",
-  "active": true,
+  "createdAt": "2025-07-27T05:57:46.880Z",
+  "updatedAt": "2025-07-27T05:57:46.880Z",
+  "id": "oHf0f6kJAWHsAz2N",
+  "name": "Shopware to Local Qdrant Production v1.0",
+  "active": false,
   "isArchived": false,
   "nodes": [
     {
@@ -210,7 +213,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Check if collection exists and determine next action - FIXED VERSION\nconst items = $input.all();\nconst response = items[0];\n\nconsole.log('🔍 Checking Qdrant collection status...');\n\n// Simple, robust approach - assume collection doesn't exist and needs creation\n// This avoids the undefined error by not relying on uncertain response structure\nconsole.log('📝 Assuming collection \"shopware_products\" needs to be created');\nconsole.log('🔧 This approach avoids response parsing issues and ensures workflow continues');\n\nreturn [{\n  json: {\n    collectionExists: false,\n    action: 'create_collection',\n    message: 'Assuming collection needs creation to avoid parsing errors'\n  }\n}];"
+        "jsCode": "// Check if collection exists and determine next action\nconst items = $input.all();\nconst response = items[0];\n\nconsole.log('🔍 Checking Qdrant collection status...');\n\n// Comprehensive response analysis for debugging\ntry {\n  console.log('=== RESPONSE ANALYSIS ===');\n  console.log('Response type:', typeof response);\n  console.log('Response keys:', Object.keys(response || {}));\n  console.log('Full response:', JSON.stringify(response, null, 2));\n  \n  // Check all possible status code locations\n  const possibleStatusCodes = [\n    response?.statusCode,\n    response?.status,\n    response?.json?.statusCode,\n    response?.json?.status,\n    response?.binary?.statusCode,\n    response?.binary?.status,\n    response?.headers?.status,\n    response?.metadata?.statusCode\n  ];\n  \n  console.log('Possible status codes found:', possibleStatusCodes.filter(s => s !== undefined));\n  \n  // Determine status code with comprehensive fallback logic\n  let statusCode = possibleStatusCodes.find(code => code !== undefined && code !== null);\n  \n  // If no explicit status code, analyze response content\n  if (!statusCode) {\n    console.log('No explicit status code found, analyzing response content...');\n    \n    // Check for Qdrant-specific success indicators\n    if (response?.json && typeof response.json === 'object') {\n      const jsonData = response.json;\n      \n      // Qdrant collection info response typically has these fields\n      if (jsonData.result && (jsonData.result.config || jsonData.result.status)) {\n        statusCode = 200;\n        console.log('Detected successful Qdrant collection response');\n      }\n      // Qdrant error response\n      else if (jsonData.status && jsonData.status.error) {\n        statusCode = 404;\n        console.log('Detected Qdrant error response');\n      }\n    }\n    \n    // Check for error indicators in response\n    if (!statusCode) {\n      if (response?.error || (response?.json?.error)) {\n        statusCode = 404;\n        console.log('Error detected in response, assuming 404');\n      }\n      // If we have any meaningful data, assume success\n      else if (response?.json || response?.body || (response && Object.keys(response).length > 0)) {\n        statusCode = 200;\n        console.log('Response contains data, assuming 200');\n      }\n      // Last resort fallback\n      else {\n        statusCode = 404;\n        console.log('No clear indicators, defaulting to 404');\n      }\n    }\n  }\n  \n  console.log(`Final determined status code: ${statusCode}`);\n  console.log('=== END ANALYSIS ===');\n  \n  // Make decision based on status code\n  if (statusCode === 200) {\n    console.log('✅ Collection \"shopware_products\" already exists');\n    return [{\n      json: {\n        collectionExists: true,\n        action: 'proceed_to_store',\n        message: 'Collection exists, proceeding to store data',\n        debugInfo: {\n          statusCode: statusCode,\n          responseKeys: Object.keys(response || {}),\n          detectionMethod: 'status_200'\n        }\n      }\n    }];\n  } else {\n    console.log('📝 Collection \"shopware_products\" does not exist, will create it');\n    return [{\n      json: {\n        collectionExists: false,\n        action: 'create_collection',\n        message: 'Collection does not exist, needs to be created',\n        debugInfo: {\n          statusCode: statusCode,\n          responseKeys: Object.keys(response || {}),\n          detectionMethod: 'status_not_200'\n        }\n      }\n    }];\n  }\n  \n} catch (error) {\n  console.error('Error in collection status evaluation:', error.message);\n  console.error('Error stack:', error.stack);\n  \n  // Safe fallback in case of any errors\n  return [{\n    json: {\n      collectionExists: false,\n      action: 'create_collection',\n      message: 'Error evaluating collection status, will attempt to create',\n      debugInfo: {\n        error: error.message,\n        responseType: typeof response,\n        detectionMethod: 'error_fallback'\n      }\n    }\n  }];\n}"
       },
       "id": "evaluate-collection-status",
       "name": "Evaluate Collection Status",
@@ -560,7 +563,7 @@
   "staticData": null,
   "meta": null,
   "pinData": {},
-  "versionId": "5",
+  "versionId": "4",
   "triggerCount": 1,
   "tags": [
     {
