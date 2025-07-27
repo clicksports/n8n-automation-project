@@ -57,14 +57,26 @@ copy_to_docker() {
 # Get workflow ID by name
 get_workflow_id_by_name() {
     local workflow_name="$1"
-    n8n_exec list:workflow | grep -F "$workflow_name" | cut -d'|' -f1 | head -1 | tr -d ' '
+    # Use awk for exact name matching to prevent partial matches
+    n8n_exec list:workflow | awk -F'|' -v name="$workflow_name" '
+        {
+            # Remove leading/trailing whitespace from the name field
+            gsub(/^[ \t]+|[ \t]+$/, "", $2)
+            if ($2 == name) {
+                # Remove leading/trailing whitespace from ID and print
+                gsub(/^[ \t]+|[ \t]+$/, "", $1)
+                print $1
+                exit
+            }
+        }
+    '
 }
 
 # Check if workflow exists by name
 workflow_exists() {
     local workflow_name="$1"
     local workflow_id=$(get_workflow_id_by_name "$workflow_name")
-    [[ -n "$workflow_id" ]]
+    [[ -n "$workflow_id" && "$workflow_id" != "null" && "$workflow_id" != "" ]]
 }
 
 # Smart import/update workflow
@@ -140,9 +152,16 @@ smart_import_workflow() {
 
 # Import all workflows with duplicate prevention
 import_all_no_duplicates() {
-    local force_update="${1:-false}"
+    local force_update="${1:-true}"  # Default to true - always update existing workflows
+    local auto_remove_duplicates="${2:-false}"  # Don't need to remove duplicates if we're updating
     
-    log_info "Importing workflows with duplicate prevention..."
+    log_info "Importing workflows with automatic updates..."
+    
+    # Only remove duplicates if explicitly requested (for cleanup scenarios)
+    if [[ "$auto_remove_duplicates" == "true" ]]; then
+        log_info "Removing existing duplicates before import..."
+        remove_duplicates
+    fi
     
     # Find workflow JSON files
     local workflow_files=()
@@ -194,9 +213,14 @@ list_workflows_with_status() {
         id=$(echo "$id" | tr -d ' ')
         name=$(echo "$name" | sed 's/^[[:space:]]*//' | sed 's/[[:space:]]*$//')
         
-        # Check if we have a local file for this workflow
+        # Skip header row or empty lines
+        if [[ "$id" == "id" || -z "$name" || -z "$id" ]]; then
+            continue
+        fi
+        
+        # Check if we have a local file for this workflow using exact name matching
         local local_file_exists=false
-        if find "$WORKFLOWS_DIR" -name "*.json" -not -path "*/exported/*" -not -path "*/backups/*" -exec grep -l "\"name\"[[:space:]]*:[[:space:]]*\"$name\"" {} \; | head -1 > /dev/null 2>&1; then
+        if find "$WORKFLOWS_DIR" -name "*.json" -not -path "*/exported/*" -not -path "*/backups/*" -exec grep -l "\"name\"[[:space:]]*:[[:space:]]*\"$(echo "$name" | sed 's/[[\.*^$()+?{|]/\\&/g')\"" {} \; | head -1 > /dev/null 2>&1; then
             local_file_exists=true
         fi
         
@@ -206,6 +230,83 @@ list_workflows_with_status() {
             echo -e "  ${YELLOW}?${NC} $id | $name (no local file)"
         fi
     done
+}
+
+# Deactivate duplicate workflows and provide deletion instructions
+remove_duplicates() {
+    log_info "Handling duplicate workflows..."
+    
+    # Create temp file to store workflow data
+    local temp_file=$(mktemp)
+    trap "rm -f $temp_file" EXIT
+    
+    # Store workflow data in temp file
+    n8n_exec list:workflow | while IFS='|' read -r id name; do
+        # Clean up whitespace
+        id=$(echo "$id" | tr -d ' ')
+        name=$(echo "$name" | sed 's/^[[:space:]]*//' | sed 's/[[:space:]]*$//')
+        
+        if [[ -n "$name" && "$name" != "name" ]]; then
+            echo "$name|$id" >> "$temp_file"
+        fi
+    done
+    
+    # Find duplicates by name
+    local duplicates_found=false
+    local workflows_to_delete=()
+    
+    while IFS='|' read -r name id; do
+        # Count how many workflows have this exact name
+        local count=$(grep -c "^$name|" "$temp_file" || echo "0")
+        if [[ $count -gt 1 ]]; then
+            duplicates_found=true
+            log_warning "Found $count workflows with name: $name"
+            
+            # Get all IDs for this name, sorted (keep the first one, deactivate others)
+            local ids=($(grep "^$name|" "$temp_file" | cut -d'|' -f2 | sort))
+            local keep_id="${ids[0]}"
+            
+            log_info "Keeping workflow ID: $keep_id (will ensure it's active)"
+            n8n_exec update:workflow --id="$keep_id" --active=true > /dev/null 2>&1 || true
+            
+            # Deactivate all other instances
+            for ((i=1; i<${#ids[@]}; i++)); do
+                local deactivate_id="${ids[i]}"
+                log_warning "Deactivating duplicate workflow ID: $deactivate_id"
+                if n8n_exec update:workflow --id="$deactivate_id" --active=false; then
+                    log_success "Deactivated duplicate workflow: $deactivate_id"
+                    workflows_to_delete+=("$deactivate_id")
+                else
+                    log_error "Failed to deactivate workflow: $deactivate_id"
+                fi
+            done
+        fi
+    done < <(cut -d'|' -f1 "$temp_file" | sort -u | while read -r unique_name; do
+        grep "^$unique_name|" "$temp_file" | head -1
+    done)
+    
+    if [[ "$duplicates_found" == "false" ]]; then
+        log_success "No duplicates found"
+    else
+        log_info ""
+        log_warning "MANUAL CLEANUP REQUIRED:"
+        log_warning "The following workflow IDs have been deactivated and should be archived/deleted manually:"
+        for id in "${workflows_to_delete[@]}"; do
+            log_warning "  - Workflow ID: $id"
+            log_info "    Archive via: http://localhost:5678/workflow/$id (click ... menu → Archive)"
+            log_info "    Or Delete via: http://localhost:5678/workflow/$id (click ... menu → Delete)"
+        done
+        log_info ""
+        log_info "Or manage all inactive workflows via the web interface:"
+        log_info "  1. Go to http://localhost:5678/workflows"
+        log_info "  2. Filter by 'Inactive' workflows (they show as 'Inactive', not 'Archived')"
+        log_info "  3. For each duplicate workflow:"
+        log_info "     - Click the ... menu on the right"
+        log_info "     - Select 'Archive' to archive (recommended) or 'Delete' to remove permanently"
+        log_info ""
+        log_warning "NOTE: n8n CLI can only deactivate workflows, not archive them."
+        log_warning "Archiving must be done through the web interface."
+    fi
 }
 
 # Clean up duplicate workflows - simplified version
@@ -262,21 +363,23 @@ USAGE:
     $0 [COMMAND] [OPTIONS]
 
 COMMANDS:
-    import-all          Import all workflow files (skip existing)
-    import-all --force  Import all workflow files (update existing)
+    import-all          Import/update all workflow files (default: update existing)
+    import-all --no-update  Import workflow files (skip existing, may create duplicates)
     list                List workflows with local file status
     cleanup             Analyze and report duplicate workflows
+    remove-duplicates   Remove duplicate workflows automatically
     help                Show this help
 
 OPTIONS:
-    --force             Force update of existing workflows
+    --no-update         Skip updating existing workflows (may create duplicates)
     --help              Show this help
 
 EXAMPLES:
-    $0 import-all                # Import new workflows, skip existing
-    $0 import-all --force        # Import and update all workflows
+    $0 import-all                # Import new workflows, update existing (recommended)
+    $0 import-all --no-update    # Import new workflows only, skip existing
     $0 list                      # List workflows with status
     $0 cleanup                   # Check for duplicates
+    $0 remove-duplicates         # Remove duplicates automatically
 
 ENVIRONMENT VARIABLES:
     DOCKER_CONTAINER    Docker container name (default: n8n-production)
@@ -288,14 +391,19 @@ EOF
 # Main function
 main() {
     local command=${1:-help}
-    local force=false
+    local update_existing=true  # Default to updating existing workflows
     
     # Parse options
     shift || true
     while [[ $# -gt 0 ]]; do
         case $1 in
+            --no-update)
+                update_existing=false
+                shift
+                ;;
             --force)
-                force=true
+                # Keep --force for backward compatibility
+                update_existing=true
                 shift
                 ;;
             --help)
@@ -313,13 +421,16 @@ main() {
     # Execute command
     case $command in
         import-all)
-            import_all_no_duplicates "$force"
+            import_all_no_duplicates "$update_existing"
             ;;
         list)
             list_workflows_with_status
             ;;
         cleanup)
             cleanup_duplicates
+            ;;
+        remove-duplicates)
+            remove_duplicates
             ;;
         help|--help|-h)
             show_help
