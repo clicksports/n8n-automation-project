@@ -1,7 +1,9 @@
 {
-  "id": "v8sMMWqIomCRil2F",
-  "name": "Shopware to Local Qdrant Production v1.1",
-  "active": true,
+  "createdAt": "2025-07-26T19:27:52.993Z",
+  "updatedAt": "2024-01-01T00:00:00.000Z",
+  "id": "o0wn8zRfXvzQjpjH",
+  "name": "Shopware to Local Qdrant Production",
+  "active": false,
   "isArchived": false,
   "nodes": [
     {
@@ -9,7 +11,7 @@
       "id": "f8b0c5e1-8a2d-4c3e-9f1a-2b3c4d5e6f7g",
       "name": "Manual Trigger",
       "type": "n8n-nodes-base.manualTrigger",
-      "typeVersion": 1.1,
+      "typeVersion": 1,
       "position": [
         240,
         300
@@ -65,7 +67,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Validate OAuth response and initialize pagination - Updated for sync test\nconst items = $input.all();\nconst response = items[0].json;\n\n// Check if we got a valid access token\nif (!response.access_token) {\n  throw new Error('Failed to obtain access token from Shopware API');\n}\n\nconsole.log('✅ Successfully obtained OAuth token');\nconsole.log(`Token type: ${response.token_type}`);\nconsole.log(`Expires in: ${response.expires_in} seconds`);\nconsole.log('🔄 Sync test - workflow updated successfully');\n\n// Set initial pagination parameters\nconst paginationData = {\n  page: 1,\n  limit: 10, // Reduced for testing\n  totalPages: null,\n  accessToken: response.access_token,\n  allProducts: [],\n  startTime: new Date().toISOString(),\n  errors: []\n};\n\nreturn [{\n  json: paginationData\n}];"
+        "jsCode": "// Validate OAuth response and initialize pagination\nconst items = $input.all();\nconst response = items[0].json;\n\n// Check if we got a valid access token\nif (!response.access_token) {\n  throw new Error('Failed to obtain access token from Shopware API');\n}\n\nconsole.log('✅ Successfully obtained OAuth token');\nconsole.log(`Token type: ${response.token_type}`);\nconsole.log(`Expires in: ${response.expires_in} seconds`);\n\n// Set initial pagination parameters\nconst paginationData = {\n  page: 1,\n  limit: 10, // Reduced for testing\n  totalPages: null,\n  accessToken: response.access_token,\n  allProducts: [],\n  startTime: new Date().toISOString(),\n  errors: []\n};\n\nreturn [{\n  json: paginationData\n}];"
       },
       "id": "b2c3d4e5-6f7g-8h9i-0j1k-2l3m4n5o6p7q",
       "name": "Validate Token & Initialize",
@@ -142,7 +144,8 @@
               "rightValue": true,
               "operator": {
                 "type": "boolean",
-                "operation": "equals"
+                "operation": "equal",
+                "rightType": "boolean"
               }
             }
           ],
@@ -210,7 +213,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Check if collection exists and determine next action - FIXED VERSION\nconst items = $input.all();\nconst response = items[0];\n\nconsole.log('🔍 Checking Qdrant collection status...');\n\n// Simple, robust approach - assume collection doesn't exist and needs creation\n// This avoids the undefined error by not relying on uncertain response structure\nconsole.log('📝 Assuming collection \"shopware_products\" needs to be created');\nconsole.log('🔧 This approach avoids response parsing issues and ensures workflow continues');\n\nreturn [{\n  json: {\n    collectionExists: false,\n    action: 'create_collection',\n    message: 'Assuming collection needs creation to avoid parsing errors'\n  }\n}];"
+        "jsCode": "// Check if collection exists and determine next action\nconst items = $input.all();\nconst response = items[0];\n\nconsole.log('🔍 Checking Qdrant collection status...');\nconsole.log(`Response status: ${response.statusCode}`);\n\n// Check if collection exists (status 200) or doesn't exist (status 404)\nif (response.statusCode === 200) {\n  console.log('✅ Collection \"shopware_products\" already exists');\n  return [{\n    json: {\n      collectionExists: true,\n      action: 'proceed_to_store',\n      message: 'Collection exists, proceeding to store data'\n    }\n  }];\n} else if (response.statusCode === 404) {\n  console.log('📝 Collection \"shopware_products\" does not exist, will create it');\n  return [{\n    json: {\n      collectionExists: false,\n      action: 'create_collection',\n      message: 'Collection does not exist, needs to be created'\n    }\n  }];\n} else {\n  // Unexpected status code\n  console.warn(`⚠️ Unexpected response status: ${response.statusCode}`);\n  console.warn(`Response: ${JSON.stringify(response.json, null, 2)}`);\n  throw new Error(`Unexpected response from Qdrant: ${response.statusCode}`);\n}"
       },
       "id": "evaluate-collection-status",
       "name": "Evaluate Collection Status",
@@ -236,7 +239,8 @@
               "rightValue": false,
               "operator": {
                 "type": "boolean",
-                "operation": "equals"
+                "operation": "equal",
+                "rightType": "boolean"
               }
             }
           ],
@@ -316,7 +320,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Prepare Qdrant Points - FIXED VERSION\nconsole.log('🔍 Prepare Qdrant Points - Starting...');\n\nlet transformedProducts = [];\n\ntry {\n  // Try to get products from Transform Products node\n  const transformData = $node[\"Transform Products for Vector Storage\"];\n  \n  if (transformData) {\n    console.log('📥 Found Transform Products node data');\n    \n    // Handle array of execution results\n    if (Array.isArray(transformData)) {\n      console.log(`📦 Transform data is array with ${transformData.length} items`);\n      transformData.forEach(item => {\n        if (item && item.json && item.json.pageContent && item.json.metadata) {\n          transformedProducts.push(item.json);\n        }\n      });\n    } else if (transformData.json && transformData.json.pageContent && transformData.json.metadata) {\n      console.log('📦 Transform data has single json property');\n      transformedProducts.push(transformData.json);\n    }\n  }\n  \n  console.log(`✅ Extracted ${transformedProducts.length} products from Transform node`);\n  \n} catch (error) {\n  console.error('❌ Error accessing Transform Products node:', error.message);\n}\n\n// If no products found, check if we can get them from workflow execution context\nif (transformedProducts.length === 0) {\n  console.log('🔍 Trying to get products from workflow execution context...');\n  \n  try {\n    // Try to get from workflow execution data\n    const workflowData = $workflow;\n    if (workflowData && workflowData.items) {\n      console.log('📥 Found workflow items data');\n      // Process workflow items if they contain product data\n      workflowData.items.forEach(item => {\n        if (item && item.json && item.json.pageContent && item.json.metadata) {\n          transformedProducts.push(item.json);\n        }\n      });\n    }\n  } catch (error) {\n    console.warn('⚠️ Could not access workflow execution context:', error.message);\n  }\n}\n\n// If still no products, this indicates a workflow execution issue\nif (transformedProducts.length === 0) {\n  const errorMessage = 'No products to store in Qdrant. This usually means:\\n' +\n    '1. The Transform Products node did not execute successfully\\n' +\n    '2. No products were fetched from the API\\n' +\n    '3. The workflow connection is broken\\n' +\n    'Please check the previous nodes for errors.';\n  \n  console.error('❌ ' + errorMessage);\n  throw new Error(errorMessage);\n}\n\nconsole.log(`🔄 Preparing to store ${transformedProducts.length} products in Qdrant...`);\n\n// Prepare points for Qdrant\nconst points = [];\nconst errors = [];\n\ntransformedProducts.forEach((product, index) => {\n  try {\n    if (!product || !product.pageContent || !product.metadata || !product.metadata.id) {\n      errors.push(`Item ${index}: Missing required fields`);\n      return;\n    }\n\n    // Create a simple vector (placeholder - in production use actual embeddings)\n    const vector = new Array(1536).fill(0).map(() => Math.random() * 0.1);\n    \n    const point = {\n      id: product.metadata.id,\n      vector: vector,\n      payload: {\n        content: product.pageContent,\n        name: product.metadata.name,\n        price: product.metadata.price,\n        currency: product.metadata.currency,\n        stock: product.metadata.stock,\n        active: product.metadata.active,\n        ean: product.metadata.ean,\n        manufacturerNumber: product.metadata.manufacturerNumber,\n        createdAt: product.metadata.createdAt,\n        updatedAt: product.metadata.updatedAt\n      }\n    };\n    \n    points.push(point);\n    \n  } catch (error) {\n    errors.push(`Item ${index}: ${error.message}`);\n  }\n});\n\nif (points.length === 0) {\n  throw new Error('No valid points could be prepared for Qdrant storage');\n}\n\nconsole.log(`✅ Prepared ${points.length} points for Qdrant storage`);\nif (errors.length > 0) {\n  console.warn(`⚠️ ${errors.length} preparation errors:`);\n  errors.slice(0, 3).forEach(error => console.warn(`  - ${error}`));\n}\n\n// Return the points data for the HTTP request\nreturn [{\n  json: {\n    points: points,\n    totalPoints: points.length,\n    errors: errors\n  }\n}];"
+        "jsCode": "// Store products in Qdrant using HTTP API\nconst items = $input.all();\n\n// Get the transformed products from the previous node\nconst transformedProducts = $node[\"Transform Products for Vector Storage\"].json;\n\nif (!Array.isArray(transformedProducts) || transformedProducts.length === 0) {\n  throw new Error('No products to store in Qdrant');\n}\n\nconsole.log(`🔄 Preparing to store ${transformedProducts.length} products in Qdrant...`);\n\n// Prepare points for Qdrant\nconst points = [];\nconst errors = [];\n\ntransformedProducts.forEach((item, index) => {\n  try {\n    const product = item.json;\n    \n    if (!product || !product.pageContent || !product.metadata || !product.metadata.id) {\n      errors.push(`Item ${index}: Missing required fields`);\n      return;\n    }\n\n    // Create a simple vector (placeholder since we don't have embeddings yet)\n    // In a real implementation, you'd generate embeddings from pageContent\n    const vector = new Array(1536).fill(0).map(() => Math.random() * 0.1);\n    \n    const point = {\n      id: product.metadata.id,\n      vector: vector,\n      payload: {\n        content: product.pageContent,\n        name: product.metadata.name,\n        price: product.metadata.price,\n        currency: product.metadata.currency,\n        stock: product.metadata.stock,\n        active: product.metadata.active,\n        ean: product.metadata.ean,\n        manufacturerNumber: product.metadata.manufacturerNumber,\n        createdAt: product.metadata.createdAt,\n        updatedAt: product.metadata.updatedAt\n      }\n    };\n    \n    points.push(point);\n    \n  } catch (error) {\n    errors.push(`Item ${index}: ${error.message}`);\n  }\n});\n\nif (points.length === 0) {\n  throw new Error('No valid points could be prepared for Qdrant storage');\n}\n\nconsole.log(`✅ Prepared ${points.length} points for Qdrant storage`);\nif (errors.length > 0) {\n  console.warn(`⚠️ ${errors.length} preparation errors:`);\n  errors.slice(0, 3).forEach(error => console.warn(`  - ${error}`));\n}\n\n// Return the points data for the HTTP request\nreturn [{\n  json: {\n    points: points,\n    totalPoints: points.length,\n    errors: errors\n  }\n}];"
       },
       "id": "g7h8i9j0-1k2l-3m4n-5o6p-7q8r9s0t1u2v",
       "name": "Prepare Qdrant Points",
@@ -559,7 +563,7 @@
   "staticData": null,
   "meta": null,
   "pinData": {},
-  "versionId": "5",
+  "versionId": "4",
   "triggerCount": 1,
   "tags": [
     {

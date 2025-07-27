@@ -1,7 +1,9 @@
 {
-  "id": "v8sMMWqIomCRil2F",
+  "createdAt": "2025-07-27T12:22:17.869Z",
+  "updatedAt": "2025-07-27T12:22:17.869Z",
+  "id": "trURzHcp29ynVksw",
   "name": "Shopware to Local Qdrant Production v1.1",
-  "active": true,
+  "active": false,
   "isArchived": false,
   "nodes": [
     {
@@ -9,7 +11,7 @@
       "id": "f8b0c5e1-8a2d-4c3e-9f1a-2b3c4d5e6f7g",
       "name": "Manual Trigger",
       "type": "n8n-nodes-base.manualTrigger",
-      "typeVersion": 1.1,
+      "typeVersion": 1,
       "position": [
         240,
         300
@@ -142,7 +144,8 @@
               "rightValue": true,
               "operator": {
                 "type": "boolean",
-                "operation": "equals"
+                "operation": "equal",
+                "rightType": "boolean"
               }
             }
           ],
@@ -236,7 +239,8 @@
               "rightValue": false,
               "operator": {
                 "type": "boolean",
-                "operation": "equals"
+                "operation": "equal",
+                "rightType": "boolean"
               }
             }
           ],

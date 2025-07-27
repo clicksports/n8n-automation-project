@@ -1,7 +1,9 @@
 {
-  "id": "v8sMMWqIomCRil2F",
+  "createdAt": "2025-07-27T12:32:11.994Z",
+  "updatedAt": "2025-07-27T12:32:11.994Z",
+  "id": "rZkFFfIVkj1GW9Fb",
   "name": "Shopware to Local Qdrant Production v1.1",
-  "active": true,
+  "active": false,
   "isArchived": false,
   "nodes": [
     {

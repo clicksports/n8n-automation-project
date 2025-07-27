@@ -1,0 +1,547 @@
+{
+  "createdAt": "2025-07-26T19:21:54.297Z",
+  "updatedAt": "2025-01-26T00:00:00.000Z",
+  "id": "qBLfesuNCaAiyfn9",
+  "name": "Shopware Optimized Vectorization Workflow",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "a1b2c3d4-5e6f-7g8h-9i0j-1k2l3m4n5o6p",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        240,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Load and enhance dataset with Shopware-specific metadata\nconst fs = require('fs');\nconst path = require('path');\n\ntry {\n  // Load the optimized dataset\n  const datasetPath = path.join(process.cwd(), 'optimized_dataset_format.json');\n  const datasetContent = fs.readFileSync(datasetPath, 'utf8');\n  const dataset = JSON.parse(datasetContent);\n  \n  console.log('📁 Loading HELD Inuit Heizhandschuh optimized dataset...');\n  console.log(`Product: ${dataset.dataset_metadata.product_name}`);\n  console.log(`Article Number: ${dataset.dataset_metadata.product_id}`);\n  console.log(`Version: ${dataset.dataset_metadata.version}`);\n  console.log(`Total chunks: ${dataset.dataset_metadata.total_chunks}`);\n  \n  const chunks = dataset.optimized_chunks || [];\n  const articleNumber = dataset.dataset_metadata.product_id;\n  \n  if (chunks.length === 0) {\n    throw new Error('No chunks found in dataset');\n  }\n  \n  // Return each chunk as a separate item with enhanced Shopware metadata\n  return chunks.map((chunk, index) => ({\n    json: {\n      chunk_id: chunk.chunk_id,\n      content: chunk.content,\n      metadata: {\n        ...chunk.metadata,\n        // Shopware Integration Fields\n        article_number: articleNumber,\n        shopware_product_id: `sw_${articleNumber}`,\n        shopware_variant_id: `sw_var_${articleNumber}_${index.toString().padStart(3, '0')}`,\n        last_updated: new Date().toISOString(),\n        content_version: '2.0',\n        chunk_index: index,\n        \n        // Product Hierarchy\n        brand: 'HELD',\n        category_path: 'Handschuhe > Touring-Handschuhe > mit Membrane',\n        product_line: 'Inuit',\n        \n        // Update Tracking\n        source_system: 'shopware',\n        sync_status: 'active',\n        price_currency: 'EUR',\n        stock_status: 'available',\n        \n        // Processing metadata\n        processed_at: new Date().toISOString(),\n        content_length: chunk.content.length,\n        embedding_model: 'text-embedding-3-large',\n        workflow_version: '2.0_shopware_optimized'\n      },\n      article_number: articleNumber,\n      chunk_index: index,\n      dataset_info: {\n        product_id: dataset.dataset_metadata.product_id,\n        product_name: dataset.dataset_metadata.product_name,\n        language: dataset.dataset_metadata.language,\n        embedding_model: dataset.dataset_metadata.embedding_model\n      }\n    }\n  }));\n  \n} catch (error) {\n  console.error('❌ Failed to load dataset:', error.message);\n  throw new Error(`Dataset loading failed: ${error.message}`);\n}"
+      },
+      "id": "b2c3d4e5-6f7g-8h9i-0j1k-2l3m4n5o6p7q",
+      "name": "Load & Enhance Dataset",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        460,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "DELETE",
+        "url": "http://localhost:6333/collections/held_products_optimized",
+        "options": {
+          "timeout": 30000,
+          "retry": {
+            "enabled": true,
+            "maxRetries": 2,
+            "retryInterval": 2000
+          }
+        }
+      },
+      "id": "c3d4e5f6-7g8h-9i0j-1k2l-3m4n5o6p7q8r",
+      "name": "Delete Existing Collection",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        680,
+        300
+      ],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "http://localhost:6333/collections/held_products_optimized",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "vectors",
+              "value": "={\"size\": 3072, \"distance\": \"Cosine\"}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000,
+          "retry": {
+            "enabled": true,
+            "maxRetries": 3,
+            "retryInterval": 2000
+          }
+        }
+      },
+      "id": "d4e5f6g7-8h9i-0j1k-2l3m-4n5o6p7q8r9s",
+      "name": "Create Optimized Collection",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        900,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Create payload indexes for efficient Shopware queries\nconst indexesToCreate = [\n  'metadata.article_number',\n  'metadata.shopware_product_id',\n  'metadata.brand',\n  'metadata.category_path',\n  'metadata.last_updated',\n  'metadata.chunk_type',\n  'metadata.source_system',\n  'metadata.sync_status'\n];\n\nconsole.log('🔧 Creating payload indexes for Shopware optimization...');\n\nreturn indexesToCreate.map(fieldName => ({\n  json: {\n    field_name: fieldName,\n    field_schema: 'keyword'\n  }\n}));"
+      },
+      "id": "e5f6g7h8-9i0j-1k2l-3m4n-5o6p7q8r9s0t",
+      "name": "Prepare Index Fields",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=http://localhost:6333/collections/held_products_optimized/index/{{ $json.field_name }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "field_name",
+              "value": "={{ $json.field_name }}"
+            },
+            {
+              "name": "field_schema",
+              "value": "={{ $json.field_schema }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 15000
+        }
+      },
+      "id": "f6g7h8i9-0j1k-2l3m-4n5o-6p7q8r9s0t1u",
+      "name": "Create Payload Indexes",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1340,
+        300
+      ],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Generate deterministic mock embeddings for testing\nconst item = $input.item(0).json;\n\nif (!item.content) {\n  throw new Error('No content to generate embeddings for');\n}\n\nconsole.log(`🔄 Generating mock embedding for chunk: ${item.chunk_id}`);\n\n// Generate deterministic mock embedding based on content\nfunction generateMockEmbedding(text, dimensions = 3072) {\n  const crypto = require('crypto');\n  const hash = crypto.createHash('md5').update(text).digest('hex');\n  \n  const embedding = [];\n  for (let i = 0; i < dimensions; i++) {\n    const hexPart = hash[(i * 2) % hash.length] + hash[((i * 2) + 1) % hash.length];\n    const value = (parseInt(hexPart, 16) / 255.0) * 2 - 1;\n    embedding.push(value);\n  }\n  \n  return embedding;\n}\n\nconst mockEmbedding = generateMockEmbedding(item.content);\n\nconsole.log(`✅ Generated mock embedding: ${mockEmbedding.length} dimensions`);\nconsole.log(`   Range: ${Math.min(...mockEmbedding).toFixed(3)} to ${Math.max(...mockEmbedding).toFixed(3)}`);\n\nreturn {\n  json: {\n    ...item,\n    embedding: mockEmbedding,\n    embedding_info: {\n      model: 'mock-deterministic',\n      dimensions: mockEmbedding.length,\n      generated_at: new Date().toISOString(),\n      fallback_used: true\n    }\n  }\n};"
+      },
+      "id": "g7h8i9j0-1k2l-3m4n-5o6p-7q8r9s0t1u2v",
+      "name": "Generate Mock Embeddings",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1560,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Prepare optimized Qdrant points with deterministic IDs for upsert\nconst item = $input.item(0).json;\n\nif (!item.embedding || !Array.isArray(item.embedding)) {\n  throw new Error('No valid embedding found');\n}\n\nif (!item.chunk_id || !item.content) {\n  throw new Error('Missing required chunk data');\n}\n\n// Generate deterministic Point ID based on article number and chunk index\nfunction generateDeterministicPointId(articleNumber, chunkIndex) {\n  const idString = `${articleNumber}_${chunkIndex.toString().padStart(3, '0')}`;\n  const crypto = require('crypto');\n  const hash = crypto.createHash('md5').update(idString).digest('hex');\n  // Convert to positive integer within safe range\n  return parseInt(hash.substring(0, 15), 16);\n}\n\nconst pointId = generateDeterministicPointId(item.article_number, item.chunk_index);\n\n// Prepare comprehensive payload for Shopware integration\nconst payload = {\n  chunk_id: item.chunk_id,\n  content: item.content,\n  metadata: item.metadata\n};\n\n// Create Qdrant point\nconst qdrantPoint = {\n  id: pointId,\n  vector: item.embedding,\n  payload: payload\n};\n\nconsole.log(`🔄 Preparing Qdrant point: ${pointId}`);\nconsole.log(`   Article: ${item.article_number}`);\nconsole.log(`   Chunk: ${item.chunk_id}`);\nconsole.log(`   Vector dimensions: ${item.embedding.length}`);\n\nreturn {\n  json: {\n    point: qdrantPoint,\n    article_number: item.article_number,\n    chunk_index: item.chunk_index,\n    summary: {\n      point_id: pointId,\n      chunk_type: item.metadata.chunk_type,\n      content_category: item.metadata.content_category,\n      article_number: item.article_number,\n      shopware_product_id: item.metadata.shopware_product_id\n    }\n  }\n};"
+      },
+      "id": "h8i9j0k1-2l3m-4n5o-6p7q-8r9s0t1u2v3w",
+      "name": "Prepare Optimized Qdrant Points",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1780,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Delete existing product data before upsert\nconst items = $input.all();\n\nif (!items || items.length === 0) {\n  throw new Error('No points to process');\n}\n\n// Get article number from first item\nconst articleNumber = items[0].json.article_number;\n\nconsole.log(`🗑️ Deleting existing data for article: ${articleNumber}`);\n\n// Prepare delete filter\nconst deleteFilter = {\n  must: [\n    {\n      key: 'metadata.article_number',\n      match: {\n        value: articleNumber\n      }\n    }\n  ]\n};\n\nreturn [{\n  json: {\n    filter: deleteFilter,\n    article_number: articleNumber,\n    points_to_upsert: items.map(item => item.json.point)\n  }\n}];"
+      },
+      "id": "i9j0k1l2-3m4n-5o6p-7q8r-9s0t1u2v3w4x",
+      "name": "Prepare Delete Filter",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2000,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:6333/collections/held_products_optimized/points/delete",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "filter",
+              "value": "={{ $json.filter }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000,
+          "retry": {
+            "enabled": true,
+            "maxRetries": 2,
+            "retryInterval": 2000
+          }
+        }
+      },
+      "id": "j0k1l2m3-4n5o-6p7q-8r9s-0t1u2v3w4x5y",
+      "name": "Delete Existing Product Data",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        2220,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "http://localhost:6333/collections/held_products_optimized/points",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "points",
+              "value": "={{ $node['Prepare Delete Filter'].json.points_to_upsert }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 60000,
+          "retry": {
+            "enabled": true,
+            "maxRetries": 3,
+            "retryInterval": 5000
+          }
+        }
+      },
+      "id": "k1l2m3n4-5o6p-7q8r-9s0t-1u2v3w4x5y6z",
+      "name": "Upsert Product Data",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        2440,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Test upsert functionality by performing a search\nconst upsertResult = $input.item(0).json;\nconst articleNumber = $node['Prepare Delete Filter'].json.article_number;\n\nconsole.log('🧪 Testing upsert functionality...');\nconsole.log(`Article Number: ${articleNumber}`);\nconsole.log(`Upsert Status: ${upsertResult.status}`);\n\n// Prepare test search queries\nconst testQueries = [\n  'Wie lange hält der Akku?',\n  'Welche Größen gibt es?',\n  'Ist der Handschuh wasserdicht?',\n  'Preis des Handschuhs'\n];\n\nreturn testQueries.map(query => ({\n  json: {\n    query: query,\n    article_number: articleNumber,\n    upsert_status: upsertResult.status\n  }\n}));"
+      },
+      "id": "l2m3n4o5-6p7q-8r9s-0t1u-2v3w4x5y6z7a",
+      "name": "Prepare Test Queries",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2660,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Generate mock query embedding for search test\nconst item = $input.item(0).json;\n\nfunction generateMockEmbedding(text, dimensions = 3072) {\n  const crypto = require('crypto');\n  const hash = crypto.createHash('md5').update(text).digest('hex');\n  \n  const embedding = [];\n  for (let i = 0; i < dimensions; i++) {\n    const hexPart = hash[(i * 2) % hash.length] + hash[((i * 2) + 1) % hash.length];\n    const value = (parseInt(hexPart, 16) / 255.0) * 2 - 1;\n    embedding.push(value);\n  }\n  \n  return embedding;\n}\n\nconst queryEmbedding = generateMockEmbedding(item.query);\n\nreturn {\n  json: {\n    ...item,\n    query_vector: queryEmbedding\n  }\n};"
+      },
+      "id": "m3n4o5p6-7q8r-9s0t-1u2v-3w4x5y6z7a8b",
+      "name": "Generate Query Embedding",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2880,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:6333/collections/held_products_optimized/points/search",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "vector",
+              "value": "={{ $json.query_vector }}"
+            },
+            {
+              "name": "filter",
+              "value": "={\"must\": [{\"key\": \"metadata.article_number\", \"match\": {\"value\": \"{{ $json.article_number }}\"}}]}"
+            },
+            {
+              "name": "limit",
+              "value": 2
+            },
+            {
+              "name": "with_payload",
+              "value": true
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "n4o5p6q7-8r9s-0t1u-2v3w-4x5y6z7a8b9c",
+      "name": "Test Search Functionality",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        3100,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Generate final completion report\nconst searchResults = $input.all();\nconst articleNumber = searchResults[0]?.json?.article_number || 'unknown';\n\nconst completionTime = new Date().toISOString();\n\n// Analyze search results\nlet totalSearches = searchResults.length;\nlet successfulSearches = 0;\nlet searchSummary = [];\n\nsearchResults.forEach((result, index) => {\n  const searchData = result.json;\n  const query = $node['Prepare Test Queries'].json[index]?.query || 'unknown';\n  \n  if (searchData.result && Array.isArray(searchData.result)) {\n    successfulSearches++;\n    searchSummary.push({\n      query: query,\n      results_found: searchData.result.length,\n      top_score: searchData.result[0]?.score || 0\n    });\n  }\n});\n\n// Generate final report\nconst finalReport = {\n  workflow_status: 'completed',\n  completion_time: completionTime,\n  \n  workflow_summary: {\n    article_number: articleNumber,\n    collection_name: 'held_products_optimized',\n    workflow_version: '2.0_shopware_optimized'\n  },\n  \n  upsert_summary: {\n    upsert_completed: true,\n    article_processed: articleNumber,\n    collection_recreated: true\n  },\n  \n  search_testing: {\n    total_queries: totalSearches,\n    successful_searches: successfulSearches,\n    success_rate: totalSearches > 0 ? `${Math.round((successfulSearches / totalSearches) * 100)}%` : '0%',\n    search_results: searchSummary\n  },\n  \n  optimization_features: [\n    'Shopware-specific metadata enhancement',\n    'Deterministic point ID generation',\n    'Article number-based upsert functionality',\n    'Payload indexing for efficient queries',\n    'Mock embedding generation for testing',\n    'Search functionality verification'\n  ],\n  \n  next_steps: [\n    'Integrate with real OpenAI embeddings API',\n    'Connect to live Shopware product data',\n    'Implement automated sync scheduling',\n    'Add monitoring and alerting',\n    'Scale for production workloads'\n  ]\n};\n\nconsole.log('🎉 ===== SHOPWARE VECTORIZATION COMPLETED =====');\nconsole.log(`📊 Article processed: ${finalReport.workflow_summary.article_number}`);\nconsole.log(`✅ Upsert completed: ${finalReport.upsert_summary.upsert_completed}`);\nconsole.log(`🔍 Search success rate: ${finalReport.search_testing.success_rate}`);\nconsole.log(`⏰ Completed at: ${completionTime}`);\nconsole.log('================================================');\n\nreturn [{ json: finalReport }];"
+      },
+      "id": "o5p6q7r8-9s0t-1u2v-3w4x-5y6z7a8b9c0d",
+      "name": "Generate Completion Report",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3320,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Load & Enhance Dataset",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load & Enhance Dataset": {
+      "main": [
+        [
+          {
+            "node": "Delete Existing Collection",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete Existing Collection": {
+      "main": [
+        [
+          {
+            "node": "Create Optimized Collection",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Optimized Collection": {
+      "main": [
+        [
+          {
+            "node": "Prepare Index Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Index Fields": {
+      "main": [
+        [
+          {
+            "node": "Create Payload Indexes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Payload Indexes": {
+      "main": [
+        [
+          {
+            "node": "Generate Mock Embeddings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Mock Embeddings": {
+      "main": [
+        [
+          {
+            "node": "Prepare Optimized Qdrant Points",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Optimized Qdrant Points": {
+      "main": [
+        [
+          {
+            "node": "Prepare Delete Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Delete Filter": {
+      "main": [
+        [
+          {
+            "node": "Delete Existing Product Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete Existing Product Data": {
+      "main": [
+        [
+          {
+            "node": "Upsert Product Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upsert Product Data": {
+      "main": [
+        [
+          {
+            "node": "Prepare Test Queries",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Test Queries": {
+      "main": [
+        [
+          {
+            "node": "Generate Query Embedding",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Query Embedding": {
+      "main": [
+        [
+          {
+            "node": "Test Search Functionality",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Test Search Functionality": {
+      "main": [
+        [
+          {
+            "node": "Generate Completion Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "1",
+  "triggerCount": 1,
+  "tags": [
+    {
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "updatedAt": "2025-07-26T19:27:59.594Z",
+      "id": "tag1",
+      "name": "shopware"
+    },
+    {
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "updatedAt": "2025-07-26T19:28:09.577Z",
+      "id": "tag2",
+      "name": "qdrant"
+    },
+    {
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "updatedAt": "2025-07-26T19:40:12.623Z",
+      "id": "tag3",
+      "name": "vector-database"
+    },
+    {
+      "createdAt": "2025-01-26T00:00:00.000Z",
+      "updatedAt": "2025-07-26T19:40:12.625Z",
+      "id": "tag4",
+      "name": "best-version"
+    }
+  ]
+}
