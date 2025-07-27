@@ -1,5 +1,0 @@
-count,latestEvent,name,workflowId,rootCount
-1,2025-07-26 10:16:02,manual_error,sU8WiDF4UnAQq9PC,0
-1,2025-07-26 10:19:21,manual_error,JWL1s21OQx2lOpBL,0
-1,2025-07-26 12:24:02.509,data_loaded,d74bb1275e9a48ac,1
-3,2025-07-26 12:24:18,manual_success,d74bb1275e9a48ac,0

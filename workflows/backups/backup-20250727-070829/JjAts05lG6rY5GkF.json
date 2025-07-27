@@ -1,6 +1,9 @@
 {
-  "name": "Shopware to Local Qdrant Production v1.0",
-  "active": true,
+  "createdAt": "2025-07-26T19:40:10.982Z",
+  "updatedAt": "2024-01-01T00:00:00.000Z",
+  "id": "JjAts05lG6rY5GkF",
+  "name": "Shopware to Local Qdrant Production (With Collection Auto-Create)",
+  "active": false,
   "isArchived": false,
   "nodes": [
     {
@@ -64,7 +67,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Validate OAuth response and initialize pagination - Updated for sync test\nconst items = $input.all();\nconst response = items[0].json;\n\n// Check if we got a valid access token\nif (!response.access_token) {\n  throw new Error('Failed to obtain access token from Shopware API');\n}\n\nconsole.log('✅ Successfully obtained OAuth token');\nconsole.log(`Token type: ${response.token_type}`);\nconsole.log(`Expires in: ${response.expires_in} seconds`);\nconsole.log('🔄 Sync test - workflow updated successfully');\n\n// Set initial pagination parameters\nconst paginationData = {\n  page: 1,\n  limit: 10, // Reduced for testing\n  totalPages: null,\n  accessToken: response.access_token,\n  allProducts: [],\n  startTime: new Date().toISOString(),\n  errors: []\n};\n\nreturn [{\n  json: paginationData\n}];"
+        "jsCode": "// Validate OAuth response and initialize pagination\nconst items = $input.all();\nconst response = items[0].json;\n\n// Check if we got a valid access token\nif (!response.access_token) {\n  throw new Error('Failed to obtain access token from Shopware API');\n}\n\nconsole.log('✅ Successfully obtained OAuth token');\nconsole.log(`Token type: ${response.token_type}`);\nconsole.log(`Expires in: ${response.expires_in} seconds`);\n\n// Set initial pagination parameters\nconst paginationData = {\n  page: 1,\n  limit: 10, // Reduced for testing\n  totalPages: null,\n  accessToken: response.access_token,\n  allProducts: [],\n  startTime: new Date().toISOString(),\n  errors: []\n};\n\nreturn [{\n  json: paginationData\n}];"
       },
       "id": "b2c3d4e5-6f7g-8h9i-0j1k-2l3m4n5o6p7q",
       "name": "Validate Token & Initialize",

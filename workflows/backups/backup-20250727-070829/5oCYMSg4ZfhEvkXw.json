@@ -1,6 +1,9 @@
 {
-  "name": "Shopware to Local Qdrant Production v1.0",
-  "active": true,
+  "createdAt": "2025-07-26T19:27:56.284Z",
+  "updatedAt": "2024-01-01T00:00:00.000Z",
+  "id": "5oCYMSg4ZfhEvkXw",
+  "name": "Shopware to Qdrant Product Import (Complete)",
+  "active": false,
   "isArchived": false,
   "nodes": [
     {
@@ -64,7 +67,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Validate OAuth response and initialize pagination - Updated for sync test\nconst items = $input.all();\nconst response = items[0].json;\n\n// Check if we got a valid access token\nif (!response.access_token) {\n  throw new Error('Failed to obtain access token from Shopware API');\n}\n\nconsole.log('✅ Successfully obtained OAuth token');\nconsole.log(`Token type: ${response.token_type}`);\nconsole.log(`Expires in: ${response.expires_in} seconds`);\nconsole.log('🔄 Sync test - workflow updated successfully');\n\n// Set initial pagination parameters\nconst paginationData = {\n  page: 1,\n  limit: 10, // Reduced for testing\n  totalPages: null,\n  accessToken: response.access_token,\n  allProducts: [],\n  startTime: new Date().toISOString(),\n  errors: []\n};\n\nreturn [{\n  json: paginationData\n}];"
+        "jsCode": "// Validate OAuth response and initialize pagination\nconst items = $input.all();\nconst response = items[0].json;\n\n// Check if we got a valid access token\nif (!response.access_token) {\n  throw new Error('Failed to obtain access token from Shopware API');\n}\n\nconsole.log('✅ Successfully obtained OAuth token');\nconsole.log(`Token type: ${response.token_type}`);\nconsole.log(`Expires in: ${response.expires_in} seconds`);\n\n// Set initial pagination parameters\nconst paginationData = {\n  page: 1,\n  limit: 10, // Reduced for testing\n  totalPages: null,\n  accessToken: response.access_token,\n  allProducts: [],\n  startTime: new Date().toISOString(),\n  errors: []\n};\n\nreturn [{\n  json: paginationData\n}];"
       },
       "id": "b2c3d4e5-6f7g-8h9i-0j1k-2l3m4n5o6p7q",
       "name": "Validate Token & Initialize",
@@ -174,35 +177,12 @@
     },
     {
       "parameters": {
-        "method": "GET",
-        "url": "http://qdrant:6333/collections/shopware_products",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Content-Type",
-              "value": "application/json"
-            }
-          ]
-        },
-        "options": {
-          "timeout": 30000,
-          "retry": {
-            "enabled": true,
-            "maxRetries": 2,
-            "retryInterval": 1000
-          },
-          "response": {
-            "response": {
-              "neverError": true
-            }
-          }
-        }
+        "jsCode": "// Store products in Qdrant using HTTP API\nconst items = $input.all();\n\nif (!Array.isArray(items) || items.length === 0) {\n  throw new Error('No products to store in Qdrant');\n}\n\nconsole.log(`🔄 Preparing to store ${items.length} products in Qdrant...`);\n\n// Prepare points for Qdrant\nconst points = [];\nconst errors = [];\n\nitems.forEach((item, index) => {\n  try {\n    const product = item.json;\n    \n    if (!product || !product.pageContent || !product.metadata || !product.metadata.id) {\n      errors.push(`Item ${index}: Missing required fields`);\n      return;\n    }\n\n    // Create a simple vector (placeholder since we don't have embeddings yet)\n    // In a real implementation, you'd generate embeddings from pageContent\n    const vector = new Array(1536).fill(0).map(() => Math.random() * 0.1);\n    \n    const point = {\n      id: product.metadata.id,\n      vector: vector,\n      payload: {\n        content: product.pageContent,\n        name: product.metadata.name,\n        price: product.metadata.price,\n        currency: product.metadata.currency,\n        stock: product.metadata.stock,\n        active: product.metadata.active,\n        ean: product.metadata.ean,\n        manufacturerNumber: product.metadata.manufacturerNumber,\n        createdAt: product.metadata.createdAt,\n        updatedAt: product.metadata.updatedAt\n      }\n    };\n    \n    points.push(point);\n    \n  } catch (error) {\n    errors.push(`Item ${index}: ${error.message}`);\n  }\n});\n\nif (points.length === 0) {\n  throw new Error('No valid points could be prepared for Qdrant storage');\n}\n\nconsole.log(`✅ Prepared ${points.length} points for Qdrant storage`);\nif (errors.length > 0) {\n  console.warn(`⚠️ ${errors.length} preparation errors:`);\n  errors.slice(0, 3).forEach(error => console.warn(`  - ${error}`));\n}\n\n// Return the points data for the HTTP request\nreturn [{\n  json: {\n    points: points,\n    totalPoints: points.length,\n    errors: errors\n  }\n}];"
       },
-      "id": "check-collection-exists",
-      "name": "Check Collection Exists",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.1,
+      "id": "g7h8i9j0-1k2l-3m4n-5o6p-7q8r9s0t1u2v",
+      "name": "Prepare Qdrant Points",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
       "position": [
         1780,
         420
@@ -210,131 +190,15 @@
     },
     {
       "parameters": {
-        "jsCode": "// Check if collection exists and determine next action\nconst items = $input.all();\nconst response = items[0];\n\nconsole.log('🔍 Checking Qdrant collection status...');\nconsole.log(`Response status: ${response.statusCode}`);\n\n// Check if collection exists (status 200) or doesn't exist (status 404)\nif (response.statusCode === 200) {\n  console.log('✅ Collection \"shopware_products\" already exists');\n  return [{\n    json: {\n      collectionExists: true,\n      action: 'proceed_to_store',\n      message: 'Collection exists, proceeding to store data'\n    }\n  }];\n} else if (response.statusCode === 404) {\n  console.log('📝 Collection \"shopware_products\" does not exist, will create it');\n  return [{\n    json: {\n      collectionExists: false,\n      action: 'create_collection',\n      message: 'Collection does not exist, needs to be created'\n    }\n  }];\n} else {\n  // Unexpected status code\n  console.warn(`⚠️ Unexpected response status: ${response.statusCode}`);\n  console.warn(`Response: ${JSON.stringify(response.json, null, 2)}`);\n  throw new Error(`Unexpected response from Qdrant: ${response.statusCode}`);\n}"
-      },
-      "id": "evaluate-collection-status",
-      "name": "Evaluate Collection Status",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        2000,
-        420
-      ]
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict"
-          },
-          "conditions": [
-            {
-              "id": "collection-exists-condition",
-              "leftValue": "={{ $json.collectionExists }}",
-              "rightValue": false,
-              "operator": {
-                "type": "boolean",
-                "operation": "equal",
-                "rightType": "boolean"
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "id": "collection-exists-check",
-      "name": "Collection Exists?",
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2,
-      "position": [
-        2220,
-        420
-      ]
-    },
-    {
-      "parameters": {
         "method": "PUT",
-        "url": "http://qdrant:6333/collections/shopware_products",
+        "url": "https://8ec957ec-27b4-4041-9714-f8dde751b007.europe-west3-0.gcp.cloud.qdrant.io:6333/collections/shopware_products/points",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
-              "name": "Content-Type",
-              "value": "application/json"
-            }
-          ]
-        },
-        "sendBody": true,
-        "bodyParameters": {
-          "parameters": [
-            {
-              "name": "vectors",
-              "value": "={{ { \"size\": 1536, \"distance\": \"Cosine\" } }}"
+              "name": "api-key",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIn0.50x-a9c0zTX_dzWnKjq-xM7rJ0ym6_yZ-D_eN_Idft4"
             },
-            {
-              "name": "optimizers_config",
-              "value": "={{ { \"default_segment_number\": 2 } }}"
-            },
-            {
-              "name": "replication_factor",
-              "value": "=1"
-            }
-          ]
-        },
-        "options": {
-          "timeout": 60000,
-          "retry": {
-            "enabled": true,
-            "maxRetries": 2,
-            "retryInterval": 3000
-          }
-        }
-      },
-      "id": "create-collection",
-      "name": "Create Qdrant Collection",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.1,
-      "position": [
-        2440,
-        320
-      ]
-    },
-    {
-      "parameters": {
-        "jsCode": "// Log collection creation result\nconst items = $input.all();\nconst response = items[0].json;\n\nif (response && response.result === true) {\n  console.log('🎉 Successfully created Qdrant collection \"shopware_products\"');\n  console.log('📋 Collection configuration:');\n  console.log('  - Vector size: 1536');\n  console.log('  - Distance metric: Cosine');\n  console.log('  - Replication factor: 1');\n} else {\n  console.warn('⚠️ Collection creation response:', JSON.stringify(response, null, 2));\n}\n\nreturn [{\n  json: {\n    collectionCreated: true,\n    message: 'Collection created successfully, ready to store data'\n  }\n}];"
-      },
-      "id": "log-collection-creation",
-      "name": "Log Collection Creation",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        2660,
-        320
-      ]
-    },
-    {
-      "parameters": {
-        "jsCode": "// Store products in Qdrant using HTTP API\nconst items = $input.all();\n\n// Get the transformed products from the previous node\nconst transformedProducts = $node[\"Transform Products for Vector Storage\"].json;\n\nif (!Array.isArray(transformedProducts) || transformedProducts.length === 0) {\n  throw new Error('No products to store in Qdrant');\n}\n\nconsole.log(`🔄 Preparing to store ${transformedProducts.length} products in Qdrant...`);\n\n// Prepare points for Qdrant\nconst points = [];\nconst errors = [];\n\ntransformedProducts.forEach((item, index) => {\n  try {\n    const product = item.json;\n    \n    if (!product || !product.pageContent || !product.metadata || !product.metadata.id) {\n      errors.push(`Item ${index}: Missing required fields`);\n      return;\n    }\n\n    // Create a simple vector (placeholder since we don't have embeddings yet)\n    // In a real implementation, you'd generate embeddings from pageContent\n    const vector = new Array(1536).fill(0).map(() => Math.random() * 0.1);\n    \n    const point = {\n      id: product.metadata.id,\n      vector: vector,\n      payload: {\n        content: product.pageContent,\n        name: product.metadata.name,\n        price: product.metadata.price,\n        currency: product.metadata.currency,\n        stock: product.metadata.stock,\n        active: product.metadata.active,\n        ean: product.metadata.ean,\n        manufacturerNumber: product.metadata.manufacturerNumber,\n        createdAt: product.metadata.createdAt,\n        updatedAt: product.metadata.updatedAt\n      }\n    };\n    \n    points.push(point);\n    \n  } catch (error) {\n    errors.push(`Item ${index}: ${error.message}`);\n  }\n});\n\nif (points.length === 0) {\n  throw new Error('No valid points could be prepared for Qdrant storage');\n}\n\nconsole.log(`✅ Prepared ${points.length} points for Qdrant storage`);\nif (errors.length > 0) {\n  console.warn(`⚠️ ${errors.length} preparation errors:`);\n  errors.slice(0, 3).forEach(error => console.warn(`  - ${error}`));\n}\n\n// Return the points data for the HTTP request\nreturn [{\n  json: {\n    points: points,\n    totalPoints: points.length,\n    errors: errors\n  }\n}];"
-      },
-      "id": "g7h8i9j0-1k2l-3m4n-5o6p-7q8r9s0t1u2v",
-      "name": "Prepare Qdrant Points",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        2880,
-        420
-      ]
-    },
-    {
-      "parameters": {
-        "method": "PUT",
-        "url": "http://qdrant:6333/collections/shopware_products/points",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
             {
               "name": "Content-Type",
               "value": "application/json"
@@ -360,11 +224,11 @@
         }
       },
       "id": "h8i9j0k1-2l3m-4n5o-6p7q-8r9s0t1u2v3w",
-      "name": "Store in Local Qdrant Vector DB",
+      "name": "Store in Qdrant Vector DB",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.1,
       "position": [
-        3100,
+        2000,
         420
       ]
     },
@@ -377,7 +241,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3320,
+        2220,
         420
       ]
     }
@@ -460,68 +324,6 @@
       "main": [
         [
           {
-            "node": "Check Collection Exists",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Check Collection Exists": {
-      "main": [
-        [
-          {
-            "node": "Evaluate Collection Status",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Evaluate Collection Status": {
-      "main": [
-        [
-          {
-            "node": "Collection Exists?",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Collection Exists?": {
-      "main": [
-        [
-          {
-            "node": "Create Qdrant Collection",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Prepare Qdrant Points",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Create Qdrant Collection": {
-      "main": [
-        [
-          {
-            "node": "Log Collection Creation",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Log Collection Creation": {
-      "main": [
-        [
-          {
             "node": "Prepare Qdrant Points",
             "type": "main",
             "index": 0
@@ -533,14 +335,14 @@
       "main": [
         [
           {
-            "node": "Store in Local Qdrant Vector DB",
+            "node": "Store in Qdrant Vector DB",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Store in Local Qdrant Vector DB": {
+    "Store in Qdrant Vector DB": {
       "main": [
         [
           {

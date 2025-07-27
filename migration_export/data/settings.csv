@@ -1,8 +1,0 @@
-key,value,loadOnStartup
-userManagement.isInstanceOwnerSetUp,true,1
-ui.banners.dismissed,"[""V1""]",1
-features.ldap,"{""loginEnabled"":false,""loginLabel"":"""",""connectionUrl"":"""",""allowUnauthorizedCerts"":false,""connectionSecurity"":""none"",""connectionPort"":389,""baseDn"":"""",""bindingAdminDn"":"""",""bindingAdminPassword"":"""",""firstNameAttribute"":"""",""lastNameAttribute"":"""",""emailAttribute"":"""",""loginIdAttribute"":"""",""ldapIdAttribute"":"""",""userFilter"":"""",""synchronizationEnabled"":false,""synchronizationInterval"":60,""searchPageSize"":0,""searchTimeout"":60}",1
-features.oidc,"{""clientId"":"""",""clientSecret"":"""",""discoveryEndpoint"":"""",""loginEnabled"":false}",1
-userManagement.authenticationMethod,email,1
-features.sourceControl.sshKeys,"{""encryptedPrivateKey"":""U2FsdGVkX1+gnhXFGoafcFvn/2OxcHBn1BPGAOnzULV9b/fG6ZlCF1mQ2R48wFuAczKrsuaeEd0Nwc2GkQNLTeKMoirq7r9Rkl0Hdf0LMVVkU9f0svJwUfARrnxi7Y5MUhnCBKdXmNH8IjajZcFFQL5grdiaAQBpeAj8KxlIIICdeUbRa9wVa6H9ODkJk6SpSoF5fTBqV9wtXJk4U32QE3x9oHTq994gXPxHhGgKAXsxJBJesKRk944+a0oxFeeQkg7XpYsEa1YEql/vHIJwevRWZHEtWe5GZRVqos2ca0iR4l1yJgZ48WJyqXDy95hnDDOT+c/ugm+RW4fAoFosDnUim8xnAd0sgeFT25bsfPNvTwiswPE8gysNTV7uEPLNeNM8YlZNv9NI10ssy+caF0KuLzqo6/V0t+TkPJ7+a6ggQegUqn76XlrQhMM1dcpWyPgilXTLCCYihhPg+7VPpHaVayqBFHTupjzcjOeOR468irg6qee8nPvILu2UwPiAcjnJwvEHmwo71GWeWjWtEUXeovMYrAu0KY2aaB5WZMR6MJU2wW0zSRqIwSO8gOwt"",""publicKey"":""ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINNkrdJUN4mpoT5tEU3mp39tXEdEKuu4sjgTwaQahrOZ n8n deploy key""}",1
-features.sourceControl,"{""branchName"":""main"",""keyGeneratorType"":""ed25519""}",1

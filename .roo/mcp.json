@@ -36,13 +36,16 @@
         "-y",
         "@supabase/mcp-server-postgrest@latest",
         "--apiUrl",
-        "http://localhost:3000  txt",
+        "https://localhost:3000",
         "--apiKey",
         "",
         "--schema",
         "public"
       ],
-      "alwaysAllow": []
+      "alwaysAllow": [
+        "postgrestRequest",
+        "sqlToRest"
+      ]
     }
   }
 }

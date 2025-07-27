@@ -1,6 +1,0 @@
-id,workflowId,finished,mode,retryOf,retrySuccessId,startedAt,stoppedAt,waitTill,status,deletedAt,createdAt
-1,sU8WiDF4UnAQq9PC,0,manual,,,2025-07-26 10:16:02.406,2025-07-26 10:16:02.460,,error,,2025-07-26 10:16:02.390
-2,JWL1s21OQx2lOpBL,0,manual,,,2025-07-26 10:19:21.703,2025-07-26 10:19:21.808,,error,,2025-07-26 10:19:21.683
-3,d74bb1275e9a48ac,1,manual,,,2025-07-26 12:24:02.073,2025-07-26 12:24:03.235,,success,,2025-07-26 12:24:02.053
-4,d74bb1275e9a48ac,1,manual,,,2025-07-26 12:24:13.442,2025-07-26 12:24:14.084,,success,,2025-07-26 12:24:13.429
-5,d74bb1275e9a48ac,1,manual,,,2025-07-26 12:24:17.919,2025-07-26 12:24:18.493,,success,,2025-07-26 12:24:17.886

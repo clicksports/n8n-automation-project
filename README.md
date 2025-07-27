@@ -1,170 +1,88 @@
-# Held N8N Shopware Integration
+# n8n with PostgreSQL and Qdrant Setup
 
-A comprehensive n8n workflow system for importing Shopware products into Qdrant vector database with optimized product separation and chunking.
+This project contains a clean n8n setup with PostgreSQL database and Qdrant vector database integration.
 
-## 🚀 Features
+## Architecture
 
-- **Automated Shopware Product Import**: OAuth-based authentication with Shopware API
-- **Vector Database Integration**: Seamless integration with Qdrant for semantic search
-- **Product Separation**: Unique vector generation per product to prevent confusion
-- **Optimized Chunking**: Proper batch processing with configurable page sizes
-- **Error Handling**: Comprehensive validation and error tracking
-- **Docker Support**: Complete containerized setup with Docker Compose
+- **n8n**: Workflow automation platform
+- **PostgreSQL**: Primary database (migrated from SQLite)
+- **Qdrant**: Vector database for product embeddings
+- **PostgREST**: REST API for PostgreSQL (MCP integration)
 
-## 📋 Prerequisites
+## Services
 
-- Docker and Docker Compose
-- n8n instance (can be run via Docker)
-- Qdrant vector database access
-- Shopware API credentials
+All services run via Docker Compose:
 
-## 🛠️ Quick Setup
+```bash
+# Start all services
+docker-compose -f docker-compose-local-postgresql.yml up -d
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/YOUR_USERNAME/held-n8n-shopware.git
-   cd held-n8n-shopware
-   ```
-
-2. **Start the services**
-   ```bash
-   docker-compose up -d
-   ```
-
-3. **Import the workflow**
-   ```bash
-   cd workflows
-   ./import-workflow.sh
-   ```
-
-4. **Configure credentials**
-   - Update Shopware API credentials in n8n
-   - Configure Qdrant API key and endpoint
-
-## 📁 Project Structure
-
-```
-├── workflows/                 # n8n workflow definitions
-│   ├── current_workflow.json  # Main optimized workflow
-│   ├── optimized_workflow.json # Enhanced version with separation
-│   ├── backups/               # Workflow backups
-│   └── exported/              # Exported workflow files
-├── docker-compose.yml         # Docker services configuration
-├── backup-and-restart.sh      # Backup and restart script
-├── MCP_SETUP.md              # MCP server setup guide
-├── N8N_SETUP_COMPLETE.md     # Setup completion guide
-└── DOCKER_VOLUMES_SETUP.md   # Docker volumes configuration
+# Check service status
+docker ps
 ```
 
-## 🔧 Workflow Features
+## Workflow Management
 
-### Product Import Pipeline
-1. **OAuth Authentication**: Secure token-based authentication with Shopware
-2. **Pagination Handling**: Automatic pagination through product catalog
-3. **Data Transformation**: Product data normalization and cleaning
-4. **Vector Generation**: Unique deterministic vectors per product
-5. **Qdrant Storage**: Optimized batch storage with error handling
+The project contains one main workflow:
+- `workflows/current_workflow.json` - Shopware to Local Qdrant Production (With Collection Auto-Create)
 
-### Product Separation Safeguards
-- **Unique Product IDs**: Each Shopware product uses its unique ID as Qdrant point identifier
-- **Deterministic Vectors**: Content-based vector generation ensures uniqueness
-- **Individual Processing**: Products processed separately to prevent cross-contamination
-- **Vector Validation**: Mathematical verification of vector uniqueness
+### Sync Workflow Without Interface
 
-## 📊 Configuration
+Use the CLI sync tools to manage workflows without the n8n interface:
 
-### Shopware API Settings
-```javascript
-{
-  "client_id": "YOUR_SHOPWARE_CLIENT_ID",
-  "client_secret": "YOUR_SHOPWARE_CLIENT_SECRET",
-  "api_url": "https://your-shop.domain.com/api"
-}
+```bash
+cd workflows
+
+# List remote workflows
+./n8n-sync.sh list-remote
+
+# Sync local workflow to n8n
+./n8n-sync.sh sync-to-n8n --backup
+
+# Verify sync status
+./verify-sync.sh
 ```
 
-### Qdrant Configuration
-```javascript
-{
-  "endpoint": "https://your-qdrant-instance.com:6333",
-  "api_key": "your-qdrant-api-key",
-  "collection": "shopware_products",
-  "vector_size": 1536,
-  "distance": "Cosine"
-}
-```
+## Database Access
 
-## 🧪 Testing
+### PostgreSQL
+- Host: localhost:5432
+- Database: n8n
+- User: n8n_user
+- Password: n8n_password
 
-The workflow has been tested with:
-- ✅ 10 Shopware products successfully imported
-- ✅ Unique vector generation verified
-- ✅ Product separation confirmed
-- ✅ Error handling validated
-- ✅ Qdrant collection health verified
+### PostgREST API
+- URL: http://localhost:3000
+- Schema: public
 
-## 📈 Performance
+### Qdrant
+- URL: http://localhost:6333
+- Collection: shopware_products
 
-- **Batch Size**: 5-10 products per page (configurable)
-- **Vector Dimensions**: 1536 (OpenAI compatible)
-- **Distance Metric**: Cosine similarity
-- **Processing Speed**: ~1-2 seconds per product
-- **Error Rate**: <1% with proper configuration
+## Environment Configuration
 
-## 🔍 Monitoring
+Key environment variables are in `.env`:
+- Database credentials
+- PostgREST configuration
+- API keys and tokens
 
-### Workflow Execution Logs
-- OAuth token acquisition status
-- Product fetch pagination progress
-- Vector generation and validation
-- Qdrant storage confirmation
-- Error tracking and reporting
+## MCP Integration
 
-### Health Checks
-- Qdrant collection status monitoring
-- Vector count verification
-- Product uniqueness validation
-- API connectivity checks
+The project supports Model Context Protocol (MCP) for database interaction:
+- PostgREST MCP server for PostgreSQL access
+- Configuration in `.roo/mcp.json`
 
-## 🛡️ Security
+## Workflow Features
 
-- OAuth 2.0 authentication with Shopware
-- API key-based Qdrant authentication
-- Secure credential storage in n8n
-- No hardcoded secrets in workflow files
+The main workflow:
+1. Authenticates with Shopware API
+2. Fetches product data with pagination
+3. Transforms data for vector storage
+4. Auto-creates Qdrant collection if needed
+5. Stores product vectors with metadata
 
-## 📚 Documentation
+## Maintenance
 
-- [MCP Setup Guide](MCP_SETUP.md) - Model Context Protocol configuration
-- [Docker Setup](DOCKER_VOLUMES_SETUP.md) - Container configuration
-- [Workflow Import Guide](workflows/IMPORT_GUIDE.md) - Step-by-step import process
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🆘 Support
-
-For issues and questions:
-1. Check the documentation in the `/workflows` directory
-2. Review the setup guides
-3. Check existing issues in the repository
-4. Create a new issue with detailed information
-
-## 🏷️ Version History
-
-- **v1.0.0** - Initial release with basic Shopware integration
-- **v1.1.0** - Added product separation and chunking optimization
-- **v1.2.0** - Enhanced error handling and vector validation
-- **v1.3.0** - Docker containerization and automated setup
-
----
-
-**Built with ❤️ for efficient e-commerce data processing**
+- Backups are automatically created during sync operations
+- Use `./n8n-sync.sh --help` for all available commands
+- Monitor services with `docker ps` and `docker logs <container>`

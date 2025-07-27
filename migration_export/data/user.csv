@@ -1,2 +1,0 @@
-id,email,firstName,lastName,password,personalizationAnswers,createdAt,updatedAt,settings,disabled,mfaEnabled,mfaSecret,mfaRecoveryCodes,role,lastActiveAt
-f624dd0d-b63b-4cb7-9da8-2451dcca12fc,admin@n8n.local,Admin,User,$2a$10$d6C7Rirg3Fo4omEPKSKgiO7bwGjhWasO2xRch5VNYWOjKJzLsUQNa,"{""version"":""v4"",""personalization_survey_submitted_at"":""2025-07-26T06:59:30.398Z"",""personalization_survey_n8n_version"":""1.102.3""}",2025-07-26 06:43:51.842,2025-07-26 12:21:17,"{""userActivated"":false}",0,0,,,global:owner,2025-07-26

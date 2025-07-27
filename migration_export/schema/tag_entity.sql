@@ -1,7 +1,0 @@
-CREATE TABLE tag_entity (
-  id VARCHAR(36) NOT NULL,
-  name VARCHAR(24) NOT NULL,
-  createdAt TIMESTAMP NOT NULL DEFAULT STRFTIME('%Y-%m-%d %H:%M:%f', 'NOW'),
-  updatedAt TIMESTAMP NOT NULL DEFAULT STRFTIME('%Y-%m-%d %H:%M:%f', 'NOW'),
-  PRIMARY KEY (id)
-);
